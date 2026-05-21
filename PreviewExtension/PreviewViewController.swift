@@ -75,16 +75,17 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
   }
 
   func preparePreviewOfFile(at url: URL) async throws {
-    let data = try Data(contentsOf: textFileURL(of: url))
+    let textURL = textFileURL(of: url)
+    let data = try Data(contentsOf: textURL)
     let config = EditorConfig(
       text: data.toString() ?? "",
       theme: effectiveTheme,
-      fontFace: WebFontFace(family: "ui-monospace", weight: nil, style: nil),
-      fontSize: 12,
+      fontFace: WebFontFace(family: "-apple-system", weight: nil, style: nil),
+      fontSize: 15,
       showLineNumbers: false,
       showActiveLineIndicator: false,
-      invisiblesBehavior: .always,
-      readOnlyMode: false,
+      invisiblesBehavior: .never,
+      readOnlyMode: true,
       typewriterMode: false,
       focusMode: false,
       lineWrapping: true,
@@ -105,7 +106,7 @@ final class PreviewViewController: NSViewController, QLPreviewingController {
       searchNormalizers: nil
     )
 
-    webView.loadHTMLString(config.toHtml, baseURL: nil)
+    webView.loadHTMLString(config.toHtml, baseURL: textURL.deletingLastPathComponent())
   }
 }
 
