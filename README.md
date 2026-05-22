@@ -10,6 +10,8 @@
 
 MarkEdit is a free and **open-source** Markdown editor, for macOS. It's just like _TextEdit_ on Mac but dedicated to `Markdown`.
 
+This fork adds rendered Markdown previews for both Finder Quick Look and the main editor window: press Space in Finder to preview rendered Markdown, or use the toolbar button in MarkEdit to switch between source editing and rendered Markdown.
+
 No bloat. Markdown editing done right in a 4 MB app that flies through million-line files.
 
 We do not claim to be the best in any single dimension. Instead, we aim to strike the right balance across **size**, **speed**, **native integration**, and **correctness**.
@@ -38,6 +40,7 @@ _For perspective: at just 4 MB, MarkEdit is much smaller than Electron apps. Han
 - Fast: edits 10 MB files easily
 - Lightweight: installer size is about 4 MB
 - Extensible: seamless integration with Shortcuts and AppleScript
+- Rendered previews: Finder Quick Look and the editor toolbar can show formatted Markdown without losing source-editing state
 
 MarkEdit strictly follows the [GFM specification](https://github.github.com/gfm/), with no proprietary syntax or invented features. Complex editing like multi-caret and code folding is built on [CodeMirror 6](https://codemirror.net/) for correctness and performance, consistently faster than most macOS editors. UI controls remain native to macOS in both aesthetics and behavior, including force-touch word lookup, inline predictions, and Writing Tools.
 
@@ -47,11 +50,11 @@ Customization is built around CSS, JavaScript, and [CodeMirror extensions](https
 
 ## Installation
 
-Get `MarkEdit.dmg` from the <a href="https://github.com/MarkEdit-app/MarkEdit/releases/latest" target="_blank">latest release</a>, open it, and drag `MarkEdit.app` to `Applications`. Or install via [Homebrew](https://brew.sh/): `brew install --cask markedit`.
+Get `MarkEdit.zip` from the <a href="https://github.com/vpromise/MarkEdit/releases/latest" target="_blank">latest release of this fork</a>, unzip it, and drag `MarkEdit.app` to `Applications`. The upstream app is also available via [Homebrew](https://brew.sh/): `brew install --cask markedit`.
 
 <img src="./Screenshots/install.png" width="540" alt="Install MarkEdit">
 
-MarkEdit checks for updates automatically; you can also browse version history [here](https://github.com/MarkEdit-app/MarkEdit/releases).
+This fork's release history is available at [github.com/vpromise/MarkEdit/releases](https://github.com/vpromise/MarkEdit/releases). The upstream app checks for updates automatically and keeps its version history [here](https://github.com/MarkEdit-app/MarkEdit/releases).
 
 For older macOS: [macos-12](https://github.com/MarkEdit-app/MarkEdit/releases/tag/macos-12), [macos-13](https://github.com/MarkEdit-app/MarkEdit/releases/tag/macos-13), [macos-14](https://github.com/MarkEdit-app/MarkEdit/releases/tag/macos-14).
 
