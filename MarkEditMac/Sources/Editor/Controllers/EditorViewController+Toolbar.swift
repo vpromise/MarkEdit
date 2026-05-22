@@ -69,6 +69,10 @@ extension EditorViewController {
       $0.identifier.rawValue == identifier.rawValue
     }
   }
+
+  @objc func toggleMarkdownPreviewModeFromToolbar(_ sender: NSToolbarItem) {
+    toggleMarkdownPreviewMode()
+  }
 }
 
 // MARK: - NSToolbarDelegate
@@ -91,6 +95,7 @@ extension EditorViewController: NSToolbarDelegate {
       case .insertCode: return insertCodeItem
       case .textFormat: return textFormatItem
       case .statistics: return statisticsItem
+      case .markdownPreview: return markdownPreviewItem
       case .shareDocument: return shareDocumentItem
       case .copyPandocCommand: return copyPandocCommandItem
       case .writingTools: return writingToolsItem
@@ -130,7 +135,17 @@ extension EditorViewController: NSToolbarDelegate {
 
 extension EditorViewController: NSToolbarItemValidation {
   func validateToolbarItem(_ item: NSToolbarItem) -> Bool {
-    true
+    if item.itemIdentifier == .markdownPreview {
+      updateMarkdownPreviewItem(item)
+      return hasFinishedLoading && pendingResetCount == 0
+    }
+
+    switch item.itemIdentifier {
+    case .formatHeaders, .toggleBold, .toggleItalic, .toggleStrikethrough, .insertLink, .insertImage, .toggleList, .toggleBlockquote, .horizontalRule, .insertTable, .insertCode, .textFormat:
+      return !isMarkdownPreviewMode
+    default:
+      return true
+    }
   }
 }
 
@@ -249,6 +264,14 @@ private extension EditorViewController {
     }
   }
 
+  var markdownPreviewItem: NSToolbarItem {
+    let item = NSToolbarItem(itemIdentifier: .markdownPreview)
+    item.target = self
+    item.action = #selector(toggleMarkdownPreviewModeFromToolbar(_:))
+    updateMarkdownPreviewItem(item)
+    return item
+  }
+
   var shareDocumentItem: NSToolbarItem {
     let item = NSSharingServicePickerToolbarItem(itemIdentifier: .shareDocument)
     item.toolTip = Localized.Toolbar.shareDocument
@@ -267,6 +290,15 @@ private extension EditorViewController {
     } else {
       return nil
     }
+  }
+
+  func updateMarkdownPreviewItem(_ item: NSToolbarItem) {
+    item.label = isMarkdownPreviewMode ? Localized.Toolbar.showSource : Localized.Toolbar.previewMarkdown
+    item.toolTip = item.label
+    item.image = NSImage(
+      systemSymbolName: isMarkdownPreviewMode ? Icons.docPlaintext : Icons.docRichtext,
+      accessibilityDescription: item.label
+    )
   }
 
   func updateTableOfContentsMenu(_ menu: NSMenu) {

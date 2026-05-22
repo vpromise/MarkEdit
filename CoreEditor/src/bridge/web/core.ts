@@ -11,6 +11,8 @@ import {
   insertText,
   replaceText,
   performTextDrop,
+  setMarkdownPreviewMode,
+  getMarkdownPreviewMode,
   handleFocusLost,
   handleMouseExited,
   setHasModalSheet,
@@ -29,6 +31,8 @@ export interface WebModuleCore extends WebModule {
   insertText({ text, from, to }: { text: string; from: CodeGen_Int; to: CodeGen_Int }): void;
   replaceText({ text, granularity }: { text: string; granularity: ReplaceGranularity }): void;
   performTextDrop({ text }: { text: string }): void;
+  setMarkdownPreviewMode({ enabled }: { enabled: boolean }): boolean;
+  getMarkdownPreviewMode(): boolean;
   handleFocusLost(): void;
   handleMouseExited({ clientX, clientY }: { clientX: number; clientY: number }): void;
   setHasModalSheet({ value }: { value: boolean }): void;
@@ -61,6 +65,14 @@ export class WebModuleCoreImpl implements WebModuleCore {
 
   performTextDrop({ text }: { text: string }): void {
     performTextDrop(text);
+  }
+
+  setMarkdownPreviewMode({ enabled }: { enabled: boolean }): boolean {
+    return setMarkdownPreviewMode(enabled);
+  }
+
+  getMarkdownPreviewMode(): boolean {
+    return getMarkdownPreviewMode();
   }
 
   handleFocusLost(): void {

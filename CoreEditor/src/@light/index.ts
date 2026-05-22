@@ -1,5 +1,5 @@
 import { Config } from '../config';
-import { renderMarkdown } from './markdownRenderer';
+import { renderMarkdown } from '../modules/markdown/markdownRenderer';
 
 // "{{EDITOR_CONFIG}}" will be replaced with a JSON literal
 const config: Config = '{{EDITOR_CONFIG}}' as unknown as Config;

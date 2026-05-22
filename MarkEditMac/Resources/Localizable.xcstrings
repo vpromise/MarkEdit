@@ -2180,6 +2180,23 @@
         }
       }
     },
+    "Preview Markdown" : {
+      "comment" : "Toolbar item to show rendered Markdown",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "预览 Markdown"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預覽 Markdown"
+          }
+        }
+      }
+    },
     "Previous" : {
       "comment" : "Button title, move to the previous item",
       "localizations" : {
@@ -2617,6 +2634,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "分享此文件"
+          }
+        }
+      }
+    },
+    "Show Source" : {
+      "comment" : "Toolbar item to return to Markdown source editing",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "显示源码"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示原始碼"
           }
         }
       }

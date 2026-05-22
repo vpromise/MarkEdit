@@ -26,6 +26,7 @@ final class EditorViewController: NSViewController {
   var nativeSearchQueryChanged = false
   var bottomPanelHeight: Double = 0
   var pendingResetCount: Int = 0
+  var isMarkdownPreviewMode = false
   var webBackgroundColor = AppPreferences.Window.cachedBackgroundColor?.nsColor
   var localEventMonitor: Any?
   var textBoxInputObserver: Any?
@@ -374,6 +375,9 @@ extension EditorViewController {
       return
     }
 
+    isMarkdownPreviewMode = false
+    view.window?.toolbar?.validateVisibleItems()
+
     let textContent = document.stringValue
     let documentID = ObjectIdentifier(document)
 
@@ -426,6 +430,34 @@ extension EditorViewController {
 
     hasBeenEdited = false
     setShowSelectionStatus(enabled: AppPreferences.Editor.showSelectionStatus)
+  }
+
+  func setMarkdownPreviewMode(_ enabled: Bool) {
+    guard hasFinishedLoading else {
+      return
+    }
+
+    isMarkdownPreviewMode = enabled
+    view.window?.toolbar?.validateVisibleItems()
+
+    Task { @MainActor [weak self] in
+      guard let self else {
+        return
+      }
+
+      do {
+        self.isMarkdownPreviewMode = try await self.bridge.core.setMarkdownPreviewMode(enabled: enabled)
+      } catch {
+        self.isMarkdownPreviewMode = false
+        Logger.log(.error, "Failed to set Markdown preview mode: \(error.localizedDescription)")
+      }
+
+      self.view.window?.toolbar?.validateVisibleItems()
+    }
+  }
+
+  func toggleMarkdownPreviewMode() {
+    setMarkdownPreviewMode(!isMarkdownPreviewMode)
   }
 
   func setHasModalSheet(value: Bool) {

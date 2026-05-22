@@ -97,6 +97,7 @@ extension NSToolbarItem.Identifier {
   static let insertCode = newItem("insertCode")
   static let textFormat = newItem("textFormat")
   static let statistics = newItem("statistics")
+  static let markdownPreview = newItem("markdownPreview")
   static let shareDocument = newItem("shareDocument")
   static let copyPandocCommand = newItem("copyPandocCommand")
   static let writingTools = newItem("writingTools")
@@ -108,6 +109,8 @@ extension NSToolbarItem.Identifier {
       .toggleBold,
       .toggleItalic,
       .toggleList,
+      .flexibleSpace,
+      .markdownPreview,
     ]
   }
 
@@ -127,6 +130,7 @@ extension NSToolbarItem.Identifier {
       .insertCode,
       .textFormat,
       .statistics,
+      .markdownPreview,
       .shareDocument,
       .copyPandocCommand,
     ]
@@ -167,6 +171,7 @@ private extension NSToolbarItem.Identifier {
     case .insertCode: return Localized.Toolbar.insertCode
     case .textFormat: return Localized.Toolbar.textFormat
     case .statistics: return Localized.Toolbar.statistics
+    case .markdownPreview: return Localized.Toolbar.previewMarkdown
     case .shareDocument: return Localized.Toolbar.shareDocument
     case .copyPandocCommand: return Localized.Toolbar.copyPandocCommand
     case .writingTools: return Localized.WritingTools.title
@@ -190,6 +195,7 @@ private extension NSToolbarItem.Identifier {
     case .insertCode: return Icons.curlybracesSquare
     case .textFormat: return Icons.textformat
     case .statistics: return Icons.chartPie
+    case .markdownPreview: return Icons.docRichtext
     case .shareDocument: return Icons.squareAndArrowUp
     case .copyPandocCommand: return Icons.terminal
     case .writingTools: return Icons.wandAndSparkles

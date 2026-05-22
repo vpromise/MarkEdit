@@ -11,6 +11,26 @@ html, body {
   overflow: auto;
 }
 
+#editor {
+  min-height: 100vh;
+}
+
+html.markdown-preview-active,
+html.markdown-preview-active body {
+  height: 100%;
+  overflow: hidden;
+}
+
+#editor.markdown-preview-mode {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+#editor.markdown-preview-mode > .cm-editor {
+  display: none !important;
+}
+
 /* CodeMirror */
 
 .cm-editor {
@@ -39,6 +59,168 @@ html, body {
 .cm-focused {
   /* Disable the dashed border when the editor is focused */
   outline: none !important;
+}
+
+/* Markdown preview */
+
+.markdown-preview-source-hidden {
+  display: none !important;
+}
+
+.markdown-preview {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  overflow: auto;
+  padding: 28px 32px 36px;
+  background-color: var(--markdown-preview-background-color, Canvas);
+  color: var(--markdown-preview-text-color, CanvasText);
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  font-size: var(--markdown-preview-font-size, 15px);
+  line-height: var(--markdown-preview-line-height, 1.55);
+  -webkit-font-smoothing: antialiased;
+}
+
+.markdown-preview[hidden] {
+  display: none !important;
+}
+
+.markdown-preview > :first-child {
+  margin-top: 0;
+}
+
+.markdown-preview > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  margin: 1.4em 0 0.65em;
+  line-height: 1.25;
+  font-weight: 650;
+}
+
+.markdown-preview h1,
+.markdown-preview h2 {
+  padding-bottom: 0.28em;
+  border-bottom: 1px solid var(--markdown-preview-soft-border-color, color-mix(in srgb, currentColor 18%, transparent));
+}
+
+.markdown-preview h1 {
+  font-size: 2em;
+}
+
+.markdown-preview h2 {
+  font-size: 1.55em;
+}
+
+.markdown-preview h3 {
+  font-size: 1.25em;
+}
+
+.markdown-preview h4 {
+  font-size: 1.08em;
+}
+
+.markdown-preview h5,
+.markdown-preview h6 {
+  font-size: 1em;
+  color: var(--markdown-preview-muted-color, color-mix(in srgb, currentColor 65%, transparent));
+}
+
+.markdown-preview p,
+.markdown-preview blockquote,
+.markdown-preview ul,
+.markdown-preview ol,
+.markdown-preview pre,
+.markdown-preview table {
+  margin: 0 0 1em;
+}
+
+.markdown-preview a {
+  color: var(--markdown-preview-accent-color, LinkText);
+  text-decoration: none;
+}
+
+.markdown-preview a:hover {
+  text-decoration: underline;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  padding-left: 1.5em;
+}
+
+.markdown-preview li + li {
+  margin-top: 0.25em;
+}
+
+.markdown-preview blockquote {
+  padding: 0 1em;
+  color: var(--markdown-preview-muted-color, color-mix(in srgb, currentColor 65%, transparent));
+  border-left: 0.25em solid var(--markdown-preview-blockquote-border-color, color-mix(in srgb, currentColor 24%, transparent));
+}
+
+.markdown-preview code,
+.markdown-preview pre {
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+}
+
+.markdown-preview code {
+  padding: 0.16em 0.36em;
+  border-radius: 6px;
+  background-color: var(--markdown-preview-code-background-color, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+.markdown-preview pre {
+  overflow: auto;
+  padding: 1em;
+  border-radius: 8px;
+  background-color: var(--markdown-preview-code-background-color, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+.markdown-preview pre code {
+  display: block;
+  padding: 0;
+  background-color: transparent;
+  white-space: pre;
+}
+
+.markdown-preview table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  overflow: auto;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  padding: 0.45em 0.75em;
+  border: 1px solid var(--markdown-preview-border-color, color-mix(in srgb, currentColor 24%, transparent));
+}
+
+.markdown-preview th {
+  font-weight: 600;
+  background-color: var(--markdown-preview-table-header-color, color-mix(in srgb, currentColor 8%, transparent));
+}
+
+.markdown-preview hr {
+  height: 0.25em;
+  margin: 1.5em 0;
+  border: 0;
+  background-color: var(--markdown-preview-soft-border-color, color-mix(in srgb, currentColor 18%, transparent));
+}
+
+.markdown-preview img {
+  max-width: 100%;
+  height: auto;
 }
 
 /* Markdown */

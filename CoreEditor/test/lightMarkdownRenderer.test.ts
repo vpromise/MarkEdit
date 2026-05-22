@@ -1,5 +1,5 @@
 import { describe, expect, test } from '@jest/globals';
-import { renderMarkdown } from '../src/@light/markdownRenderer';
+import { renderMarkdown } from '../src/modules/markdown/markdownRenderer';
 
 describe('Light Markdown renderer', () => {
   test('renders headings and paragraphs', () => {

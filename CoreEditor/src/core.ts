@@ -20,6 +20,11 @@ import { selectedMainText, scrollIntoView, caretScrollDefaults } from './modules
 import { selectedLineColumn } from './modules/selection/selectedLineColumn';
 import { markContentClean } from './modules/history';
 import { updateTextChecker } from './modules/textChecker';
+import {
+  getMarkdownPreviewMode as getPreviewMode,
+  resetMarkdownPreviewMode,
+  setMarkdownPreviewMode as setPreviewMode,
+} from './modules/markdown/previewMode';
 
 import { TextEditor } from './api/editor';
 import { editorReadyListeners } from './api/methods';
@@ -89,6 +94,8 @@ export async function resetEditor(
   const initialDoc = normalizeLineBreaks(initialContent, lineBreak);
   const initialSelection = normalizeSelection(initialDoc.length, selectionRange);
   const selectionRestored = selectionRange !== undefined && (selectionRange.anchor !== 0 || selectionRange.head !== 0);
+
+  resetMarkdownPreviewMode();
 
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (typeof window.editor?.destroy === 'function') {
@@ -295,6 +302,19 @@ export function performTextDrop(text: string) {
   } else {
     insertText(text, pos, pos);
   }
+}
+
+export function setMarkdownPreviewMode(enabled: boolean) {
+  const previewEnabled = setPreviewMode(enabled, enabled ? getEditorText() : undefined);
+  if (previewEnabled) {
+    handleFocusLost();
+  }
+
+  return previewEnabled;
+}
+
+export function getMarkdownPreviewMode() {
+  return getPreviewMode();
 }
 
 export function handleFocusLost() {

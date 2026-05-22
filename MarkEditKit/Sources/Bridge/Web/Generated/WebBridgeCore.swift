@@ -104,6 +104,30 @@ public final class WebBridgeCore {
     webView?.invoke(path: "webModules.core.performTextDrop", message: message, completion: completion)
   }
 
+  public func setMarkdownPreviewMode(enabled: Bool) async throws -> Bool {
+    struct Message: Encodable {
+      let enabled: Bool
+    }
+
+    let message = Message(
+      enabled: enabled
+    )
+
+    guard let webView else {
+      throw WKWebView.InvokeError.unexpectedNil
+    }
+
+    return try await webView.invoke(path: "webModules.core.setMarkdownPreviewMode", message: message)
+  }
+
+  public func getMarkdownPreviewMode() async throws -> Bool {
+    guard let webView else {
+      throw WKWebView.InvokeError.unexpectedNil
+    }
+
+    return try await webView.invoke(path: "webModules.core.getMarkdownPreviewMode")
+  }
+
   public func handleFocusLost(completion: ((Result<Void, WKWebView.InvokeError>) -> Void)? = nil) {
     webView?.invoke(path: "webModules.core.handleFocusLost", completion: completion)
   }

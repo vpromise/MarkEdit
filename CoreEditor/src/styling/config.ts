@@ -20,6 +20,7 @@ import { afterDomUpdate, isMotionReduced } from '../common/utils';
  */
 export default interface StyleSheets {
   accentColor?: HTMLStyleElement;
+  markdownPreview?: HTMLStyleElement;
   fontFace?: HTMLStyleElement;
   fontSize?: HTMLStyleElement;
   typewriterMode?: HTMLStyleElement;
@@ -65,6 +66,22 @@ export function setEditorColors(colors: EditorColors) {
   updateStyleSheet(styleSheets.accentColor, style => {
     const cssColor = shadowableTextColor(colors.accent);
     Object.keys(cssColor).forEach(key => style.setProperty(key, cssColor[key] as string));
+  });
+
+  if (styleSheets.markdownPreview === undefined) {
+    styleSheets.markdownPreview = createStyleSheet(':root {}');
+  }
+
+  updateStyleSheet(styleSheets.markdownPreview, style => {
+    style.setProperty('--markdown-preview-background-color', colors.background);
+    style.setProperty('--markdown-preview-text-color', colors.text);
+    style.setProperty('--markdown-preview-muted-color', colors.comment);
+    style.setProperty('--markdown-preview-accent-color', colors.accent);
+    style.setProperty('--markdown-preview-border-color', colors.lineBorder ?? colors.lineNumber);
+    style.setProperty('--markdown-preview-soft-border-color', colors.lighterBackground);
+    style.setProperty('--markdown-preview-blockquote-border-color', colors.lineBorder ?? colors.lineNumber);
+    style.setProperty('--markdown-preview-code-background-color', colors.lighterBackground);
+    style.setProperty('--markdown-preview-table-header-color', colors.lighterBackground);
   });
 
   globalState.colors = colors;
