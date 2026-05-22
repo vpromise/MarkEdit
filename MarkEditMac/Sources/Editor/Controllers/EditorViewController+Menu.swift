@@ -88,6 +88,31 @@ extension EditorViewController: NSMenuItemValidation {
     #selector(deleteVersionsByCapacity(_:)),
   ]
 
+  private static let sourceEditingActions = [
+    #selector(toggleH1(_:)),
+    #selector(toggleH2(_:)),
+    #selector(toggleH3(_:)),
+    #selector(toggleH4(_:)),
+    #selector(toggleH5(_:)),
+    #selector(toggleH6(_:)),
+    #selector(toggleBold(_:)),
+    #selector(toggleItalic(_:)),
+    #selector(toggleStrikethrough(_:)),
+    #selector(insertLink(_:)),
+    #selector(insertImage(_:)),
+    #selector(toggleBullet(_:)),
+    #selector(toggleNumbering(_:)),
+    #selector(toggleTodo(_:)),
+    #selector(toggleBlockquote(_:)),
+    #selector(toggleInlineCode(_:)),
+    #selector(toggleInlineMath(_:)),
+    #selector(insertCodeBlock(_:)),
+    #selector(insertMathBlock(_:)),
+    #selector(insertHorizontalRule(_:)),
+    #selector(insertTable(_:)),
+    #selector(performEditCommand(_:)),
+  ]
+
   func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
     // Disable most edit actions for read-only mode
     if isReadOnlyMode {
@@ -132,6 +157,10 @@ extension EditorViewController: NSMenuItemValidation {
 
     if let action = menuItem.action, Self.fileActions.contains(action) {
       return document?.fileURL != nil
+    }
+
+    if let action = menuItem.action, Self.sourceEditingActions.contains(action) {
+      return !isMarkdownPreviewMode
     }
 
     switch menuItem.action {
@@ -216,94 +245,115 @@ extension EditorViewController {
   // MARK: - Headers
 
   @IBAction func toggleH1(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleHeading(level: 1)
   }
 
   @IBAction func toggleH2(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleHeading(level: 2)
   }
 
   @IBAction func toggleH3(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleHeading(level: 3)
   }
 
   @IBAction func toggleH4(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleHeading(level: 4)
   }
 
   @IBAction func toggleH5(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleHeading(level: 5)
   }
 
   @IBAction func toggleH6(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleHeading(level: 6)
   }
 
   // MARK: - Text Styles
 
   @IBAction func toggleBold(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleBold()
   }
 
   @IBAction func toggleItalic(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleItalic()
   }
 
   @IBAction func toggleStrikethrough(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleStrikethrough()
   }
 
   // MARK: - Hyper Link
 
   @IBAction func insertLink(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     insertHyperLink(prefix: nil)
   }
 
   @IBAction func insertImage(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     insertHyperLink(prefix: "!")
   }
 
   // MARK: - List
 
   @IBAction func toggleBullet(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleBullet()
   }
 
   @IBAction func toggleNumbering(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleNumbering()
   }
 
   @IBAction func toggleTodo(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleTodo()
   }
 
   // MARK: - Others
 
   @IBAction func toggleBlockquote(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleBlockquote()
   }
 
   @IBAction func toggleInlineCode(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleInlineCode()
   }
 
   @IBAction func toggleInlineMath(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.toggleInlineMath()
   }
 
   @IBAction func insertCodeBlock(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.insertCodeBlock()
   }
 
   @IBAction func insertMathBlock(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.insertMathBlock()
   }
 
   @IBAction func insertHorizontalRule(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.insertHorizontalRule()
   }
 
   @IBAction func insertTable(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
     bridge.format.insertTable(
       columnName: Localized.Editor.tableColumnName,
       itemName: Localized.Editor.tableItemName
@@ -492,6 +542,8 @@ private extension EditorViewController {
   }
 
   @IBAction func performEditCommand(_ sender: Any?) {
+    guard !isMarkdownPreviewMode else { return }
+
     guard let identifier = (sender as? NSMenuItem)?.identifier?.rawValue else {
       Logger.log(.error, "Missing identifier to performCommand")
       return

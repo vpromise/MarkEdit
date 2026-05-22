@@ -29,8 +29,16 @@ final class EditorImageLoader: NSObject, WKURLSchemeHandler {
       return Logger.log(.error, "Invalid baseURL for task: \(urlSchemeTask)")
     }
 
-    let fileName = url.absoluteString.replacingOccurrences(of: "\(Self.scheme)://", with: "")
-    let fileURL = baseURL.appending(path: fileName.removingPercentEncoding ?? fileName, directoryHint: .notDirectory)
+    let fileName = [url.host(percentEncoded: false), url.path(percentEncoded: false)]
+      .compactMap { $0 }
+      .joined()
+    let fileURL = {
+      if fileName.hasPrefix("/") {
+        return URL(filePath: fileName)
+      }
+
+      return baseURL.appending(path: fileName, directoryHint: .notDirectory)
+    }()
     let fileData = (try? Data(contentsOf: fileURL)) ?? Data()
     let mimeType = UTType(filenameExtension: fileURL.pathExtension)?.preferredMIMEType
     let contentLength = fileData.count

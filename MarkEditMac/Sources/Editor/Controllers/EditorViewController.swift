@@ -26,6 +26,7 @@ final class EditorViewController: NSViewController {
   var nativeSearchQueryChanged = false
   var bottomPanelHeight: Double = 0
   var pendingResetCount: Int = 0
+  var markdownPreviewModeRequestID = 0
   var isMarkdownPreviewMode = false
   var webBackgroundColor = AppPreferences.Window.cachedBackgroundColor?.nsColor
   var localEventMonitor: Any?
@@ -375,6 +376,7 @@ extension EditorViewController {
       return
     }
 
+    markdownPreviewModeRequestID += 1
     isMarkdownPreviewMode = false
     view.window?.toolbar?.validateVisibleItems()
 
@@ -437,6 +439,8 @@ extension EditorViewController {
       return
     }
 
+    markdownPreviewModeRequestID += 1
+    let requestID = markdownPreviewModeRequestID
     isMarkdownPreviewMode = enabled
     view.window?.toolbar?.validateVisibleItems()
 
@@ -446,8 +450,17 @@ extension EditorViewController {
       }
 
       do {
-        self.isMarkdownPreviewMode = try await self.bridge.core.setMarkdownPreviewMode(enabled: enabled)
+        let enabled = try await self.bridge.core.setMarkdownPreviewMode(enabled: enabled)
+        guard requestID == self.markdownPreviewModeRequestID else {
+          return
+        }
+
+        self.isMarkdownPreviewMode = enabled
       } catch {
+        guard requestID == self.markdownPreviewModeRequestID else {
+          return
+        }
+
         self.isMarkdownPreviewMode = false
         Logger.log(.error, "Failed to set Markdown preview mode: \(error.localizedDescription)")
       }

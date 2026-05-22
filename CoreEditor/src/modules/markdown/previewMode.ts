@@ -1,5 +1,6 @@
 import { EditorView } from '@codemirror/view';
 import { isReleaseMode } from '../../common/utils';
+import { getLinkAnchor } from '../toc';
 import { renderMarkdown } from './markdownRenderer';
 
 const previewClassName = 'markdown-preview';
@@ -8,6 +9,7 @@ const rootPreviewModeClassName = 'markdown-preview-active';
 const hiddenClassName = 'markdown-preview-source-hidden';
 const imageLoaderScheme = 'image-loader://';
 const absoluteSchemePattern = /^[a-z][a-z0-9+.-]*:/i;
+const absolutePathPattern = /^\/(?:Users|Volumes|private|tmp|var)\//;
 
 const storage: {
   enabled: boolean;
@@ -38,7 +40,11 @@ export function resetMarkdownPreviewMode() {
 
 export function rewriteImageSource(source: string): string {
   const trimmed = source.trim();
-  if (trimmed === '' || trimmed.startsWith('#') || trimmed.startsWith('//') || absoluteSchemePattern.test(trimmed) || trimmed.startsWith('/')) {
+  if (trimmed === '' || trimmed.startsWith('#') || trimmed.startsWith('//') || absoluteSchemePattern.test(trimmed)) {
+    return source;
+  }
+
+  if (trimmed.startsWith('/') && !absolutePathPattern.test(trimmed)) {
     return source;
   }
 
@@ -57,6 +63,7 @@ function showMarkdownPreview(markdownText?: string): boolean {
   const scrollRatio = scrollTopRatio(editor.scrollDOM);
 
   container.innerHTML = renderMarkdown(markdownText ?? editor.state.doc.toString());
+  applyHeadingAnchors(container);
   rewriteLocalImageSources(container);
   container.hidden = false;
 
@@ -111,6 +118,14 @@ function previewContainer(parent: Element, before: Element) {
   return container;
 }
 
+function applyHeadingAnchors(container: HTMLElement) {
+  container.querySelectorAll<HTMLHeadingElement>('h1, h2, h3, h4, h5, h6').forEach(heading => {
+    if (heading.id === '') {
+      heading.id = getLinkAnchor(heading.textContent);
+    }
+  });
+}
+
 function rewriteLocalImageSources(container: HTMLElement) {
   container.querySelectorAll<HTMLImageElement>('img[src]').forEach(image => {
     image.setAttribute('src', rewriteImageSource(image.getAttribute('src') ?? ''));
@@ -129,9 +144,12 @@ function handlePreviewClick(event: MouseEvent) {
   }
 
   event.preventDefault();
+  handlePreviewLinkClick(link);
+}
 
+export function handlePreviewLinkClick(link: string) {
   if (link.startsWith('#')) {
-    document.getElementById(decodeURIComponent(link.substring(1)))?.scrollIntoView();
+    scrollToPreviewAnchor(link);
     return;
   }
 
@@ -139,6 +157,21 @@ function handlePreviewClick(event: MouseEvent) {
     window.nativeModules.core.notifyLinkClicked({ link });
   } else {
     window.open(link, '_blank');
+  }
+}
+
+function scrollToPreviewAnchor(link: string) {
+  const anchor = decodedAnchor(link.substring(1));
+  if (anchor !== undefined) {
+    document.getElementById(anchor)?.scrollIntoView();
+  }
+}
+
+function decodedAnchor(value: string): string | undefined {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return undefined;
   }
 }
 

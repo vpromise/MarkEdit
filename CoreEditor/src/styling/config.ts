@@ -73,10 +73,11 @@ export function setEditorColors(colors: EditorColors) {
   }
 
   updateStyleSheet(styleSheets.markdownPreview, style => {
+    const cssColor = shadowableTextColor(colors.accent);
     style.setProperty('--markdown-preview-background-color', colors.background);
     style.setProperty('--markdown-preview-text-color', colors.text);
     style.setProperty('--markdown-preview-muted-color', colors.comment);
-    style.setProperty('--markdown-preview-accent-color', colors.accent);
+    style.setProperty('--markdown-preview-accent-color', cssColor.color);
     style.setProperty('--markdown-preview-border-color', colors.lineBorder ?? colors.lineNumber);
     style.setProperty('--markdown-preview-soft-border-color', colors.lighterBackground);
     style.setProperty('--markdown-preview-blockquote-border-color', colors.lineBorder ?? colors.lineNumber);

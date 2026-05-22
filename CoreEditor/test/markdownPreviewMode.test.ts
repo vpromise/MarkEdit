@@ -1,8 +1,8 @@
-import { describe, expect, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import { EditorView } from '@codemirror/view';
 import { Config } from '../src/config';
 import { getMarkdownPreviewMode, resetEditor, setMarkdownPreviewMode } from '../src/core';
-import { rewriteImageSource } from '../src/modules/markdown/previewMode';
+import { handlePreviewLinkClick, rewriteImageSource } from '../src/modules/markdown/previewMode';
 
 window.config = {
   theme: 'github-light',
@@ -21,14 +21,26 @@ window.config = {
 } as Config;
 
 describe('Markdown preview mode', () => {
-  test('rewrites only local relative image sources for the main editor image loader', () => {
+  test('rewrites local image sources for the main editor image loader', () => {
     expect(rewriteImageSource('assets/image.png')).toBe('image-loader://assets/image.png');
     expect(rewriteImageSource('./assets/image.png')).toBe('image-loader://./assets/image.png');
     expect(rewriteImageSource('../assets/image.png')).toBe('image-loader://../assets/image.png');
-    expect(rewriteImageSource('/Users/example/image.png')).toBe('/Users/example/image.png');
+    expect(rewriteImageSource('assets/image.png?raw=1')).toBe('image-loader://assets/image.png?raw=1');
+    expect(rewriteImageSource('/Users/example/image.png')).toBe('image-loader:///Users/example/image.png');
+    expect(rewriteImageSource('/Volumes/Data/image.png')).toBe('image-loader:///Volumes/Data/image.png');
+    expect(rewriteImageSource('/docs/image.png')).toBe('/docs/image.png');
     expect(rewriteImageSource('https://example.com/image.png')).toBe('https://example.com/image.png');
     expect(rewriteImageSource('file:///Users/example/image.png')).toBe('file:///Users/example/image.png');
     expect(rewriteImageSource('data:image/png;base64,AAAA')).toBe('data:image/png;base64,AAAA');
+  });
+
+  test('handles malformed preview fragment links without throwing', () => {
+    document.body.innerHTML = '<h1 id="title">Title</h1>';
+    const heading = document.getElementById('title') as HTMLElement;
+    heading.scrollIntoView = jest.fn();
+
+    expect(() => handlePreviewLinkClick('#title')).not.toThrow();
+    expect(() => handlePreviewLinkClick('#%E0%A4%A')).not.toThrow();
   });
 
   test('toggles rendered preview without destroying the editor source', async () => {
@@ -39,7 +51,7 @@ describe('Markdown preview mode', () => {
     expect(setMarkdownPreviewMode(true)).toBe(true);
     const preview = document.querySelector('.markdown-preview') as HTMLElement;
     expect(preview.hidden).toBe(false);
-    expect(preview.innerHTML).toContain('<h1>Title</h1>');
+    expect(preview.innerHTML).toContain('<h1 id="title">Title</h1>');
     expect(preview.innerHTML).toContain('src="image-loader://assets/image.png"');
     expect(preview.nextElementSibling).toBe(editor.dom);
     expect(document.documentElement.classList.contains('markdown-preview-active')).toBe(true);
