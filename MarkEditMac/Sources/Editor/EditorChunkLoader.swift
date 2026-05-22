@@ -19,7 +19,8 @@ final class EditorChunkLoader: NSObject, WKURLSchemeHandler {
       return Logger.assertFail("Invalid url scheme task: \(urlSchemeTask)")
     }
 
-    guard let fileURL = Bundle.main.url(forResource: "\(host)/\(url.path())", withExtension: nil) else {
+    let path = Self.normalizedPath(url.path())
+    guard let fileURL = Bundle.main.url(forResource: "\(host)/\(path)", withExtension: nil) else {
       return Logger.assertFail("Invalid request url: \(url)")
     }
 
@@ -61,10 +62,19 @@ final class EditorChunkLoader: NSObject, WKURLSchemeHandler {
 // MARK: - Private
 
 private extension EditorChunkLoader {
+  static func normalizedPath(_ path: String) -> String {
+    path
+      .replacingOccurrences(of: "/chunk-loader/chunks/", with: "")
+      .replacingOccurrences(of: "/chunks/", with: "")
+      .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+  }
+
   static let mimeTypes = [
     "js": "text/javascript",
     "css": "text/css",
+    "woff": "font/woff",
     "woff2": "font/woff2",
+    "ttf": "font/ttf",
   ]
 
   static let accessControl = [

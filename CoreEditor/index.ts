@@ -1,3 +1,4 @@
+import 'katex/dist/katex.min.css';
 import { Config, IndentBehavior, InvisiblesBehavior } from './src/config';
 import { isReleaseMode } from './src/common/utils';
 

@@ -1,3 +1,4 @@
+import 'katex/dist/katex.min.css';
 import { Config } from '../config';
 import { renderMarkdown } from '../modules/markdown/markdownRenderer';
 

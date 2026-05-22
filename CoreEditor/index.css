@@ -223,6 +223,17 @@ html.markdown-preview-active body {
   height: auto;
 }
 
+.markdown-preview .katex-display {
+  margin: 1em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 0.1em;
+}
+
+.markdown-preview .katex {
+  color: inherit;
+}
+
 /* Markdown */
 
 .cm-md-header {

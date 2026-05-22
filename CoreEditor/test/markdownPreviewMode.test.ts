@@ -45,7 +45,7 @@ describe('Markdown preview mode', () => {
 
   test('toggles rendered preview without destroying the editor source', async () => {
     document.body.innerHTML = '<main id="editor"></main>';
-    await resetEditor('# Title\n\n![Local](assets/image.png)');
+    await resetEditor('# Title\n\n![Local](assets/image.png)\n\nInline $x^2$.');
     const editor = window.editor as EditorView;
 
     expect(setMarkdownPreviewMode(true)).toBe(true);
@@ -53,6 +53,8 @@ describe('Markdown preview mode', () => {
     expect(preview.hidden).toBe(false);
     expect(preview.innerHTML).toContain('<h1 id="title">Title</h1>');
     expect(preview.innerHTML).toContain('src="image-loader://assets/image.png"');
+    expect(preview.innerHTML).toContain('class="katex"');
+    expect(preview.innerHTML).toContain('application/x-tex">x^2</annotation>');
     expect(preview.nextElementSibling).toBe(editor.dom);
     expect(document.documentElement.classList.contains('markdown-preview-active')).toBe(true);
     expect(document.querySelector('#editor')?.classList.contains('markdown-preview-mode')).toBe(true);
@@ -69,7 +71,7 @@ describe('Markdown preview mode', () => {
     expect(editor.dom.hidden).toBe(false);
     expect(editor.dom.classList.contains('markdown-preview-source-hidden')).toBe(false);
     expect(editor.dom.hasAttribute('aria-hidden')).toBe(false);
-    expect(window.editor.state.doc.toString()).toBe('# Title\n\n![Local](assets/image.png)');
+    expect(window.editor.state.doc.toString()).toBe('# Title\n\n![Local](assets/image.png)\n\nInline $x^2$.');
   });
 
   test('resetEditor clears active preview state', async () => {
