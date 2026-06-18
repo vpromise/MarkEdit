@@ -135,6 +135,7 @@ extension EditorViewController: EditorModuleCoreDelegate {
   func editorCoreWindowDidLoad(_ sender: EditorModuleCore) {
     hasFinishedLoading = true
     resetEditor()
+    notifyAppReady()
   }
 
   func editorCoreWindowResize(
@@ -214,6 +215,7 @@ extension EditorViewController: EditorModuleCoreDelegate {
 
     // The content is edited once contentEdited is true, it cannot go back
     hasBeenEdited = hasBeenEdited || contentEdited
+
     if contentEdited {
       document?.isOutdated = true
 
@@ -221,11 +223,10 @@ extension EditorViewController: EditorModuleCoreDelegate {
       if document?.fileURL == nil && AppPreferences.General.quitAlwaysKeepsWindows {
         document?.autosaveDelayed()
       }
-    }
 
-    // Only update the dirty state when it's edited,
-    // the app can launch with an unsaved state (e.g., force quit), it should remain dirty.
-    if hasBeenEdited {
+      // Only update the dirty state when it's edited,
+      // the app can launch with an unsaved state (e.g., force quit), it should remain dirty.
+      //
       // The content is always dirty if it was edited as a temporary document
       document?.markContentDirty(isDirty || (hasBeenEdited && document?.fileURL == nil))
     }
@@ -435,8 +436,8 @@ extension EditorViewController: EditorFindPanelDelegate {
     updateTextFinderMode(mode, explicitly: true)
   }
 
-  func editorFindPanel(_ sender: EditorFindPanel, searchTermDidChange searchTerm: String) {
-    updateTextFinderQuery()
+  func editorFindPanel(_ sender: EditorFindPanel, searchTermDidChange searchTerm: String, addToRecents: Bool) {
+    updateTextFinderQuery(addToRecents: addToRecents)
   }
 
   func editorFindPanelActionsMenuItem(_ sender: EditorFindPanel) -> NSMenuItem? {
@@ -485,5 +486,21 @@ extension EditorViewController: EditorReplacePanelDelegate {
 
   func editorReplacePanelDidClickReplaceAll(_ sender: EditorReplacePanel) {
     replaceAllInTextFinder()
+  }
+}
+
+// MARK: - App ready
+
+private extension EditorViewController {
+  /// Ensures the event is sent only once during the app lifecycle.
+  static var hasAppReadyNotified = false
+
+  func notifyAppReady() {
+    guard !Self.hasAppReadyNotified else {
+      return
+    }
+
+    Self.hasAppReadyNotified = true
+    bridge.api.notifyAppReady()
   }
 }

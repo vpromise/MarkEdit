@@ -10,17 +10,26 @@ import MarkEditKit
 
 @available(macOS 15.1, *)
 enum AppWritingTools {
+  // Source/WebKit/Platform/spi/Cocoa/Modules/WritingTools_SPI/WritingToolsSPI.h
   enum Tool: Int {
-    case panel = 0
+    case index = 0
+
     case proofread = 1
     case rewrite = 2
-    case makeFriendly = 11
-    case makeProfessional = 12
-    case makeConcise = 13
-    case summarize = 21
-    case createKeyPoints = 22
-    case makeList = 23
-    case makeTable = 24
+    case rewriteProofread = 3
+
+    case rewriteFriendly = 11
+    case rewriteProfessional = 12
+    case rewriteConcise = 13
+    case rewriteOpenEnded = 19
+
+    case transformSummarize = 21
+    case transformKeyPoints = 22
+    case transformList = 23
+    case transformTable = 24
+
+    case smartReply = 101
+
     case compose = 201
   }
 
@@ -28,15 +37,15 @@ enum AppWritingTools {
     guard let controller = NSApp.windows
       .compactMap(\.contentViewController)
       .first(where: { $0.className == "WTWritingToolsViewController" }) else {
-      return .panel
+      return .index
     }
 
     // WTWritingToolsConfiguration
     guard let target = invokeObject(controller, selector: "writingToolsConfiguration") else {
-      return .panel
+      return .index
     }
 
-    return .init(rawValue: invokeInt(target, selector: "requestedTool")) ?? .panel
+    return .init(rawValue: invokeInt(target, selector: "requestedTool")) ?? .index
   }
 
   static var affordanceIcon: NSImage? {
@@ -70,12 +79,39 @@ enum AppWritingTools {
       return false
     }
 
-    return shouldReselect(with: .init(rawValue: menuItem.tag) ?? .panel)
+    return shouldReselect(with: .init(rawValue: menuItem.tag) ?? .index)
   }
 
   static func shouldReselect(with tool: Tool) -> Bool {
-    // Compose mode can start without text selections
-    tool != .compose
+    // These tools can start without text selections
+    tool != .smartReply && tool != .compose
+  }
+
+  @available(macOS 27.0, *)
+  static func ensureWritingTools(menu: NSMenu) {
+    guard !(menu.items.contains { $0.identifier == .writingTools }) else {
+      return
+    }
+
+    let item = NSMenuItem(
+      title: Localized.WritingTools.menuItemTitle,
+      action: sel_getUid("_showWritingTools"),
+      keyEquivalent: ""
+    )
+
+    let index: Int = {
+      // Before "Spelling and Grammar"
+      if let target = (menu.items.first { $0.identifier == .spellingMenu }) {
+        return menu.index(of: target)
+      }
+
+      // Or as the first one
+      return 0
+    }()
+
+    item.identifier = .writingTools
+    menu.items.insert(item, at: index)
+    menu.items.insert(.separator(), at: index + 1)
   }
 }
 
@@ -112,4 +148,9 @@ private extension AppWritingTools {
 
     return (selector, target.method(for: selector))
   }
+}
+
+private extension NSUserInterfaceItemIdentifier {
+  static let writingTools = Self("WKMenuItemIdentifierWritingTools")
+  static let spellingMenu = Self("WKMenuItemIdentifierSpellingMenu")
 }

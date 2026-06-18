@@ -1,15 +1,18 @@
 import 'katex/dist/katex.min.css';
 import { Config } from '../config';
 import { renderMarkdown } from '../modules/markdown/markdownRenderer';
+import { enablePinchZoom, PinchZoomBridge } from '../zoom';
 
 // "{{EDITOR_CONFIG}}" will be replaced with a JSON literal
 const config: Config = '{{EDITOR_CONFIG}}' as unknown as Config;
 window.config = config;
 
+const colorSchemeQuery = matchMedia('(prefers-color-scheme: dark)');
 const parent = document.querySelector('#editor') ?? document.body;
-parent.innerHTML = renderMarkdown(config.text);
+const preview = document.querySelector<HTMLElement>('#preview') ?? parent.appendChild(document.createElement('article'));
+preview.innerHTML = renderMarkdown(config.text);
 
-const bridge = window as Window & {
+const bridge = window as Window & PinchZoomBridge & {
   setTheme: (name: string) => void;
   startDragging: (location: number) => void;
   updateDragging: (location: number) => void;
@@ -22,7 +25,12 @@ bridge.setTheme = name => {
   document.documentElement.dataset.theme = name === 'github-dark' ? 'dark' : 'light';
 };
 
-bridge.startDragging = location => {
+colorSchemeQuery.addEventListener('change', () => {
+  bridge.setTheme(preferredTheme());
+});
+
+bridge.startDragging = original => {
+  const location = convertToLocal(original);
   const { scrollbarTop, scrollbarHeight } = scrollerGeometryValues();
   storage.scrollbarOffset = location - scrollbarTop;
 
@@ -33,7 +41,7 @@ bridge.startDragging = location => {
 
 bridge.updateDragging = location => {
   if (storage.scrollbarOffset !== undefined) {
-    scrollToMouseLocation(location, storage.scrollbarOffset);
+    scrollToMouseLocation(convertToLocal(location), storage.scrollbarOffset);
   }
 };
 
@@ -41,8 +49,18 @@ bridge.cancelDragging = () => {
   storage.scrollbarOffset = undefined;
 };
 
-bridge.setTheme(config.theme);
+enablePinchZoom(bridge);
+bridge.pinchZoomTarget = () => ({ scroller: scrollerElement(), inner: preview });
+bridge.setTheme(preferredTheme());
 window.scrollTo({ top: 0, left: 0 });
+
+function preferredTheme() {
+  return colorSchemeQuery.matches ? 'github-dark' : 'github-light';
+}
+
+function scrollerElement(): HTMLElement {
+  return document.scrollingElement as HTMLElement;
+}
 
 function scrollToMouseLocation(location: number, scrollbarOffset: number, behavior: ScrollBehavior = 'auto') {
   const { clientHeight, scrollHeight, scrollbarHeight } = scrollerGeometryValues();
@@ -52,14 +70,18 @@ function scrollToMouseLocation(location: number, scrollbarOffset: number, behavi
   }
 
   const percentage = (location - scrollbarOffset) / (clientHeight - scrollbarHeight);
-  window.scrollTo({
+  scrollerElement().scrollTo({
     top: percentage * scrollableHeight,
     behavior,
   });
 }
 
+function convertToLocal(viewportY: number): number {
+  return viewportY - scrollerElement().getBoundingClientRect().top;
+}
+
 function scrollerGeometryValues() {
-  const container = document.documentElement;
+  const container = scrollerElement();
   const clientHeight = container.clientHeight;
   const scrollHeight = container.scrollHeight;
   const scrollbarHeight = clientHeight * (clientHeight / scrollHeight);

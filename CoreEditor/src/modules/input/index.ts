@@ -1,5 +1,5 @@
 import { EditorView } from '@codemirror/view';
-import { EditorSelection, Transaction } from '@codemirror/state';
+import { EditorSelection, Text, Transaction } from '@codemirror/state';
 import { foldEffect, unfoldEffect } from '@codemirror/language';
 import { startCompletion as startTooltipCompletion } from '@codemirror/autocomplete';
 import { alwaysRenderInvisibles } from '../../styling/nodes/invisible';
@@ -14,6 +14,7 @@ import { refreshEditFocus, scrollCaretToVisible, scrollToSelection, selectedLine
 
 import hasSelection from '../selection/hasSelection';
 import redrawSelectionLayer from '../selection/redrawSelectionLayer';
+import selectionChanged from '../selection/selectionChanged';
 import wrapBlock from './wrapBlock';
 import insertCodeBlock from './insertCodeBlock';
 
@@ -33,6 +34,34 @@ export function filterTransaction(transaction: Transaction) {
         effects: transaction.effects,
         selection: EditorSelection.cursor(from),
       });
+    }
+  }
+
+  // Work around a WebKit IME bug where committing a composition over-deletes
+  // text before the caret (e.g., "**??**你" becomes "**你").
+  if (
+    !editingState.compositionEnded &&
+    editingState.compositionPosition !== undefined &&
+    transaction.docChanged &&
+    transaction.effects.length === 0 &&
+    transaction.isUserEvent('input.type.compose')
+  ) {
+    const anchor = editingState.compositionPosition;
+    const changes: { from: number; to: number; insert: Text }[] = [];
+    transaction.changes.iterChanges((fromA, toA, _fromB, _toB, inserted) => {
+      changes.push({ from: fromA, to: toA, insert: inserted });
+    });
+
+    // Clamp the change so composition never modifies text before it started
+    if (changes.length === 1) {
+      const { from, to, insert } = changes[0];
+      if (from < anchor) {
+        return transaction.startState.update({
+          changes: { from: anchor, to: Math.max(anchor, to), insert },
+          selection: EditorSelection.cursor(anchor + insert.length),
+          userEvent: 'input.type.compose',
+        });
+      }
     }
   }
 
@@ -118,6 +147,17 @@ export function observeChanges() {
         }
       }
 
+      // Keep the bottom pinned across an IME composition; the composing string and
+      // committed text differ in height, so CodeMirror would otherwise leave a gap.
+      if (editingState.wasScrolledToBottom && update.transactions.some(tr => tr.isUserEvent('input.type.compose'))) {
+        const scrollDOM = update.view.scrollDOM;
+        scrollDOM.scrollTop = scrollDOM.scrollHeight;
+
+        if (editingState.compositionEnded) {
+          editingState.wasScrolledToBottom = false;
+        }
+      }
+
       // Work around a composition mode bug where whitespaces are not updated,
       // we can probably remove this once EditContext is available.
       if (alwaysRenderInvisibles() && !editingState.compositionEnded) {
@@ -138,9 +178,7 @@ export function observeChanges() {
       }, 1500);
     }
 
-    // CodeMirror doesn't mark `selectionSet` true when selection is cut or replaced,
-    // always check `docChanged` too.
-    if (update.selectionSet || update.docChanged) {
+    if (selectionChanged(update) || update.docChanged) {
       const newHasSelection = hasSelection();
       const selectionStateChanged = editingState.hasSelection !== newHasSelection;
       editingState.hasSelection = newHasSelection;

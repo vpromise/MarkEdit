@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MarkEditCore
 import MarkEditKit
 
 /**
@@ -23,13 +24,6 @@ struct AppCustomization {
     case pandoc
     case statisticsRules
     case settings
-
-    var tagName: String? {
-      switch self {
-      case .editorStyle, .stylesDirectory: return "style"
-      case .editorScript, .scriptsDirectory, .debugDirectory, .pandoc, .settings, .statisticsRules: return nil
-      }
-    }
 
     var fileName: String {
       switch self {
@@ -84,21 +78,8 @@ struct AppCustomization {
   }
 
   var directoryContents: [String] {
-    let files = (try? FileManager.default.contentsOfDirectory(
-      at: fileURL,
-      includingPropertiesForKeys: nil
-    )) ?? []
-
-    let sorted = files.sorted {
-      $0.lastPathComponent.localizedStandardCompare($1.lastPathComponent) == .orderedAscending
-    }
-
-    return sorted.compactMap {
-      guard ["css", "js"].contains($0.pathExtension.lowercased()) else {
-        return nil
-      }
-
-      return createContents(url: $0.resolvingSymbolicLink)
+    fileURL.sortedFiles(types: ["css", "js"]).compactMap {
+      createContents(url: $0.resolvingSymbolicLink)
     }
   }
 
@@ -130,19 +111,13 @@ struct AppCustomization {
       return nil
     }
 
-    // Create a label to better identify loaded contents
-    let comment = " /* \(url.lastPathComponent) */"
-
-    // JavaScript, create a closure to avoid declaration conflict
-    if fileType == .editorScript || fileType == .scriptsDirectory {
-      return "(() => {\(comment)\nmodule = typeof module === 'object' ? module : { exports: {} };\nexports = module.exports;\n\n\(contents)\n})();"
+    switch fileType {
+    case .editorScript, .scriptsDirectory:
+      return EditorUserAsset.script(for: url, contents: contents)
+    case .editorStyle, .stylesDirectory:
+      return EditorUserAsset.style(for: url, contents: contents)
+    default:
+      return contents
     }
-
-    // Stylesheet, create a <style></style> element
-    if let tagName = fileType.tagName {
-      return "<\(tagName)>\(comment)\n\(contents)\n</\(tagName)>"
-    }
-
-    return contents
   }
 }

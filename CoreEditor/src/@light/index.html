@@ -6,7 +6,9 @@
   <title>MarkEdit</title>
 </head>
 <body>
-  <main id="editor"></main>
+  <main id="editor">
+    <article id="preview"></article>
+  </main>
   <script type=module src="./index.ts"></script>
   <style>
     :root {
@@ -55,12 +57,13 @@
     html, body {
       min-height: 100%;
       margin: 0;
-      overflow: auto !important;
+      overflow: auto;
       background-color: var(--background-color);
       color: var(--text-color);
     }
 
     body {
+      position: relative;
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
       font-size: var(--font-size);
       line-height: var(--line-height);
@@ -71,14 +74,18 @@
       box-sizing: border-box;
       width: min(100%, 920px);
       margin: 0 auto;
-      padding: 28px 32px 36px;
+      padding: calc(var(--editor-inset-top, 0px) + 28px) 32px 36px;
     }
 
-    #editor > :first-child {
+    #preview {
+      transform-origin: top left;
+    }
+
+    #preview > :first-child {
       margin-top: 0;
     }
 
-    #editor > :last-child {
+    #preview > :last-child {
       margin-bottom: 0;
     }
 

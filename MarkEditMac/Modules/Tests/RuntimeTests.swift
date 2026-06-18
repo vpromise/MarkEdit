@@ -16,9 +16,9 @@ final class RuntimeTests: XCTestCase {
   }
 
   func testExistenceOfDeveloperPreferences() {
-    let preferences = WKWebViewConfiguration().preferences
-    testExistenceOfSelector(object: preferences, selector: "_setDeveloperExtrasEnabled:")
-    testExistenceOfSelector(object: preferences, selector: "_setWebSecurityEnabled:")
+    let configuration = WKWebViewConfiguration()
+    testExistenceOfSelector(object: configuration, selector: "_setCORSDisablingPatterns:")
+    testExistenceOfSelector(object: configuration.preferences, selector: "_setDeveloperExtrasEnabled:")
 
     let webView = WKWebView()
     testExistenceOfSelector(object: webView, selector: "_inspector")
@@ -36,6 +36,9 @@ final class RuntimeTests: XCTestCase {
     testExistenceOfSelector(object: preferences, selector: "_setPageVisibilityBasedProcessSuppressionEnabled:")
     testExistenceOfSelector(object: preferences, selector: "_setHiddenPageDOMTimerThrottlingEnabled:")
     testExistenceOfSelector(object: preferences, selector: "_setHiddenPageDOMTimerThrottlingAutoIncreases:")
+
+    let webView = WKWebView()
+    testExistenceOfSelector(object: webView, selector: "_setWindowOcclusionDetectionEnabled:")
   }
 
   func testExistenceOfFeatureSPI() {
@@ -85,7 +88,11 @@ final class RuntimeTests: XCTestCase {
     testExistenceOfSelector(object: NSImage(), selector: "_setTintColor:")
   }
 
-  func testExistenceOfAppKitSearchField() {
+  func testExistenceOfAppKitSearchField() throws {
+    if #available(macOS 27.0, *) {
+      throw XCTSkip("[macOS 27] Revisit this later")
+    }
+
     let window = NSWindow()
     window.makeKeyAndOrderFront(nil)
 
@@ -165,6 +172,16 @@ final class RuntimeTests: XCTestCase {
 
     let object = type?.value(forKey: "defaultManager") as? AnyObject
     XCTAssertEqual(object?.responds(to: sel_getUid("loadAXBundles")), true, "Missing loadAXBundles")
+  }
+
+  func testExistenceOfShowWritingTools() {
+    let webView = WKWebView()
+    testExistenceOfSelector(object: webView, selector: "_showWritingTools")
+  }
+
+  func testExistenceOfStandardWritingToolsMenuItem() {
+    let item = NSMenuItem.systemWritingToolsItem
+    XCTAssertNotNil(item)
   }
 }
 

@@ -14,9 +14,10 @@ import MarkEditKit
 /// The underlying file is stored as "settings.json" in AppCustomization.
 enum AppRuntimeConfig {
   struct Definition: Codable {
-    enum VisualEffectType: String, Codable {
-      case glass = "glass"
-      case blur = "blur"
+    enum ToolbarTranslucency: String, Codable {
+      case light = "light"
+      case regular = "regular"
+      case heavy = "heavy"
     }
 
     enum UpdateBehavior: String, Codable {
@@ -41,9 +42,8 @@ enum AppRuntimeConfig {
     let visibleLineBreakCharacter: String?
     let searchNormalizers: [String: String]?
     let nativeSearchQuerySync: Bool?
+    let toolbarTranslucency: ToolbarTranslucency?
     let customToolbarItems: [CustomToolbarItem]?
-    let useClassicInterface: Bool?
-    let visualEffectType: VisualEffectType?
     let updateBehavior: UpdateBehavior?
     let checksForUpdates: Bool? // [Deprecated] Kept for backward compatibility
     let defaultOpenDirectory: String?
@@ -66,9 +66,8 @@ enum AppRuntimeConfig {
       case visibleLineBreakCharacter = "editor.visibleLineBreakCharacter"
       case searchNormalizers = "editor.searchNormalizers"
       case nativeSearchQuerySync = "editor.nativeSearchQuerySync"
+      case toolbarTranslucency = "editor.toolbarTranslucency"
       case customToolbarItems = "editor.customToolbarItems"
-      case useClassicInterface = "general.useClassicInterface"
-      case visualEffectType = "general.visualEffectType"
       case updateBehavior = "general.updateBehavior"
       case checksForUpdates = "general.checksForUpdates"
       case defaultOpenDirectory = "general.defaultOpenDirectory"
@@ -159,16 +158,18 @@ enum AppRuntimeConfig {
     currentDefinition?.nativeSearchQuerySync ?? false
   }
 
+  /// Alpha values of the tinted toolbar overlay: (tinted window, plain window).
+  /// Heavier translucency means more transparent, i.e., smaller alpha values.
+  static var toolbarTintAlphaValues: (tinted: Double, plain: Double) {
+    switch currentDefinition?.toolbarTranslucency ?? .regular {
+    case .light: return (0.95, 0.25)
+    case .regular: return (0.75, 0.15)
+    case .heavy: return (0.55, 0.05)
+    }
+  }
+
   static var customToolbarItems: [CustomToolbarItem] {
     currentDefinition?.customToolbarItems ?? []
-  }
-
-  static var useClassicInterface: Bool {
-    currentDefinition?.useClassicInterface ?? false
-  }
-
-  static var visualEffectType: Definition.VisualEffectType {
-    currentDefinition?.visualEffectType ?? .glass
   }
 
   static var updateBehavior: Definition.UpdateBehavior {
@@ -190,12 +191,20 @@ enum AppRuntimeConfig {
   }
 
   static var disableOpenPanelOptions: Bool {
-    currentDefinition?.disableOpenPanelOptions ?? defaultDisableOpenPanelOptions
+    currentDefinition?.disableOpenPanelOptions ?? ({
+      // [macOS 26] Revisit this later,
+      // NSOpenPanel.accessoryView can significantly slow down the file opening process.
+      if #available(macOS 26.0, *) {
+        return true
+      }
+
+      return false
+    })()
   }
 
   static var disableCorsRestrictions: Bool {
-    // Enforce CORS restrictions by default
-    currentDefinition?.disableCorsRestrictions ?? false
+    // CORS restrictions are disabled by default; we're a local editor, not a browser
+    currentDefinition?.disableCorsRestrictions ?? true
   }
 
   static var disabledWebKitFeatures: [String] {
@@ -257,15 +266,14 @@ private extension AppRuntimeConfig {
     visibleLineBreakCharacter: nil,
     searchNormalizers: nil,
     nativeSearchQuerySync: false,
+    toolbarTranslucency: nil, // Keeping nil allows us to tweak defaults later
     customToolbarItems: [],
-    useClassicInterface: nil,
-    visualEffectType: nil,
     updateBehavior: .quiet,
     checksForUpdates: nil,
     defaultOpenDirectory: nil,
     defaultSaveDirectory: nil,
-    disableOpenPanelOptions: defaultDisableOpenPanelOptions,
-    disableCorsRestrictions: nil,
+    disableOpenPanelOptions: nil, // [macOS 26] Future macOS with the fix can be opted out
+    disableCorsRestrictions: true,
     disabledWebKitFeatures: nil,
     preferredTerminalApp: nil,
     mainWindowHotKey: .init(key: "M", modifiers: ["Shift", "Command", "Option"])
@@ -293,14 +301,5 @@ private extension AppRuntimeConfig {
     Logger.assert(jsonData != nil, "Failed to encode object: \(definition)")
 
     return jsonData
-  }
-
-  static var defaultDisableOpenPanelOptions: Bool {
-    // [macOS 26] Revisit this later, NSOpenPanel.accessoryView can significantly slow down the file opening process
-    if #available(macOS 26.0, *) {
-      return true
-    }
-
-    return false
   }
 }

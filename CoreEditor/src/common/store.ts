@@ -15,7 +15,9 @@ export const globalState: {
 
 export const editingState = {
   hasSelection: false,
+  wasScrolledToBottom: false,
   compositionEnded: true,
+  compositionPosition: undefined as number | undefined,
 };
 
 export const styleSheets: StyleSheets = {};

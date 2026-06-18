@@ -1,4 +1,4 @@
-import { tryGetEditor, isMetaKey } from '../../common/utils';
+import { tryGetEditor, isMetaKey, isScrolledToBottom } from '../../common/utils';
 import { globalState, editingState } from '../../common/store';
 
 import * as completion from '../../modules/completion';
@@ -56,10 +56,21 @@ export function startObserving() {
   document.addEventListener('compositionstart', () => {
     editingState.compositionEnded = false;
     storage.selectedTextBeforeCompose = editingState.hasSelection;
+
+    // Remember where an empty-cursor composition began, so the commit can be
+    // prevented from deleting committed text before it (WebKit IME over-delete).
+    const editor = tryGetEditor();
+    editingState.compositionPosition = editor?.state.selection.main.empty === true
+      ? editor.state.selection.main.head
+      : undefined;
+
+    // Remember the bottom state so the commit can re-pin it, see observeChanges.
+    editingState.wasScrolledToBottom = editor !== null && isScrolledToBottom(editor.scrollDOM);
   });
 
   document.addEventListener('compositionend', () => {
     editingState.compositionEnded = true;
+    editingState.compositionPosition = undefined;
 
     // [macOS 15] 'compositionend' is received before the editor is initialized
     if (tryGetEditor() === null) {

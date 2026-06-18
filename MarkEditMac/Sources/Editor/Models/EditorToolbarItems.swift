@@ -174,7 +174,7 @@ private extension NSToolbarItem.Identifier {
     case .markdownPreview: return Localized.Toolbar.previewMarkdown
     case .shareDocument: return Localized.Toolbar.shareDocument
     case .copyPandocCommand: return Localized.Toolbar.copyPandocCommand
-    case .writingTools: return Localized.WritingTools.title
+    case .writingTools: return Localized.WritingTools.featureName
     default: fatalError("Unexpected toolbar item identifier: \(self)")
     }
   }

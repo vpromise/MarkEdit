@@ -35,6 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   @IBOutlet weak var editRedoItem: NSMenuItem?
   @IBOutlet weak var editPasteItem: NSMenuItem?
   @IBOutlet weak var editGotoLineItem: NSMenuItem?
+  @IBOutlet weak var editWritingToolsItem: NSMenuItem?
   @IBOutlet weak var editReadOnlyItem: NSMenuItem?
   @IBOutlet weak var editStatisticsItem: NSMenuItem?
   @IBOutlet weak var editTypewriterItem: NSMenuItem?
@@ -56,11 +57,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   private var settingsWindowController: NSWindowController?
 
   func applicationWillFinishLaunching(_ notification: Notification) {
+    NSApp.appearance = AppPreferences.General.appearance.resolved()
     EditorPreloader.shared.warmUp()
   }
 
   func applicationDidFinishLaunching(_ notification: Notification) {
-    NSApp.appearance = AppPreferences.General.appearance.resolved()
     appearanceObservation = NSApp.observe(\.effectiveAppearance) { _, _ in
       Task { @MainActor in
         AppTheme.current.updateAppearance()
@@ -185,11 +186,18 @@ extension AppDelegate: NSMenuItemValidation {
 
 private extension AppDelegate {
   @objc func windowDidResignKey(_ notification: Notification) {
-    // To reduce the glitches between switching windows,
-    // close openPanel once we don't have any key windows.
+    // [AppKit quirk] Leaving NSOpenPanel up across app switches causes a visible
+    // flash the next time the panel is shown (e.g. via Dock > Recent Documents).
+    // TextEdit has the same glitch. Closing it on deactivation avoids the flicker.
     //
     // Delay because there's no keyWindow during window transitions.
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+      // Skip transient resign-key events where the app stays active,
+      // such as the Dock icon's right-click menu.
+      guard !NSApp.isActive else {
+        return
+      }
+
       if NSApp.windows.allSatisfy({ !$0.isKeyWindow }) {
         NSApp.closeOpenPanels()
       }
