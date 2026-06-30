@@ -30,7 +30,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   @IBOutlet weak var lineEndingsLFItem: NSMenuItem?
   @IBOutlet weak var lineEndingsCRLFItem: NSMenuItem?
   @IBOutlet weak var lineEndingsCRItem: NSMenuItem?
-  @IBOutlet weak var fileFromClipboardItem: NSMenuItem?
+  @IBOutlet weak var fileNewTabItem: NSMenuItem?
+  @IBOutlet weak var fileReopenClosedTabItem: NSMenuItem?
   @IBOutlet weak var editUndoItem: NSMenuItem?
   @IBOutlet weak var editRedoItem: NSMenuItem?
   @IBOutlet weak var editPasteItem: NSMenuItem?
@@ -62,6 +63,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   func applicationDidFinishLaunching(_ notification: Notification) {
+    AppDesign.migrateMainMenuIcons(delegate: self)
     appearanceObservation = NSApp.observe(\.effectiveAppearance) { _, _ in
       Task { @MainActor in
         AppTheme.current.updateAppearance()
@@ -167,18 +169,6 @@ extension AppDelegate {
         break
       }
     }
-  }
-}
-
-// MARK: - NSMenuItemValidation
-
-extension AppDelegate: NSMenuItemValidation {
-  func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
-    if menuItem.action == #selector(reopenClosedTab(_:)) {
-      return EditorClosedTabHistory.shared.hasEntries
-    }
-
-    return true
   }
 }
 

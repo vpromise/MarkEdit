@@ -182,7 +182,7 @@ private extension NSToolbarItem.Identifier {
   var itemIcon: String {
     switch self {
     case .tableOfContents: return Icons.listBulletRectangle
-    case .formatHeaders: return Icons.number
+    case .formatHeaders: return Icons.numberSign
     case .toggleBold: return Icons.bold
     case .toggleItalic: return Icons.italic
     case .toggleStrikethrough: return Icons.strikethrough
@@ -197,7 +197,7 @@ private extension NSToolbarItem.Identifier {
     case .statistics: return Icons.chartPie
     case .markdownPreview: return Icons.docRichtext
     case .shareDocument: return Icons.squareAndArrowUp
-    case .copyPandocCommand: return Icons.terminal
+    case .copyPandocCommand: return Icons.appleTerminal
     case .writingTools: return Icons.wandAndSparkles
     default: fatalError("Unexpected toolbar item identifier: \(self)")
     }

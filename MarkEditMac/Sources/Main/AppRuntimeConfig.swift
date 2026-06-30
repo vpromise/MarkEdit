@@ -6,6 +6,7 @@
 //
 
 import AppKit
+import AppKitControls
 import MarkEditCore
 import MarkEditKit
 
@@ -14,10 +15,61 @@ import MarkEditKit
 /// The underlying file is stored as "settings.json" in AppCustomization.
 enum AppRuntimeConfig {
   struct Definition: Codable {
-    enum ToolbarTranslucency: String, Codable {
-      case light = "light"
-      case regular = "regular"
-      case heavy = "heavy"
+    enum ToolbarTranslucency: Codable {
+      case readable
+      case `default`
+      case vibrant
+      case custom(backdropBlur: Double, tintedOpacity: Double, plainOpacity: Double)
+
+      /// Backdrop material: backdropBlur, tintedOpacity, plainOpacity.
+      ///
+      /// For the presets, readable/default/vibrant step along one "reveal" axis. Tint reads linearly so it
+      /// steps arithmetically (default = midpoint); blur reads logarithmically so it steps geometrically
+      /// (default = geometric mean, double per step), with tintedOpacity = plainOpacity + 0.3.
+      ///
+      /// Custom values are used as-is and need not follow these relationships.
+      var material: (backdropBlur: Double, tintedOpacity: Double, plainOpacity: Double) {
+        switch self {
+        case .readable: return (16, 0.9, 0.6)
+        case .default: return (8, 0.7, 0.4)
+        case .vibrant: return (4, 0.5, 0.2)
+        case let .custom(backdropBlur, tintedOpacity, plainOpacity):
+          return (backdropBlur, tintedOpacity, plainOpacity)
+        }
+      }
+
+      init(from decoder: any Decoder) throws {
+        let value = try decoder.singleValueContainer().decode(String.self)
+        switch value {
+        case "readable": self = .readable
+        case "default": self = .default
+        case "vibrant": self = .vibrant
+        default:
+          // Accept a custom "blur, tinted, plain" string, e.g. "8, 0.7, 0.4"
+          let numbers = value.split(separator: ",").compactMap {
+            Double($0.trimmingCharacters(in: .whitespaces))
+          }
+
+          guard numbers.count == 3 else {
+            Logger.log(.error, "Invalid toolbarTranslucency value: \(value)")
+            self = .default
+            return
+          }
+
+          self = .custom(backdropBlur: numbers[0], tintedOpacity: numbers[1], plainOpacity: numbers[2])
+        }
+      }
+
+      func encode(to encoder: any Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .readable: try container.encode("readable")
+        case .default: try container.encode("default")
+        case .vibrant: try container.encode("vibrant")
+        case let .custom(backdropBlur, tintedOpacity, plainOpacity):
+          try container.encode("\(backdropBlur), \(tintedOpacity), \(plainOpacity)")
+        }
+      }
     }
 
     enum UpdateBehavior: String, Codable {
@@ -158,14 +210,8 @@ enum AppRuntimeConfig {
     currentDefinition?.nativeSearchQuerySync ?? false
   }
 
-  /// Alpha values of the tinted toolbar overlay: (tinted window, plain window).
-  /// Heavier translucency means more transparent, i.e., smaller alpha values.
-  static var toolbarTintAlphaValues: (tinted: Double, plain: Double) {
-    switch currentDefinition?.toolbarTranslucency ?? .regular {
-    case .light: return (0.95, 0.25)
-    case .regular: return (0.75, 0.15)
-    case .heavy: return (0.55, 0.05)
-    }
+  static var toolbarTranslucency: Definition.ToolbarTranslucency {
+    currentDefinition?.toolbarTranslucency ?? .default
   }
 
   static var customToolbarItems: [CustomToolbarItem] {

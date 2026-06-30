@@ -32,7 +32,6 @@ extension EditorViewController {
 
     if AppDesign.modernTitleBar {
       wrapper.addSubview(modernEffectView)
-      wrapper.addSubview(modernTintedView)
       wrapper.addSubview(modernDividerView)
     }
 
@@ -60,15 +59,6 @@ extension EditorViewController {
         modernEffectView.trailingAnchor.constraint(equalTo: wrapper.trailingAnchor),
         modernEffectView.topAnchor.constraint(equalTo: wrapper.topAnchor),
         modernEffectHeight,
-      ])
-
-      // It covers precisely to provide a tinted color
-      modernTintedView.translatesAutoresizingMaskIntoConstraints = false
-      NSLayoutConstraint.activate([
-        modernTintedView.leadingAnchor.constraint(equalTo: modernEffectView.leadingAnchor),
-        modernTintedView.trailingAnchor.constraint(equalTo: modernEffectView.trailingAnchor),
-        modernTintedView.topAnchor.constraint(equalTo: modernEffectView.topAnchor),
-        modernTintedView.bottomAnchor.constraint(equalTo: modernEffectView.bottomAnchor),
       ])
 
       // To avoid duplicate dividers
@@ -129,9 +119,11 @@ extension EditorViewController {
   }
 
   func updateWindowColors(_ theme: AppTheme) {
+    let titlebarView = view.window?.titlebarView
     let backgroundColor = webBackgroundColor ?? theme.windowBackground
+
     view.window?.backgroundColor = backgroundColor
-    view.window?.toolbarContainerView?.layerBackgroundColor = backgroundColor
+    titlebarView?.layerBackgroundColor = backgroundColor
 
     let prefersTintedToolbar = theme.prefersTintedToolbar || backgroundColor.isTintedColor
     (view.window as? EditorWindow)?.prefersTintedToolbar = prefersTintedToolbar
@@ -143,20 +135,17 @@ extension EditorViewController {
       let baseColor = backgroundColor.withAlphaComponent(reduceTransparency ? 1.0 : 0.01)
 
       view.window?.backgroundColor = baseColor
-      view.window?.toolbarContainerView?.layerBackgroundColor = baseColor
+      titlebarView?.layerBackgroundColor = baseColor
 
       modernBackgroundView.layerBackgroundColor = backgroundColor
       modernEffectView.isHidden = reduceTransparency
 
-      // Hide the effect view and remove the opacity of the title bar view
-      if reduceTransparency {
-        modernTintedView.layerBackgroundColor = backgroundColor
-      } else {
-        let (tintedAlpha, plainAlpha) = AppRuntimeConfig.toolbarTintAlphaValues
-        let alphaValue = prefersTintedToolbar ? tintedAlpha : plainAlpha
-        let tintColor = backgroundColor.withAlphaComponent(alphaValue).resolvedColor()
-        modernTintedView.layerBackgroundColor = tintColor
-      }
+      // The effect view is hidden when transparency is reduced, so the material only matters otherwise
+      let material = AppRuntimeConfig.toolbarTranslucency.material
+      modernEffectView.backdropBlur = material.backdropBlur
+
+      let alphaValue = prefersTintedToolbar ? material.tintedOpacity : material.plainOpacity
+      modernEffectView.tintColor = backgroundColor.withAlphaComponent(alphaValue).resolvedColor()
     }
 
     statusView.setBackgroundColor(backgroundColor)
@@ -519,6 +508,12 @@ extension EditorViewController {
 private extension EditorViewController {
   final class UserDefinedMenuItem: NSMenuItem {
     var stateGetterID: String?
+
+    override var image: NSImage? {
+      didSet {
+        ensureImageVisibility()
+      }
+    }
   }
 
   var contentHeight: Double {
