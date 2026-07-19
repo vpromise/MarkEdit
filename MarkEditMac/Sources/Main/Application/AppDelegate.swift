@@ -6,6 +6,7 @@
 
 import AppKit
 import AppKitExtensions
+import ExtensionCore
 import SettingsUI
 import MarkEditKit
 
@@ -77,6 +78,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
       object: nil
     )
 
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(extensionsDidChange(_:)),
+      name: .extensionsDidChange,
+      object: nil
+    )
+
     // App level setting for "Ask to keep changes when closing documents"
     if let closeAlwaysConfirmsChanges = AppRuntimeConfig.closeAlwaysConfirmsChanges {
       UserDefaults.standard.set(closeAlwaysConfirmsChanges, forKey: NSCloseAlwaysConfirmsChanges)
@@ -100,6 +108,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         await AppUpdater.checkForUpdates(explicitly: false)
       }
 
+      Task {
+        await ExtensionUpdater.checkForUpdates()
+      }
+
       DispatchQueue.global(qos: .utility).async {
         let defaults = UserDefaults.standard.dictionaryRepresentation()
         let plist = defaults.merging(AppRuntimeConfig.jsonObject) { _, rhs in rhs }
@@ -116,6 +128,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
       Task {
         await EditorSelectionHistory.purgeStaleEntries()
+      }
+    }
+
+    // Wake daily so background catalog refresh and update prompts can run while the app stays open.
+    Timer.scheduledTimer(withTimeInterval: 24 * 60 * 60, repeats: true) { _ in
+      Task {
+        await ExtensionUpdater.checkForUpdates()
       }
     }
 
@@ -156,7 +175,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 extension AppDelegate {
   func application(_ application: NSApplication, open urls: [URL]) {
     for url in urls {
-      // https://github.com/MarkEdit-app/MarkEdit/wiki/Text-Processing#using-url-schemes
+      // https://github.com/MarkEdit-app/MarkEdit/wiki/Manual#using-url-schemes
       let components = URLComponents(url: url, resolvingAgainstBaseURL: false)
       switch components?.host {
       case "new-file":
@@ -165,6 +184,9 @@ extension AppDelegate {
       case "open":
         // markedit://open or markedit://open?path=Untitled.md
         openFile(queryDict: components?.queryDict)
+      case "install-extension":
+        // markedit://install-extension?id=markedit-preview or ?url=https://...
+        ExtensionInstaller.install(queryDict: components?.queryDict)
       default:
         break
       }
@@ -192,6 +214,16 @@ private extension AppDelegate {
         NSApp.closeOpenPanels()
       }
     }
+  }
+
+  @objc func extensionsDidChange(_ notification: Notification) {
+    guard let menu = mainExtensionsMenu else {
+      return Logger.assertFail("Failed to get mainExtensionsMenu")
+    }
+
+    let badge = "✨ "
+    let original = menu.title.replacingOccurrences(of: badge, with: "")
+    menu.title = "\(ExtensionRegistry.hasCachedUpdates ? badge : "")\(original)"
   }
 
   @IBAction func showPreferences(_ sender: Any?) {

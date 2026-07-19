@@ -6,7 +6,8 @@
 //
 
 import AppKit
-import AppKitControls
+import AppKitExtensions
+import SharedUI
 import WebKit
 import MarkEditKit
 import Statistics
@@ -457,26 +458,11 @@ extension EditorViewController {
     alert.addButton(withTitle: Localized.General.done)
     alert.addButton(withTitle: Localized.General.cancel)
 
-    let textField = TextField(frame: CGRect(x: 0, y: 0, width: 256, height: 22))
+    let textField = TextField.alertCapableTextField
     textField.placeholderString = placeholder
     textField.stringValue = defaultValue ?? ""
     alert.accessoryView = textField
-
-    textBoxInputObserver = NotificationCenter.default.addObserver(
-      forName: NSWindow.didBecomeKeyNotification,
-      object: nil,
-      queue: .main
-    ) { [weak self] notification in
-      Task { @MainActor in
-        if let window = notification.object as? NSWindow, window == textField.window {
-          window.makeFirstResponder(textField)
-          if let observer = self?.textBoxInputObserver {
-            self?.textBoxInputObserver = nil
-            NotificationCenter.default.removeObserver(observer)
-          }
-        }
-      }
-    }
+    alert.window.initialFirstResponder = textField
 
     let response = await presentSheetModal(alert)
     return response == .alertFirstButtonReturn ? textField.stringValue : nil

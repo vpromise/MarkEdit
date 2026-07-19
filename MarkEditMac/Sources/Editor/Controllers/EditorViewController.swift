@@ -5,8 +5,9 @@
 //  Created by cyan on 12/12/22.
 
 import AppKit
-import AppKitControls
+import SharedUI
 import WebKit
+import ExtensionCore
 import MarkEditCore
 import MarkEditKit
 import Statistics
@@ -30,7 +31,6 @@ final class EditorViewController: NSViewController {
   var isMarkdownPreviewMode = false
   var webBackgroundColor = AppPreferences.Window.cachedBackgroundColor?.nsColor
   var localEventMonitor: Any?
-  var textBoxInputObserver: Any?
   var safeAreaObservation: NSKeyValueObservation?
   var userDefinedMenuItems = [EditorMenuItem]()
 
@@ -144,7 +144,7 @@ final class EditorViewController: NSViewController {
 
     let scripts = [
       AppCustomization.editorScript.fileContents,
-    ] + AppCustomization.scriptsDirectory.directoryContents
+    ] + AppCustomization.scriptsDirectory.contentsFrom(fileNames: ExtensionConfig.enabledFileNames)
 
     scripts.forEach {
       controller.addUserScript(WKUserScript(
@@ -188,7 +188,7 @@ final class EditorViewController: NSViewController {
       let html = [
         AppPreferences.editorConfig(theme: theme).toHtml,
         AppCustomization.editorStyle.fileContents,
-        AppCustomization.stylesDirectory.directoryContents.joined(separator: "\n"),
+        AppCustomization.stylesDirectory.styleContents().joined(separator: "\n"),
       ].joined(separator: "\n\n")
 
       DispatchQueue.main.async {

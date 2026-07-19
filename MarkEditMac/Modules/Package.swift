@@ -10,8 +10,8 @@ let package = Package(
   ],
   products: [
     .library(
-      name: "AppKitControls",
-      targets: ["AppKitControls"]
+      name: "SharedUI",
+      targets: ["SharedUI"]
     ),
     .library(
       name: "AppKitExtensions",
@@ -20,6 +20,10 @@ let package = Package(
     .library(
       name: "DiffKit",
       targets: ["DiffKit"]
+    ),
+    .library(
+      name: "ExtensionCore",
+      targets: ["ExtensionCore"]
     ),
     .library(
       name: "FileDrop",
@@ -55,14 +59,15 @@ let package = Package(
     ),
   ],
   dependencies: [
+    .package(path: "../MarkEditCore"),
     .package(path: "../MarkEditKit"),
     .package(path: "../MarkEditTools"),
   ],
   targets: [
     .target(
-      name: "AppKitControls",
+      name: "SharedUI",
       dependencies: ["AppKitExtensions"],
-      path: "Sources/AppKitControls",
+      path: "Sources/SharedUI",
       swiftSettings: [
         .enableExperimentalFeature("StrictConcurrency")
       ],
@@ -94,6 +99,17 @@ let package = Package(
       ]
     ),
     .target(
+      name: "ExtensionCore",
+      dependencies: ["AppKitExtensions", "MarkEditCore", "MarkEditKit"],
+      path: "Sources/ExtensionCore",
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
+      ],
+      plugins: [
+        .plugin(name: "SwiftLint", package: "MarkEditTools"),
+      ]
+    ),
+    .target(
       name: "FileDrop",
       dependencies: ["AppKitExtensions", "MarkEditKit", "TextBundle"],
       path: "Sources/FileDrop",
@@ -106,7 +122,7 @@ let package = Package(
     ),
     .target(
       name: "FileVersion",
-      dependencies: ["AppKitControls", "MarkEditKit", "DiffKit"],
+      dependencies: ["SharedUI", "MarkEditKit", "DiffKit"],
       path: "Sources/FileVersion",
       swiftSettings: [
         .enableExperimentalFeature("StrictConcurrency")
@@ -186,8 +202,9 @@ let package = Package(
     .testTarget(
       name: "ModulesTests",
       dependencies: [
-        "AppKitControls",
+        "SharedUI",
         "AppKitExtensions",
+        "ExtensionCore",
         "FileDrop",
         "Statistics",
         "TextBundle",
