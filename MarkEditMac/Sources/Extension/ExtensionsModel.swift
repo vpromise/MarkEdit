@@ -68,9 +68,24 @@ final class ExtensionsModel {
       entry?.colorScheme
     }
 
+    /// Whether the author is the MarkEdit-app organization, shown as an official badge.
+    var isOfficial: Bool {
+      author.caseInsensitiveCompare("MarkEdit-app") == .orderedSame
+    }
+
+    /// An installed extension with no tracked version, a local script not from the registry.
+    var isLocal: Bool {
+      isInstalled && version == nil
+    }
+
     /// A browsable page for the latest release (release or tag page), when known.
     var latestReleaseURL: URL? {
       entry?.latest.pageURL
+    }
+
+    /// Whether the item matches a search query, by name, author, id, or details.
+    func matches(query: String) -> Bool {
+      [name, author, id, details].contains { $0.localizedCaseInsensitiveContains(query) }
     }
   }
 
@@ -82,8 +97,11 @@ final class ExtensionsModel {
   /// The view layer that presents alerts and owns the sheet and window.
   @ObservationIgnored weak var presenter: ExtensionsPresenting?
 
-  /// True during an explicit "Refresh" so the state overlay can show a refreshing message.
-  var isRefreshing = false
+  /// The current search query; empty shows everything.
+  var searchQuery = ""
+
+  /// A whole-page progress message shown over the (emptied) list during Refresh or Update All.
+  var loadingMessage: String?
 
   /// The item currently running an install/update, used to show a per-item spinner.
   var busyItemID: String?
@@ -91,9 +109,15 @@ final class ExtensionsModel {
   private var installedItems: [Item] = []
   private var discoverItems: [Item] = []
 
-  /// Items for the current mode.
+  /// Items for the current mode, filtered by the search query.
   var items: [Item] {
-    mode == .installed ? installedItems : discoverItems
+    let base = mode == .installed ? installedItems : discoverItems
+    let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+    guard !query.isEmpty else {
+      return base
+    }
+
+    return base.filter { $0.matches(query: query) }
   }
 
   /// Item counts per mode, surfaced as segmented-control tooltips.
@@ -129,7 +153,7 @@ extension ExtensionsModel {
     phase = index == nil ? .failed : .ready
 
     // A fresh index may surface or clear updates, let the menu-bar hint refresh.
-    NotificationCenter.default.post(name: .extensionsDidChange, object: nil)
+    NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
   }
 }
 
@@ -337,6 +361,6 @@ private extension ExtensionsModel {
   func markChanged() {
     pendingRelaunch = true
     rebuildItems(index: ExtensionRegistry.cachedIndex)
-    NotificationCenter.default.post(name: .extensionsDidChange, object: nil)
+    NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
   }
 }

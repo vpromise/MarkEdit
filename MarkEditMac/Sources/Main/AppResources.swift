@@ -252,6 +252,7 @@ enum Icons {
   static let bold = "bold"
   static let characterCursorIbeam = "character.cursor.ibeam"
   static let chartPie = "chart.pie"
+  static let checkmarkSeal = "checkmark.seal.fill"
   static let curlybracesSquare = "curlybraces.square"
   static let docPlaintext = "doc.plaintext"
   static let docRichtext = "doc.richtext"

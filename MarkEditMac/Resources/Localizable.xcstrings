@@ -2158,6 +2158,23 @@
         }
       }
     },
+    "Local" : {
+      "comment" : "Label for a local extension that isn't tracked by the registry",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本地"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "本機"
+          }
+        }
+      }
+    },
     "macOS / Unix (LF)" : {
       "comment" : "Line endings used on macOS and Unix",
       "localizations" : {
@@ -2475,6 +2492,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "等下再說"
+          }
+        }
+      }
+    },
+    "Official" : {
+      "comment" : "Badge shown for extensions authored by the MarkEdit-app organization",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方"
           }
         }
       }
@@ -3072,6 +3106,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "儲存改動"
+          }
+        }
+      }
+    },
+    "Search" : {
+      "comment" : "Placeholder for the search field in the extensions window",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜索"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "搜尋"
           }
         }
       }
@@ -4073,6 +4124,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "更新當前活躍檔案的內容，沒有開啟的編輯器時將丟擲異常。"
+          }
+        }
+      }
+    },
+    "Updating…" : {
+      "comment" : "State shown while extensions are being updated",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新中…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新中…"
           }
         }
       }

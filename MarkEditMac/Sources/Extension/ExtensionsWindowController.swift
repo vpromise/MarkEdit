@@ -19,6 +19,11 @@ final class ExtensionsWindowController: NSWindowController {
   private weak var updateBehaviorMenu: NSMenu?
 
   func present(scrollTo category: ExtensionEntry.Category? = nil) {
+    if !AppPreferences.Extensions.windowHasBeenOpened {
+      AppPreferences.Extensions.windowHasBeenOpened = true
+      NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
+    }
+
     if category != nil {
       model.mode = .discover
       updateModeControl()
@@ -57,6 +62,20 @@ final class ExtensionsWindowController: NSWindowController {
   }
 }
 
+// MARK: - Responder Chain
+
+extension ExtensionsWindowController {
+  // The main menu binds "Select All" to `selectWholeDocument(_:)`
+  @IBAction func selectWholeDocument(_ sender: Any?) {
+    NSApp.sendAction(#selector(NSResponder.selectAll(_:)), to: nil, from: sender)
+  }
+
+  // The main menu binds "Find" (Cmd-F) to `startFind(_:)`; focus the toolbar search field
+  @IBAction func startFind(_ sender: Any?) {
+    searchToolbarItem?.beginSearchInteraction()
+  }
+}
+
 // MARK: - NSMenuDelegate
 
 extension ExtensionsWindowController: NSMenuDelegate {
@@ -72,11 +91,11 @@ extension ExtensionsWindowController: NSMenuDelegate {
 
 extension ExtensionsWindowController: NSToolbarDelegate {
   func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    [.mode, .flexibleSpace, .actions]
+    [.mode, .actions, .search]
   }
 
   func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-    [.mode, .actions, .flexibleSpace, .space]
+    toolbarDefaultItemIdentifiers(toolbar)
   }
 
   func toolbar(
@@ -87,6 +106,14 @@ extension ExtensionsWindowController: NSToolbarDelegate {
     switch itemIdentifier {
     case .mode:
       return createModeItem()
+    case .search:
+      let item = NSSearchToolbarItem(itemIdentifier: .search)
+      item.minimumSearchFieldWidth = 220 // Easier to collapse by default
+      item.searchField.placeholderString = Localized.Extension.searchPlaceholder
+      item.searchField.target = self
+      item.searchField.action = #selector(handleSearchChange(_:))
+      item.searchField.delegate = self
+      return item
     case .actions:
       let item = NSMenuToolbarItem(itemIdentifier: .actions)
       item.visibilityPriority = .high
@@ -101,6 +128,22 @@ extension ExtensionsWindowController: NSToolbarDelegate {
   }
 }
 
+// MARK: - NSSearchFieldDelegate
+
+extension ExtensionsWindowController: NSSearchFieldDelegate {
+  func control(_ control: NSControl, textView: NSTextView, doCommandBy selector: Selector) -> Bool {
+    guard selector == #selector(cancelOperation(_:)) else {
+      return false
+    }
+
+    // Esc clears the query and collapses the search field
+    control.stringValue = ""
+    model.searchQuery = ""
+    searchToolbarItem?.endSearchInteraction()
+    return true
+  }
+}
+
 // MARK: - Private
 
 private extension ExtensionsWindowController {
@@ -110,6 +153,10 @@ private extension ExtensionsWindowController {
 
   var extensionsVC: ExtensionsViewController? {
     window?.contentViewController as? ExtensionsViewController
+  }
+
+  var searchToolbarItem: NSSearchToolbarItem? {
+    window?.toolbar?.items.first { $0.itemIdentifier == .search } as? NSSearchToolbarItem
   }
 
   static func createController() -> ExtensionsWindowController {
@@ -131,7 +178,7 @@ private extension ExtensionsWindowController {
     NotificationCenter.default.addObserver(
       controller,
       selector: #selector(handleExtensionsChange(_:)),
-      name: .extensionsDidChange,
+      name: .extensionsMenuNeedsUpdate,
       object: nil
     )
 
@@ -181,9 +228,7 @@ private extension ExtensionsWindowController {
     }
 
     updateAllItem = menu.addItem(withTitle: Localized.Extension.updateAll) { [weak self] in
-      Task {
-        await self?.model.updateAllExtensions()
-      }
+      self?.extensionsVC?.updateAllAnimated()
     }
 
     let updateBehaviorItem = NSMenuItem()
@@ -249,6 +294,10 @@ private extension ExtensionsWindowController {
     model.mode = sender.selectedSegment == 0 ? .discover : .installed
   }
 
+  @objc func handleSearchChange(_ sender: NSSearchField) {
+    model.searchQuery = sender.stringValue
+  }
+
   @objc func handleExtensionsChange(_ notification: Notification) {
     updateModeControl()
   }
@@ -287,4 +336,5 @@ private extension ExtensionsWindowController {
 private extension NSToolbarItem.Identifier {
   static let mode = Self("app.markedit.extension.mode")
   static let actions = Self("app.markedit.extension.actions")
+  static let search = Self("app.markedit.extension.search")
 }

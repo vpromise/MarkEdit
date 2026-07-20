@@ -25,6 +25,13 @@ final class PreviewViewController: NSViewController {
     config.enablePerformanceFlags()
     config.disableAllRichFeatures()
 
+    // [macOS 26.6] WebKit regression that blocks url scheme tasks
+    config.setObjectValue(
+      ["\(EditorImageLoader.scheme)://*/*"] as NSArray,
+      forSelector: "_setCORSDisablingPatterns:"
+    )
+
+    // E.g., markedit-preview.js
     let controller = WKUserContentController()
     config.userContentController = controller
     userScripts.forEach {
