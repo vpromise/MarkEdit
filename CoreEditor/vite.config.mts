@@ -4,6 +4,13 @@ import { createLogger, defineConfig } from 'vite';
 export default defineConfig(({ command }) => (
   {
     base: command === 'build' ? '/chunk-loader/' : '',
+    experimental: command === 'build' ? {
+      // Runtime dependencies such as Mermaid diagram chunks can preload CSS
+      // after EditorConfig has already transformed index.html. Emit the
+      // custom WKURLSchemeHandler URL directly so those requests do not fall
+      // back to the unreachable /chunk-loader/ HTTP path.
+      renderBuiltUrl: fileName => `chunk-loader://${fileName}`,
+    } : undefined,
     resolve: {
       alias: {
         '@codemirror/lang-markdown': fileURLToPath(new URL('./src/@vendor/lang-markdown', import.meta.url)),
