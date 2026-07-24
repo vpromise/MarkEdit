@@ -1,6 +1,7 @@
 import { EditorView } from '@codemirror/view';
 import { isReleaseMode } from '../../common/utils';
 import { getLinkAnchor } from '../toc';
+import { renderMermaidDiagrams } from './mermaidRenderer';
 import { renderMarkdown } from './markdownRenderer';
 
 const previewClassName = 'markdown-preview';
@@ -65,6 +66,7 @@ function showMarkdownPreview(markdownText?: string): boolean {
   container.innerHTML = renderMarkdown(markdownText ?? editor.state.doc.toString());
   applyHeadingAnchors(container);
   rewriteLocalImageSources(container);
+  void renderMermaidDiagrams(container, editor.state.facet(EditorView.darkTheme) ? 'dark' : 'default');
   container.hidden = false;
 
   document.documentElement.classList.add(rootPreviewModeClassName);
@@ -81,6 +83,15 @@ function showMarkdownPreview(markdownText?: string): boolean {
   });
 
   return true;
+}
+
+export function refreshMarkdownPreviewMermaidTheme() {
+  const editor = window.editor as EditorView | undefined;
+  if (!storage.enabled || storage.container === undefined || typeof editor?.destroy !== 'function') {
+    return;
+  }
+
+  void renderMermaidDiagrams(storage.container, editor.state.facet(EditorView.darkTheme) ? 'dark' : 'default');
 }
 
 function hideMarkdownPreview(focusEditor: boolean) {

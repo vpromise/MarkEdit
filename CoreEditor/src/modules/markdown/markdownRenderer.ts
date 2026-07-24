@@ -10,6 +10,10 @@ const controlOrWhitespace = new RegExp(`[${String.fromCharCode(0)}-${String.from
 const schemePattern = /^[a-z][a-z0-9+.-]*:/i;
 const dataImagePattern = /^data:image\/(?:gif|png|jpe?g|webp|avif);/i;
 const mathPlaceholderAttribute = 'data-markedit-math';
+const mermaidFenceName = 'mermaid';
+const mermaidWrapperClassName = 'markdown-preview-mermaid';
+const mermaidSourceClassName = 'markdown-preview-mermaid-source';
+const mermaidCanvasClassName = 'markdown-preview-mermaid-canvas';
 const rawCodeTagPattern = /^<\/?\s*(?:code|pre|kbd|samp)(?:\s|>|\/)/i;
 const rawCodeClosePattern = /^<\/\s*(?:code|pre|kbd|samp)\s*>/i;
 
@@ -43,6 +47,21 @@ type MathDelimiter = {
 markdown.validateLink = value => isAllowedMarkdownResource(value);
 markdown.block.ruler.before('paragraph', 'markedit_math_block', mathBlockRule, { alt: ['paragraph', 'reference', 'blockquote', 'list'] });
 markdown.inline.ruler.before('escape', 'markedit_math_inline', mathInlineRule);
+const defaultFenceRenderer = markdown.renderer.rules.fence;
+markdown.renderer.rules.fence = (tokens, index, options, env, renderer) => {
+  const token = tokens[index];
+  if (fenceLanguage(token.info) !== mermaidFenceName) {
+    return defaultFenceRenderer?.(tokens, index, options, env, renderer) ?? renderer.renderToken(tokens, index, options);
+  }
+
+  const source = markdown.utils.escapeHtml(token.content);
+  return [
+    `<div class="${mermaidWrapperClassName}" data-markedit-mermaid aria-busy="true" aria-label="Mermaid diagram">`,
+    `<code class="${mermaidSourceClassName}" hidden>${source}</code>`,
+    `<div class="${mermaidCanvasClassName}"></div>`,
+    '</div>\n',
+  ].join('');
+};
 
 const sanitizeConfig: DOMPurifyConfig = {
   ADD_DATA_URI_TAGS: ['img'],
@@ -73,6 +92,10 @@ export function renderMarkdown(markdownText: string): string {
   const env = createMathEnvironment();
   const sanitizedHTML = DOMPurify.sanitize(markdown.render(markdownText, env), sanitizeConfig);
   return restoreMathSegments(sanitizedHTML, env);
+}
+
+function fenceLanguage(info: string): string {
+  return info.trim().split(/\s+/, 1)[0]?.toLowerCase() ?? '';
 }
 
 function createMathEnvironment(): MathEnvironment {

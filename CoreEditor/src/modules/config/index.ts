@@ -4,6 +4,7 @@ import { indentUnit } from '@codemirror/language';
 import { WebFontFace, InvisiblesBehavior } from '../../config';
 import { TabKeyBehavior } from '../indentation';
 import { adjustGutterPositions } from '../lines';
+import { refreshMarkdownPreviewMermaidTheme } from '../markdown/previewMode';
 import { refreshEditFocus, scrollToSelection } from '../selection';
 import { editingState } from '../../common/store';
 import { tryGetEditor, afterDomUpdate } from '../../common/utils';
@@ -16,6 +17,7 @@ import * as completion from '../completion';
 export function setTheme(name: string) {
   window.config.theme = name;
   styling.setTheme(loadTheme(name));
+  refreshMarkdownPreviewMermaidTheme();
   afterDomUpdate(notifyBackgroundColor);
 }
 
@@ -150,4 +152,3 @@ export function recalculateTextMetrics() {
   document.documentElement.style.setProperty('--tooltip-completion-max-height', totalHeight);
   document.body.removeChild(span);
 }
-

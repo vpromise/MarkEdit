@@ -16,6 +16,24 @@ describe('Light Markdown renderer', () => {
     expect(html).toContain('<pre><code class="language-swift">let value = 1\n</code></pre>');
   });
 
+  test('prepares Mermaid fences for diagram rendering', () => {
+    const html = renderMarkdown('```Mermaid title="Flow"\ngraph TD\n  A --> B\n```');
+
+    expect(html).toContain('class="markdown-preview-mermaid"');
+    expect(html).toContain('data-markedit-mermaid=""');
+    expect(html).toContain('class="markdown-preview-mermaid-source"');
+    expect(html).toContain('graph TD\n  A --&gt; B\n');
+    expect(html).toContain('class="markdown-preview-mermaid-canvas"');
+    expect(html).not.toContain('class="language-Mermaid"');
+  });
+
+  test('keeps non-Mermaid fence names as code', () => {
+    const html = renderMarkdown('```mermaid-js\ngraph TD\n  A --> B\n```');
+
+    expect(html).toContain('<pre><code class="language-mermaid-js">');
+    expect(html).not.toContain('data-markedit-mermaid');
+  });
+
   test('renders tables', () => {
     const html = renderMarkdown('| Name | Value |\n| --- | --- |\n| A | 1 |');
 

@@ -1,5 +1,6 @@
 import 'katex/dist/katex.min.css';
 import { Config } from '../config';
+import { renderMermaidDiagrams } from '../modules/markdown/mermaidRenderer';
 import { renderMarkdown } from '../modules/markdown/markdownRenderer';
 import { enablePinchZoom, PinchZoomBridge } from '../zoom';
 
@@ -27,6 +28,7 @@ bridge.setTheme = name => {
 
 colorSchemeQuery.addEventListener('change', () => {
   bridge.setTheme(preferredTheme());
+  void renderMermaidDiagrams(preview, colorSchemeQuery.matches ? 'dark' : 'default');
 });
 
 bridge.startDragging = original => {
@@ -52,6 +54,7 @@ bridge.cancelDragging = () => {
 enablePinchZoom(bridge);
 bridge.pinchZoomTarget = () => ({ scroller: scrollerElement(), inner: preview });
 bridge.setTheme(preferredTheme());
+void renderMermaidDiagrams(preview, colorSchemeQuery.matches ? 'dark' : 'default');
 window.scrollTo({ top: 0, left: 0 });
 
 function preferredTheme() {

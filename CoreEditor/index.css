@@ -234,6 +234,75 @@ html.markdown-preview-active body {
   color: inherit;
 }
 
+.markdown-preview-mermaid {
+  display: grid;
+  min-height: 80px;
+  margin: 0 0 1em;
+  overflow: auto;
+  place-items: center;
+}
+
+.markdown-preview-mermaid-source[hidden] {
+  display: none !important;
+}
+
+.markdown-preview-mermaid-canvas {
+  width: 100%;
+  text-align: center;
+}
+
+.markdown-preview-mermaid-canvas:empty::before {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid color-mix(in srgb, currentColor 22%, transparent);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  content: "";
+  animation: markdown-preview-mermaid-loading 0.8s linear infinite;
+}
+
+.markdown-preview-mermaid-canvas svg {
+  display: inline-block;
+  max-width: 100%;
+  height: auto;
+}
+
+.markdown-preview-mermaid-error {
+  place-items: stretch;
+}
+
+.markdown-preview .markdown-preview-mermaid-error .markdown-preview-mermaid-source {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 0;
+  overflow: auto;
+  padding: 1em;
+  border-radius: 8px;
+  background-color: var(--markdown-preview-code-background-color, color-mix(in srgb, currentColor 8%, transparent));
+  white-space: pre;
+}
+
+.markdown-preview-mermaid-error-message {
+  margin-top: 0.5em;
+  color: var(--markdown-preview-muted-color, color-mix(in srgb, currentColor 65%, transparent));
+  text-align: left;
+  white-space: pre-wrap;
+}
+
+@keyframes markdown-preview-mermaid-loading {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .markdown-preview-mermaid-canvas:empty::before {
+    animation: none;
+  }
+}
+
 /* Markdown */
 
 .cm-md-header {
