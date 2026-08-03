@@ -1,9 +1,12 @@
 import { EditorView } from '@codemirror/view';
 import { Extension } from '@codemirror/state';
-import { LanguageDescription } from '@codemirror/language';
+import { LanguageDescription, LanguageSupport } from '@codemirror/language';
 import { MarkdownConfig } from '@lezer/markdown';
 import { RuntimeInfo } from 'markedit-api';
 import { markdownConfigurations } from '../extensions';
+
+type HTMLConfig = { matchClosingTags?: boolean };
+type HTMLLanguage = (config?: HTMLConfig) => LanguageSupport;
 
 export function onAppReady(listener: () => void) {
   storage.appReadyListeners.push(listener);
@@ -57,13 +60,28 @@ export function addExtension(extension: Extension) {
   }
 }
 
-export function addMarkdownConfig(config: MarkdownConfig) {
-  storage.markdownConfigs.push(config);
+export function addMarkdownConfig(config: MarkdownConfig | MarkdownConfig[]) {
+  if (Array.isArray(config)) {
+    storage.markdownConfigs.push(...config);
+  } else {
+    storage.markdownConfigs.push(config);
+  }
+
   reconfigureMarkdown();
 }
 
-export function addCodeLanguage(language: LanguageDescription) {
-  storage.codeLanguages.push(language);
+export function addCodeLanguage(language: LanguageDescription | LanguageDescription[]) {
+  if (Array.isArray(language)) {
+    storage.codeLanguages.push(...language);
+  } else {
+    storage.codeLanguages.push(language);
+  }
+
+  reconfigureMarkdown();
+}
+
+export function overrideHTMLLanguage(html: HTMLLanguage) {
+  storage.htmlLanguage = html;
   reconfigureMarkdown();
 }
 
@@ -81,6 +99,10 @@ export function userMarkdownConfigs(): MarkdownConfig[] {
 
 export function userCodeLanguages(): LanguageDescription[] {
   return storage.codeLanguages;
+}
+
+export function userHTMLLanguage(): HTMLLanguage | undefined {
+  return storage.htmlLanguage;
 }
 
 function reconfigureMarkdown() {
@@ -101,6 +123,7 @@ const storage: {
   extensions: Extension[];
   markdownConfigs: MarkdownConfig[];
   codeLanguages: LanguageDescription[];
+  htmlLanguage?: HTMLLanguage;
 } = {
   appReadyListeners: [],
   editorReadyListeners: [],

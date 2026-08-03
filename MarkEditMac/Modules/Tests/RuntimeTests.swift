@@ -41,6 +41,12 @@ final class RuntimeTests: XCTestCase {
     testExistenceOfSelector(object: webView, selector: "_setWindowOcclusionDetectionEnabled:")
   }
 
+  func testExistenceOfNetworkProcessIdentifier() {
+    let dataStore = WKWebsiteDataStore.default()
+    dataStore.launchNetworkProcess()
+    XCTAssertTrue(dataStore.responds(to: sel_getUid("_networkProcessIdentifier")))
+  }
+
   func testExistenceOfFeatureSPI() {
     testExistenceOfSelector(object: WKPreferences.self, selector: "_features")
 
@@ -168,6 +174,7 @@ final class RuntimeTests: XCTestCase {
     testExistenceOfClass(named: "NSTitlebarBackgroundView")
     testExistenceOfClass(named: "NSTitlebarView")
     testExistenceOfClass(named: "NSToolbarButton")
+    testExistenceOfClass(named: "NSThemeDocumentButton")
   }
 
   func testTitlebarDecorationViewSelector() {

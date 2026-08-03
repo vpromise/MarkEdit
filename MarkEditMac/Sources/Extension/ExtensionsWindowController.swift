@@ -8,24 +8,28 @@
 import AppKit
 import AppKitExtensions
 import ExtensionCore
+import MarkEditKit
 
 /// Hosts the Extension Manager: an AppKit window and toolbar wrapping the extension list.
 @MainActor
 final class ExtensionsWindowController: NSWindowController {
   static let shared = ExtensionsWindowController.createController()
   private let model = ExtensionsModel()
-  private weak var modeControl: NSSegmentedControl?
+  private weak var modeControl: NSToolbarItemGroup?
   private weak var updateAllItem: NSMenuItem?
   private weak var updateBehaviorMenu: NSMenu?
 
-  func present(scrollTo category: ExtensionEntry.Category? = nil) {
+  func present(scrollTo target: ExtensionsScrollTarget? = nil) {
     if !AppPreferences.Extensions.windowHasBeenOpened {
       AppPreferences.Extensions.windowHasBeenOpened = true
-      NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
+      ExtensionUpdater.requestMenuUpdate()
     }
 
-    if category != nil {
+    if target != nil {
+      // Discover lists every entry, and a leftover query would filter out the target
       model.mode = .discover
+      model.searchQuery = ""
+      searchToolbarItem?.searchField.stringValue = ""
       updateModeControl()
     }
 
@@ -33,9 +37,8 @@ final class ExtensionsWindowController: NSWindowController {
     window?.makeKeyAndOrderFront(nil)
     NSApp.activate(ignoringOtherApps: true)
 
-    var scrolledToCategory = false
-    if let category {
-      scrolledToCategory = extensionsVC?.scrollTo(category: category) ?? false
+    if let target {
+      extensionsVC?.scrollTo(target)
     }
 
     Task {
@@ -43,10 +46,8 @@ final class ExtensionsWindowController: NSWindowController {
       // and falls back to the cache when offline or unchanged.
       await model.load(forceRefresh: true)
 
-      // Re-request if it wasn't listed initially
-      if let category, !scrolledToCategory {
-        extensionsVC?.scrollTo(category: category)
-      }
+      // Retry only if the target wasn't already reached while rows loaded
+      extensionsVC?.scrollToPendingTarget()
     }
   }
 
@@ -80,7 +81,7 @@ extension ExtensionsWindowController {
 
 extension ExtensionsWindowController: NSMenuDelegate {
   func menuNeedsUpdate(_ menu: NSMenu) {
-    let count = model.availableUpdateCount
+    let count = model.installableUpdateCount
     updateAllItem?.isEnabled = count > 0
     updateAllItem?.title = count > 0 ? "\(Localized.Extension.updateAll) (\(count))" : Localized.Extension.updateAll
     refreshUpdateSettingChecks()
@@ -109,15 +110,16 @@ extension ExtensionsWindowController: NSToolbarDelegate {
     case .search:
       let item = NSSearchToolbarItem(itemIdentifier: .search)
       item.minimumSearchFieldWidth = 220 // Easier to collapse by default
-      item.searchField.placeholderString = Localized.Extension.searchPlaceholder
+      item.visibilityPriority = .low
+      item.searchField.delegate = self
       item.searchField.target = self
       item.searchField.action = #selector(handleSearchChange(_:))
-      item.searchField.delegate = self
+      item.searchField.sendsWholeSearchString = false
+      item.searchField.sendsSearchStringImmediately = false
       return item
     case .actions:
       let item = NSMenuToolbarItem(itemIdentifier: .actions)
-      item.visibilityPriority = .high
-      item.image = NSImage(systemSymbolName: Icons.ellipsisCircle, accessibilityDescription: nil)
+      item.image = NSImage(systemSymbolName: Icons.ellipsisCircle)
       item.label = Localized.Extension.actions
       item.toolTip = Localized.Extension.actions
       item.menu = createActionsMenu()
@@ -148,6 +150,7 @@ extension ExtensionsWindowController: NSSearchFieldDelegate {
 
 private extension ExtensionsWindowController {
   enum Constants {
+    static let officialWebsiteURL = "https://markedit-app.github.io/extensions/"
     static let contributingURL = "https://github.com/MarkEdit-app/extensions#contributing"
   }
 
@@ -199,23 +202,36 @@ private extension ExtensionsWindowController {
   }
 
   func createModeItem() -> NSToolbarItem {
-    let segmented = NSSegmentedControl(
-      labels: [Localized.Extension.discover, Localized.Extension.installed],
-      trackingMode: .selectOne,
+    let group = NSToolbarItemGroup(
+      itemIdentifier: .mode,
+      titles: ExtensionsModel.Mode.allCases.map(\.title),
+      selectionMode: .selectOne,
+      labels: nil,
       target: self,
       action: #selector(handleModeChange(_:))
     )
 
-    segmented.setSymbolImages([Icons.sparkles, Icons.shippingbox])
-    modeControl = segmented
+    let icons = ExtensionsModel.Mode.allCases.map(\.icon)
+    for (index, icon) in icons.enumerated() where index < group.subitems.count {
+      group.subitems[index].image = NSImage(systemSymbolName: icon)
+    }
+
+    group.controlRepresentation = .automatic
+    group.visibilityPriority = .high
+    group.label = Localized.Extension.windowTitle
+
+    // [macOS 27] Use "tabs" role, the default style has vertical dividers
+    if #available(macOS 27.0, *), group.responds(to: sel_getUid("setRole:")) {
+    #if canImport(FoundationModels, _version: 2)
+      group.role = .tabs
+    #else
+      group.setValue(1, forKey: "role") // .tabs
+    #endif
+    }
+
+    modeControl = group
     updateModeControl()
-
-    let item = NSToolbarItem(itemIdentifier: .mode)
-    item.visibilityPriority = .high
-    item.view = segmented
-    item.label = Localized.Extension.windowTitle
-
-    return item
+    return group
   }
 
   func createActionsMenu() -> NSMenu {
@@ -223,12 +239,28 @@ private extension ExtensionsWindowController {
     menu.autoenablesItems = false
     menu.delegate = self
 
-    menu.addItem(withTitle: Localized.Extension.refresh) { [weak self] in
+    let refreshItem = menu.addItem(withTitle: Localized.Extension.refresh) { [weak self] in
       self?.extensionsVC?.refreshAnimated()
     }
 
+    refreshItem.keyEquivalent = "r"
+    refreshItem.keyEquivalentModifierMask = .command
+
     updateAllItem = menu.addItem(withTitle: Localized.Extension.updateAll) { [weak self] in
-      self?.extensionsVC?.updateAllAnimated()
+      guard let self else {
+        return
+      }
+
+      // Switch to the Updates tab first, then let its row animation settle before the
+      // overlay empties the list, so the two animations don't overlap and busy the eye.
+      let modeChanged = self.model.mode != .updates
+      self.model.mode = .updates
+      self.updateModeControl()
+
+      let delay: TimeInterval = (modeChanged && !AppDesign.reduceMotion) ? 0.8 : 0
+      DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+        self?.extensionsVC?.updateAllAnimated()
+      }
     }
 
     let updateBehaviorItem = NSMenuItem()
@@ -248,6 +280,10 @@ private extension ExtensionsWindowController {
     }
 
     menu.addItem(.separator())
+    menu.addItem(withTitle: Localized.Extension.officialWebsite) {
+      NSWorkspace.shared.safelyOpenURL(string: Constants.officialWebsiteURL)
+    }
+
     menu.addItem(withTitle: Localized.Extension.submitExtension) {
       NSWorkspace.shared.safelyOpenURL(string: Constants.contributingURL)
     }
@@ -277,21 +313,38 @@ private extension ExtensionsWindowController {
   }
 
   func updateModeControl() {
-    modeControl?.selectedSegment = model.mode == .discover ? 0 : 1
-    modeControl?.setToolTip(Localized.Extension.itemCount(model.discoverCount), forSegment: 0)
-    modeControl?.setToolTip(Localized.Extension.itemCount(model.installedCount), forSegment: 1)
+    guard let group = modeControl else {
+      return Logger.log(.debug, "Missing mode control")
+    }
+
+    let selectedIndex = model.mode.rawValue
+    modeControl?.selectedIndex = selectedIndex
+
+    let counts = ExtensionsModel.Mode.allCases.map { model.count(for: $0) }
+    for (index, subitem) in group.subitems.enumerated() where index < counts.count {
+      subitem.toolTip = Localized.Extension.itemCount(counts[index])
+    }
+
+    // Surface the update count in the Updates segment title, e.g. "Updates (3)"
+    let updatesIndex = ExtensionsModel.Mode.updates.rawValue
+    if updatesIndex < group.subitems.count {
+      let count = model.availableUpdateCount
+      group.subitems[updatesIndex].title = count > 0 ? "\(Localized.Extension.updates) (\(count))" : Localized.Extension.updates
+    }
   }
 
   /// Checks the option matching the persisted update behavior.
   func refreshUpdateSettingChecks() {
     let behavior = ExtensionConfig.updateBehavior.rawValue
     updateBehaviorMenu?.items.forEach {
-      $0.state = ($0.representedObject as? String) == behavior ? .on : .off
+      $0.setOn(($0.representedObject as? String) == behavior)
     }
   }
 
-  @objc func handleModeChange(_ sender: NSSegmentedControl) {
-    model.mode = sender.selectedSegment == 0 ? .discover : .installed
+  @objc func handleModeChange(_ sender: Any?) {
+    if let index = modeControl?.selectedIndex, let mode = ExtensionsModel.Mode(rawValue: index) {
+      model.mode = mode
+    }
   }
 
   @objc func handleSearchChange(_ sender: NSSearchField) {
@@ -305,6 +358,7 @@ private extension ExtensionsWindowController {
   @objc func promptInstallFromURL() {
     let alert = NSAlert()
     alert.messageText = Localized.Extension.installFromURLTitle
+    alert.informativeText = Localized.Extension.unreviewedWarning
     alert.addButton(withTitle: Localized.Extension.installButton)
     alert.addButton(withTitle: Localized.General.cancel)
 

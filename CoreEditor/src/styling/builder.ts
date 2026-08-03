@@ -46,12 +46,11 @@ const sharedStyles: { [selector: string]: StyleSpec } = {
   '@keyframes cm-blink2': { '40%, 90%': { opacity: 1 }, '60%, 70%': { opacity: 0 } },
   '.cm-foldGutter': {
     padding: '0 4px',
-    opacity: '0',
-    transition: '0s', // See #436
+    // Fade with color, not opacity: on WebKit an opacity transition promotes this to a
+    // compositing layer that snaps to device pixels, leaving a seam beside the gutter (#1581)
+    color: 'transparent',
+    transition: 'color 0s', // See #436
     transitionDelay: '0s',
-  },
-  '.cm-foldGutter.cm-gutterHover': {
-    opacity: '1',
   },
   '.cm-foldGutter, .cm-foldPlaceholder': {
     // Don't use ui-monospace because ▶︎ and ••• look very big
@@ -67,7 +66,7 @@ const sharedStyles: { [selector: string]: StyleSpec } = {
   },
   '.cm-gutters': {
     borderRight: 'none',
-    fontFamily: 'SF Mono, ui-monospace, monospace',
+    fontFamily: 'ui-monospace, monospace',
   },
   // '.cm-gutterElement': {
   //   boxShadow: 'inset 0px 0px 0px 1px #f00',
@@ -108,10 +107,15 @@ const sharedStyles: { [selector: string]: StyleSpec } = {
     pointerEvents: 'none',
   },
   '.cm-md-monospace, .cm-md-monospace *, .cm-md-codeBlock *, .cm-md-table *': {
-    fontFamily: 'SF Mono, ui-monospace, monospace',
+    fontFamily: 'ui-monospace, monospace',
   },
-  '.cm-md-inlineCode': {
-    borderRadius: '3px',
+  '.cm-md-inlineCodeStart': {
+    borderTopLeftRadius: '3px',
+    borderBottomLeftRadius: '3px',
+  },
+  '.cm-md-inlineCodeEnd': {
+    borderTopRightRadius: '3px',
+    borderBottomRightRadius: '3px',
   },
 };
 
@@ -121,7 +125,7 @@ const sharedHighlights = [
   { tag: [tags.emphasis, tags.quote], fontStyle: 'italic' },
   { tag: tags.strikethrough, textDecoration: 'line-through' },
   { tag: tags.link, textDecoration: 'underline' },
-  { tag: tags.monospace, fontFamily: 'SF Mono, ui-monospace, monospace' },
+  { tag: tags.monospace, fontFamily: 'ui-monospace, monospace' },
 ];
 
 function buildTheme(colors: EditorColors, scheme?: ColorScheme) {
@@ -152,7 +156,7 @@ function buildTheme(colors: EditorColors, scheme?: ColorScheme) {
       color: colors.text,
     },
     // Handle of code folding
-    '.cm-foldGutter, .cm-foldPlaceholder': {
+    '.cm-foldGutter.cm-gutterHover, .cm-foldPlaceholder': {
       color: `${colors.text}66`,
     },
     '.cm-foldPlaceholder': {
@@ -274,4 +278,4 @@ function buildInnerBorder(width: number, color?: string) {
   return color !== undefined ? `inset 0px 0px 0px ${width}px ${color}` : 'none';
 }
 
-export { buildTheme, buildHighlight, buildInnerBorder, tags };
+export { buildTheme, buildHighlight, tags };

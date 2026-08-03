@@ -128,6 +128,7 @@ private extension AppDelegate {
 
       let icon = NSWorkspace.shared.icon(forFile: appURL.path)
       item?.image = icon.resized(with: CGSize(width: 16, height: 16))
+      item?.ensureImageVisibility()
     }
   }
 
@@ -197,10 +198,6 @@ private extension AppDelegate {
 
   @IBAction func manageExtensions(_ sender: Any?) {
     ExtensionsWindowController.shared.present()
-  }
-
-  @IBAction func openOfficialWebsite(_ sender: Any?) {
-    NSWorkspace.shared.safelyOpenURL(string: "https://markedit-app.github.io/extensions/")
   }
 
   @IBAction func openCustomizationGuide(_ sender: Any?) {

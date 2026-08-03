@@ -1,23 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "**Author:** %@" : {
-      "comment" : "Extension author line (format) in the install confirmation",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**作者：**%@"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "**作者：**%@"
-          }
-        }
-      }
-    },
     "**URL:** %@" : {
       "comment" : "Extension URL line (format) in the install confirmation",
       "localizations" : {
@@ -135,6 +118,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "⌘ 點選切換完成狀態"
+          }
+        }
+      }
+    },
+    "⚠️ This source is not reviewed by MarkEdit. Only continue if you trust it." : {
+      "comment" : "Caution shown before installing an extension from a raw URL",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 此来源未经 MarkEdit 审核，请仅在信任该来源时继续。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "⚠️ 此來源未經 MarkEdit 審核，請僅在信任該來源時繼續。"
           }
         }
       }
@@ -1175,6 +1175,23 @@
         }
       }
     },
+    "Extensions" : {
+      "comment" : "Title of the extension manager window",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扩展功能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "擴充功能"
+          }
+        }
+      }
+    },
     "Extensions Updated" : {
       "comment" : "Title shown after extensions are updated",
       "localizations" : {
@@ -1222,6 +1239,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法安裝該擴充功能。"
+          }
+        }
+      }
+    },
+    "Featured" : {
+      "comment" : "Badge shown for featured extensions recommended by MarkEdit",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "精选"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "精選"
           }
         }
       }
@@ -2226,23 +2260,6 @@
         }
       }
     },
-    "MarkEdit Extensions" : {
-      "comment" : "Title of the extension manager window",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MarkEdit 扩展功能"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "MarkEdit 擴充功能"
-          }
-        }
-      }
-    },
     "Missing active document to proceed." : {
       "localizations" : {
         "zh-Hans" : {
@@ -2445,6 +2462,23 @@
         }
       }
     },
+    "No updates available." : {
+      "comment" : "Empty state when the installed list is filtered to updates only",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "没有可用更新。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有可用更新。"
+          }
+        }
+      }
+    },
     "No versions match the specified condition." : {
       "comment" : "Alert title for no versions found",
       "localizations" : {
@@ -2509,6 +2543,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "官方"
+          }
+        }
+      }
+    },
+    "Official Website" : {
+      "comment" : "Menu item to open the extensions official website",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方网站"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "官方網站"
           }
         }
       }
@@ -3110,23 +3161,6 @@
         }
       }
     },
-    "Search" : {
-      "comment" : "Placeholder for the search field in the extensions window",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜索"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "搜尋"
-          }
-        }
-      }
-    },
     "Search Actions" : {
       "comment" : "Search actions, like select all, select all in selection",
       "localizations" : {
@@ -3722,23 +3756,6 @@
         }
       }
     },
-    "This extension runs with full editor access." : {
-      "comment" : "Disclosure shown before installing an extension",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此扩展功能拥有对编辑器的完全访问权限。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此擴充功能擁有對編輯器的完整取用權限。"
-          }
-        }
-      }
-    },
     "This release requires macOS %@ or later and cannot be installed without upgrading your operating system." : {
       "comment" : "Message for minimum required OS version",
       "localizations" : {
@@ -3769,23 +3786,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "這會從指令碼目錄中移除它的指令碼。"
-          }
-        }
-      }
-    },
-    "This source is not reviewed by MarkEdit. Only continue if you trust it." : {
-      "comment" : "Caution shown before installing an extension from a raw URL",
-      "localizations" : {
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此来源未经 MarkEdit 审核，请仅在信任该来源时继续。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "此來源未經 MarkEdit 審核，請僅在信任該來源時繼續。"
           }
         }
       }
@@ -4112,6 +4112,23 @@
         }
       }
     },
+    "Updates" : {
+      "comment" : "Extension manager mode: installed extensions filtered to those with available updates",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
+          }
+        }
+      }
+    },
     "Updates file content of the active document; throws an error if no editor is opened." : {
       "localizations" : {
         "zh-Hans" : {
@@ -4146,7 +4163,7 @@
       }
     },
     "View Release Page" : {
-      "comment" : "Title for the \"View Release Page\" button",
+      "comment" : "Button in the release notes popover to open the release page\nTitle for the \"View Release Page\" button",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -4158,6 +4175,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "檢視釋出頁面"
+          }
+        }
+      }
+    },
+    "What’s New" : {
+      "comment" : "Button revealing an extension's latest release notes in a popover",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新功能"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "新功能"
           }
         }
       }

@@ -1,0 +1,30 @@
+.markedit-quicklook,
+.markedit-quicklook body {
+  min-height: 100%;
+  background-color: var(--markdown-preview-background-color, #ffffff);
+  color: var(--markdown-preview-text-color, #24292f);
+}
+
+html.markedit-quicklook {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.markedit-quicklook body {
+  position: relative;
+  overflow: visible;
+}
+
+.markedit-quicklook #editor {
+  min-height: 100vh;
+}
+
+.markedit-quicklook .markdown-preview {
+  width: min(100%, 920px);
+  height: auto;
+  min-height: 100vh;
+  margin: 0 auto;
+  overflow: visible;
+  padding: calc(var(--editor-inset-top, 0px) + 28px) 32px 36px;
+  transform-origin: top left;
+}

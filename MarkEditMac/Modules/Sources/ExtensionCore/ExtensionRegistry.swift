@@ -31,7 +31,7 @@ public struct ExtensionRelease: Codable, Equatable, Sendable {
   }
 }
 
-public extension ExtensionRelease {
+extension ExtensionRelease {
   /// Whether the running app meets this release's minimum version requirement.
   var isCompatible: Bool {
     guard let minAppVersion, !minAppVersion.isEmpty else {
@@ -43,7 +43,7 @@ public extension ExtensionRelease {
   }
 
   /// A browsable page for this release: the GitHub release page for a release-asset URL.
-  var pageURL: URL? {
+  public var pageURL: URL? {
     guard let components = URLComponents(string: url), let host = components.host else {
       return nil
     }
@@ -69,7 +69,7 @@ public extension ExtensionRelease {
     }()
 
     if let source {
-      // MarkEdit-app repos always tag a release, so prefer the release page.
+      // MarkEdit-app repos always tag a release, so prefer the release page
       let official = source.owner.caseInsensitiveCompare("MarkEdit-app") == .orderedSame
       let path = official ? "releases/tag" : "tree"
       return URL(string: "https://github.com/\(source.owner)/\(source.repo)/\(path)/\(source.ref)")
@@ -101,6 +101,7 @@ public struct ExtensionEntry: Codable, Equatable, Sendable {
   public let category: Category
   public let colorScheme: ColorScheme?
   public let colorPatterns: [String]?
+  public let featured: Bool?
   public let latest: ExtensionRelease
 
   public init(
@@ -112,6 +113,7 @@ public struct ExtensionEntry: Codable, Equatable, Sendable {
     category: Category,
     colorScheme: ColorScheme?,
     colorPatterns: [String]?,
+    featured: Bool?,
     latest: ExtensionRelease
   ) {
     self.id = id
@@ -122,6 +124,7 @@ public struct ExtensionEntry: Codable, Equatable, Sendable {
     self.category = category
     self.colorScheme = colorScheme
     self.colorPatterns = colorPatterns
+    self.featured = featured
     self.latest = latest
   }
 }
@@ -149,6 +152,11 @@ public struct ExtensionIndex: Codable, Equatable, Sendable {
 public struct ExtensionUpdate: Sendable {
   public let installed: ExtensionConfig.Installed
   public let entry: ExtensionEntry
+
+  /// The app version needed, set only when the running app is too old.
+  public var unmetAppVersion: String? {
+    entry.latest.isCompatible ? nil : entry.latest.minAppVersion
+  }
 }
 
 /// Fetches and caches the registry index.
@@ -263,7 +271,7 @@ public enum ExtensionRegistry {
     }
   }
 
-  /// Version-tracked installs with a newer, compatible release in the registry.
+  /// Version-tracked installs with a newer release, incompatible ones flagged by `unmetAppVersion`.
   public static func availableUpdates(
     index: ExtensionIndex,
     installed: [ExtensionConfig.Installed] = ExtensionConfig.installed
@@ -273,12 +281,7 @@ public enum ExtensionRegistry {
         return nil
       }
 
-      // Skip releases the current app can't run
-      guard entry.latest.isCompatible else {
-        return nil
-      }
-
-      // Version-less official scripts (pre-registry) adopt the latest; third-party ones are left alone.
+      // Version-less official scripts (pre-registry) adopt the latest; third-party ones are left alone
       guard let version = installed.version else {
         return installed.shouldMigrate ? ExtensionUpdate(installed: installed, entry: entry) : nil
       }
@@ -292,7 +295,7 @@ public enum ExtensionRegistry {
     }
   }
 
-  /// Whether the cached index currently surfaces any updates for installed extensions.
+  /// Whether the cached index offers any update the running app can install.
   ///
   /// Reads from disk only, never triggers a network fetch.
   public static var hasCachedUpdates: Bool {
@@ -300,7 +303,7 @@ public enum ExtensionRegistry {
       return false
     }
 
-    return !availableUpdates(index: index).isEmpty
+    return availableUpdates(index: index).contains { $0.unmetAppVersion == nil }
   }
 }
 

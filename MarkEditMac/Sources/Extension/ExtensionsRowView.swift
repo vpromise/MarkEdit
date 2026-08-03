@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import AppKitExtensions
 import ExtensionCore
 import SharedUI
 
@@ -13,9 +14,13 @@ import SharedUI
 struct ExtensionsRowView: View {
   let model: ExtensionsModel
   let item: ExtensionsModel.Item
+  let rowMargin: Double
+
+  // State for update notes popover
+  @State private var showingUpdateNotes = false
 
   var body: some View {
-    // Read live state so the cell animates its own updates instead of being reloaded.
+    // Read live state so the cell animates its own updates instead of being reloaded
     let item = liveItem
 
     HStack(spacing: 10) {
@@ -25,75 +30,81 @@ struct ExtensionsRowView: View {
             .foregroundStyle(.secondary)
             .accessibilityHidden(true)
 
-          Text(item.name)
-            .font(.title3)
-            .fontWeight(.semibold)
-            .lineLimit(1)
+          HighlightedText(
+            item.displayName,
+            query: searchQuery,
+            isRevealed: model.highlightedItemID == item.id
+          )
+          .font(.title3)
+          .fontWeight(.semibold)
+          .lineLimit(1)
 
-          if item.isOfficial {
-            Image(systemName: Icons.checkmarkSeal)
-              .foregroundStyle(.orange)
-              .help(Localized.Extension.official)
-              .accessibilityLabel(Localized.Extension.official)
+          if item.isFeatured, model.mode == .discover {
+            if #available(macOS 15.1, *) {
+              HStack(spacing: 4) {
+                Image(systemName: Icons.laurelLeading)
+                  .bold()
+                  .foregroundStyle(LinearGradient.spectrum(direction: .leftToRight))
+                  .accessibilityHidden(true)
+
+                Text(Localized.Extension.featured)
+                  .font(.callout)
+                  .fontDesign(.serif)
+                  .foregroundStyle(.secondary)
+
+                Image(systemName: Icons.laurelTrailing)
+                  .bold()
+                  .foregroundStyle(LinearGradient.spectrum(direction: .rightToLeft))
+                  .accessibilityHidden(true)
+              }
+            } else {
+              Image(systemName: "rosette")
+                .bold()
+                .foregroundStyle(.orange)
+                .help(Localized.Extension.featured)
+                .accessibilityLabel(Localized.Extension.featured)
+            }
           }
 
-          if let updateVersion = item.updateVersion {
+          // Skip in Discover, where many rows repeat the same version and it's noisy
+          if let updateVersion = item.updateVersion, model.mode != .discover {
             updateBadge(version: updateVersion, url: item.latestReleaseURL)
               .transition(.opacity.combined(with: .scale))
           }
         }
-        // Only animate the row being upgraded, not tab switches.
+        // Only animate the row being upgraded, not tab switches
         .animation(isItemBusy ? .easeInOut(duration: 0.25) : nil, value: item.updateVersion)
 
         if !item.details.isEmpty {
-          Text(item.details)
+          Text(item.details, highlighting: searchQuery)
             .font(.body)
             .foregroundStyle(.secondary)
-            // Keep the description on one line; users can widen the window to read more.
+            // Keep the description on one line; users can widen the window to read more
             .lineLimit(1)
             .truncationMode(.tail)
         }
 
         if item.category == .theme, let patterns = item.colorPatterns, !patterns.isEmpty {
           ThemePreview(patterns: patterns, showsBothSchemes: item.colorScheme == .both)
-            .padding(.top, 4)
+            // Centered vertically between subtitle and metadata
+            .padding(.top, 12)
+            // Decorative illustration; the row already conveys the theme textually
+            .accessibilityHidden(true)
         }
 
-        if item.isLocal || !item.author.isEmpty || item.version != nil || item.homepage != nil {
+        let segments = metadataSegments(for: item)
+        if !segments.isEmpty {
           HStack(spacing: 5) {
-            if item.isLocal {
-              Text(Localized.Extension.local)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-            } else if let version = item.version {
-              Text(verbatim: "v\(version)")
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .contentTransition(.numericText())
-            }
-
-            if !item.author.isEmpty {
-              if item.version != nil || item.isLocal {
+            ForEach(segments.indices, id: \.self) { index in
+              if index > 0 {
                 metadataDot
               }
 
-              Text(item.author)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-            }
-
-            if let homepage = item.homepage {
-              if item.version != nil || item.isLocal || !item.author.isEmpty {
-                metadataDot
-              }
-
-              Link(Localized.Extension.homepage, destination: homepage)
-                .font(.callout)
-                .fontWeight(.medium)
+              segments[index]
             }
           }
           .padding(.top, 12)
-          // Only animate the row being upgraded, not tab switches.
+          // Only animate the row being upgraded, not tab switches
           .animation(isItemBusy ? .easeInOut(duration: 0.25) : nil, value: item.version)
         }
       }
@@ -104,7 +115,14 @@ struct ExtensionsRowView: View {
       trailingControl(item: item)
     }
     .padding(.vertical, 8)
-    // Fresh identity per mode so tab switches swap content without animating.
+    .padding(.horizontal, rowMargin)
+    .frame(maxWidth: .infinity)
+    .background(
+      // Rounded for the drag preview; invisible at rest since it matches the content background
+      RoundedRectangle(cornerRadius: 8)
+        .fill(Self.contentBackgroundStyle)
+    )
+    // Fresh identity per mode so tab switches swap content without animating
     .id(model.mode)
   }
 }
@@ -112,6 +130,14 @@ struct ExtensionsRowView: View {
 // MARK: - Private
 
 private extension ExtensionsRowView {
+  static var contentBackgroundStyle: AnyShapeStyle {
+    if #available(macOS 26.0, *) {
+      return .init(.windowBackground)
+    }
+
+    return .init(Color(.finderContentBackground))
+  }
+
   /// Live snapshot of this item, falling back to the initial value if it's no longer listed.
   var liveItem: ExtensionsModel.Item {
     model.liveItem(id: item.id) ?? item
@@ -120,6 +146,11 @@ private extension ExtensionsRowView {
   /// Whether this item is running an install/update, so it shows a spinner instead of a button.
   var isItemBusy: Bool {
     model.busyItemID == item.id
+  }
+
+  /// Trimmed search query, tinted in rows to show why an item matched.
+  var searchQuery: String {
+    model.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
   }
 
   func enabledBinding(for item: ExtensionsModel.Item) -> Binding<Bool> {
@@ -132,10 +163,10 @@ private extension ExtensionsRowView {
   @ViewBuilder
   func trailingControl(item: ExtensionsModel.Item) -> some View {
     buttonControls(for: item)
-      // Non-interactive while busy; only the triggering button shows the spinner.
+      // Non-interactive while busy; only the triggering button shows the spinner
       .disabled(isItemBusy)
       .animation(.easeInOut(duration: 0.25), value: isItemBusy)
-      // Intrinsic width so a narrow window truncates metadata, not the titles.
+      // Intrinsic width so a narrow window truncates metadata, not the titles
       .fixedSize(horizontal: true, vertical: false)
       .layoutPriority(1)
   }
@@ -154,7 +185,7 @@ private extension ExtensionsRowView {
 
   @ViewBuilder
   func buttonControls(for item: ExtensionsModel.Item) -> some View {
-    if model.mode == .installed {
+    if model.mode.isLocalList {
       HStack(spacing: 8) {
         updateButton(for: item)
         revealButton(for: item)
@@ -172,7 +203,7 @@ private extension ExtensionsRowView {
       }
     } else if !item.isInstalled {
       busyControl {
-        PillButton(Localized.Extension.installButton, style: .prominent) {
+        PillButton(Localized.Extension.installButton, style: .bordered) {
           Task {
             await model.installExtension(item)
           }
@@ -191,28 +222,41 @@ private extension ExtensionsRowView {
   @ViewBuilder
   func updateButton(for item: ExtensionsModel.Item) -> some View {
     if let updateVersion = item.updateVersion {
+      // Stays enabled, clicking it explains the requirement
+      let requirement = item.unmetAppVersion.map {
+        String(format: Localized.Extension.incompatibleFormat, $0)
+      }
+
       busyControl {
-        PillButton(String(format: Localized.Extension.updateToFormat, updateVersion), style: .bordered) {
+        PillButton(Localized.Extension.updateButton, style: requirement == nil ? .prominent : .bordered) {
           Task {
             await model.updateExtension(item)
           }
         }
+        .help(requirement ?? String(format: Localized.Extension.updateToFormat, updateVersion))
       }
     }
   }
 
-  /// The pending-update badge ("↑ 1.2.3"); links to a browsable page for the latest release when available.
+  /// The pending-update badge ("↑ 1.2.3"); opens a browsable page for the latest release when available.
   func updateBadge(version: String, url: URL?) -> some View {
     let title = Text(verbatim: "↑ \(version)")
       .font(.callout)
       .fontWeight(.medium)
+      .foregroundStyle(.tint)
 
     return Group {
       if let url {
-        // Keep the default link style so it dims on mouse down
-        Link(destination: url) { title }
+        Button {
+          NSWorkspace.shared.open(url)
+        } label: {
+          title
+        }
+        .buttonStyle(.plain)
+        .help(url.absoluteString)
+        .accessibilityAddTraits(.isLink)
       } else {
-        title.foregroundStyle(.tint)
+        title
       }
     }
     .accessibilityLabel(String(format: Localized.Extension.updateToFormat, version))
@@ -224,10 +268,106 @@ private extension ExtensionsRowView {
     }
   }
 
+  func updateNotesPopover(_ notes: String, releaseURL: URL?) -> some View {
+    VStack(alignment: .center, spacing: 12) {
+      Text(notes)
+        .font(.body)
+        .textSelection(.enabled)
+        .fixedSize(horizontal: false, vertical: true)
+
+      if let releaseURL {
+        Button(Localized.Extension.viewRelease) {
+          showingUpdateNotes = false
+          NSWorkspace.shared.open(releaseURL)
+        }
+        .help(releaseURL.absoluteString)
+      }
+    }
+    .frame(maxWidth: 300)
+    .padding()
+  }
+
   var metadataDot: some View {
     Text(verbatim: "·")
       .bold()
       .foregroundStyle(.secondary)
       .accessibilityHidden(true)
+  }
+
+  /// Metadata line segments (version/local, what's new, author, homepage), type-erased so they
+  /// can be interleaved with dots via a single `ForEach` instead of a chain of conditionals.
+  func metadataSegments(for item: ExtensionsModel.Item) -> [AnyView] {
+    guard (item.isLocal && !item.isUntracked) || !item.author.isEmpty || item.version != nil || item.homepage != nil || item.updateNotes != nil else {
+      return []
+    }
+
+    var segments: [AnyView] = []
+    if item.isLocal {
+      segments.append(AnyView(
+        Text(Localized.Extension.local)
+          .font(.callout)
+          .foregroundStyle(.secondary)
+      ))
+    } else if let version = item.version {
+      segments.append(AnyView(
+        Text(verbatim: "v\(version)")
+          .font(.callout)
+          .foregroundStyle(.secondary)
+          .contentTransition(.numericText())
+      ))
+    }
+
+    if let notes = item.updateNotes {
+      segments.append(AnyView(
+        Button(Localized.Extension.whatsNew) {
+          showingUpdateNotes = true
+        }
+        .buttonStyle(.plain)
+        .font(.callout)
+        .fontWeight(.medium)
+        .foregroundStyle(.tint)
+        .popover(isPresented: $showingUpdateNotes, arrowEdge: .bottom) {
+          updateNotesPopover(notes, releaseURL: item.releasePageURL)
+        }
+        .onDisappear {
+          showingUpdateNotes = false
+        }
+      ))
+    }
+
+    if !item.author.isEmpty {
+      segments.append(AnyView(
+        HStack(spacing: 5) {
+          if item.isOfficial {
+            Image(systemName: Icons.checkmarkSeal)
+              .font(.callout)
+              .imageScale(.small)
+              .foregroundStyle(.secondary)
+              .help(Localized.Extension.official)
+              .accessibilityLabel(Localized.Extension.official)
+          }
+
+          Text(item.author, highlighting: searchQuery)
+            .font(.callout)
+            .foregroundStyle(.secondary)
+        }
+      ))
+    }
+
+    if let homepage = item.homepage {
+      segments.append(AnyView(
+        Button(Localized.Extension.homepage) {
+          NSWorkspace.shared.open(homepage)
+        }
+        .buttonStyle(.plain)
+        .font(.callout)
+        .fontWeight(.medium)
+        .foregroundStyle(.tint)
+        .help(homepage.absoluteString)
+        .accessibilityAddTraits(.isLink)
+      ))
+    }
+
+    return segments
   }
 }

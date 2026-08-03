@@ -2,38 +2,32 @@ import { describe, expect, test } from '@jest/globals';
 import fs from 'fs';
 import path from 'path';
 
+const readHtml = () => {
+  const filePath = path.join(__dirname, '../dist/index.html');
+  return fs.readFileSync(filePath, 'utf-8');
+};
+
 describe('Build system', () => {
   test('test existence of magic variables', () => {
-    const testFileName = (fileName: string, hasChunks: boolean) => {
-      const html = fs.readFileSync(path.join(__dirname, fileName), 'utf-8');
-      expect(html).toContain('"{{EDITOR_CONFIG}}"');
-
-      if (hasChunks) {
-        expect(html).toContain('chunk-loader://chunks/');
-      }
-    };
-
-    testFileName('../dist/index.html', true);
-    testFileName('../src/@light/dist/index.html', false);
+    const html = readHtml();
+    expect(html).toContain('"{{EDITOR_CONFIG}}"');
+    expect(html).toContain('"{{USER_SETTINGS}}"');
   });
 
-  test('uses the chunk loader scheme for runtime dependencies', () => {
-    const chunksDirectory = path.join(__dirname, '../dist/chunks');
-    const scripts = fs.readdirSync(chunksDirectory)
-      .filter(fileName => fileName.endsWith('.js'))
-      .map(fileName => fs.readFileSync(path.join(chunksDirectory, fileName), 'utf-8'))
-      .join('\n');
-
-    expect(scripts).toContain('chunk-loader://chunks/');
-    expect(scripts).not.toContain('"/chunk-loader/');
+  test('test everything is inlined in a single file', () => {
+    const html = readHtml();
+    expect(html).not.toMatch(/<script[^>]*\ssrc=/i);
+    expect(html).not.toMatch(/<link[^>]*\srel=["']?stylesheet/i);
+    expect(html).not.toContain('chunk-loader');
+    expect(html).toContain('markdown-preview-mermaid');
   });
 
   test('uses a single root scroller in Quick Look', () => {
-    const html = fs.readFileSync(path.join(__dirname, '../src/@light/index.html'), 'utf-8');
+    const css = fs.readFileSync(path.join(__dirname, '../src/@quicklook/index.css'), 'utf-8');
 
-    expect(html).toMatch(/html\s*\{[^}]*overflow:\s*auto;/s);
-    expect(html).toMatch(/body\s*\{[^}]*overflow:\s*visible;/s);
-    expect(html).not.toMatch(/html,\s*body\s*\{[^}]*overflow:/s);
+    expect(css).toMatch(/html\.markedit-quicklook\s*\{[^}]*overflow-y:\s*auto;/s);
+    expect(css).toMatch(/\.markedit-quicklook body\s*\{[^}]*overflow:\s*visible;/s);
+    expect(css).toMatch(/\.markedit-quicklook \.markdown-preview\s*\{[^}]*overflow:\s*visible;/s);
   });
 
   test('leaves vertical scrolling to the active main editor view', () => {

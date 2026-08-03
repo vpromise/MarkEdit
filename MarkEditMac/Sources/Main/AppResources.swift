@@ -248,16 +248,17 @@ enum Localized {
 // Note: double check availability and deployment target before adding new icons
 enum Icons {
   static let appleTerminal = "apple.terminal"
+  static let arrowDownCircle = "arrow.down.circle"
   static let arrowUturnBackwardCircle = "arrow.uturn.backward.circle"
   static let bold = "bold"
   static let characterCursorIbeam = "character.cursor.ibeam"
   static let chartPie = "chart.pie"
   static let checkmarkSeal = "checkmark.seal.fill"
+  static let cupAndHeatWaves = "cup.and.heat.waves"
   static let curlybracesSquare = "curlybraces.square"
   static let docPlaintext = "doc.plaintext"
   static let docRichtext = "doc.richtext"
   static let ellipsisCircle = "ellipsis.circle"
-  static let exclamationmarkBubbleFill = "exclamationmark.bubble.fill"
   static let gearshape = "gearshape"
   static let italic = "italic"
 
@@ -273,6 +274,9 @@ enum Icons {
     "macwindow.on.rectangle"
   }
 
+  static let laurelLeading = "laurel.leading"
+  static let laurelTrailing = "laurel.trailing"
+  static let lightbulbMaxFill = "lightbulb.max.fill"
   static let link = "link"
   static let listBullet = "list.bullet"
   static let listBulletRectangle = "list.bullet.rectangle"
@@ -295,7 +299,6 @@ enum Icons {
   static let textQuote = "text.quote"
   static let textformat = "textformat"
   static let wandAndSparkles = "wand.and.sparkles"
-  static let wifiSlash = "wifi.slash"
 }
 
 extension EditorLocalizable {

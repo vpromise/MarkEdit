@@ -156,20 +156,21 @@ final class ExtensionCoreTests: XCTestCase {
     XCTAssertEqual(updates.first?.entry.latest.version, "2.0.0")
   }
 
-  func testAvailableUpdatesSkipsIncompatibleVersionlessOfficial() {
+  func testAvailableUpdatesFlagsIncompatibleVersionlessOfficial() {
     ExtensionEnvironment.appVersion = "1.5.0"
 
-    // An incompatible release is skipped before version-less adoption
+    // Adopted and flagged, not skipped
     let index = makeIndex([makeEntry(id: "markedit-preview", version: "2.0.0", minAppVersion: "9.0.0")])
     let updates = ExtensionRegistry.availableUpdates(
       index: index,
       installed: [makeInstalled(id: "markedit-preview", version: nil)]
     )
 
-    XCTAssertTrue(updates.isEmpty)
+    XCTAssertEqual(updates.count, 1)
+    XCTAssertEqual(updates.first?.unmetAppVersion, "9.0.0")
   }
 
-  func testAvailableUpdatesSkipsIncompatibleRelease() {
+  func testAvailableUpdatesFlagsIncompatibleRelease() {
     ExtensionEnvironment.appVersion = "1.5.0"
     let index = makeIndex([makeEntry(id: "sample", version: "2.0.0", minAppVersion: "9.0.0")])
     let updates = ExtensionRegistry.availableUpdates(
@@ -177,7 +178,20 @@ final class ExtensionCoreTests: XCTestCase {
       installed: [makeInstalled(id: "sample", version: "1.0.0")]
     )
 
-    XCTAssertTrue(updates.isEmpty)
+    XCTAssertEqual(updates.count, 1)
+    XCTAssertEqual(updates.first?.unmetAppVersion, "9.0.0")
+  }
+
+  func testAvailableUpdatesLeavesCompatibleReleaseUnflagged() {
+    ExtensionEnvironment.appVersion = "1.5.0"
+    let index = makeIndex([makeEntry(id: "sample", version: "2.0.0", minAppVersion: "1.4.0")])
+    let updates = ExtensionRegistry.availableUpdates(
+      index: index,
+      installed: [makeInstalled(id: "sample", version: "1.0.0")]
+    )
+
+    XCTAssertEqual(updates.count, 1)
+    XCTAssertNil(updates.first?.unmetAppVersion)
   }
 
   func testAvailableUpdatesSkipsEqualOrOlder() {
@@ -242,6 +256,41 @@ final class ExtensionCoreTests: XCTestCase {
     // Only equal or older releases means nothing to update
     try seedCachedIndex(makeIndex([makeEntry(id: "sample", version: "1.0.0")]))
     XCTAssertFalse(ExtensionRegistry.hasCachedUpdates)
+  }
+
+  // MARK: - ExtensionEntry.featured
+
+  func testFeaturedDefaultsToNilWhenAbsent() throws {
+    let json = """
+    {
+      "id": "a",
+      "name": "A",
+      "description": "",
+      "author": "",
+      "homepage": "",
+      "category": "extension",
+      "latest": { "version": "1.0.0", "url": "https://example.com/a.js", "sha256": "abc" }
+    }
+    """
+    let entry = try JSONDecoder().decode(ExtensionEntry.self, from: Data(json.utf8))
+    XCTAssertNil(entry.featured)
+  }
+
+  func testFeaturedDecodesWhenPresent() throws {
+    let json = """
+    {
+      "id": "a",
+      "name": "A",
+      "description": "",
+      "author": "",
+      "homepage": "",
+      "category": "extension",
+      "featured": true,
+      "latest": { "version": "1.0.0", "url": "https://example.com/a.js", "sha256": "abc" }
+    }
+    """
+    let entry = try JSONDecoder().decode(ExtensionEntry.self, from: Data(json.utf8))
+    XCTAssertTrue(try XCTUnwrap(entry.featured))
   }
 
   // MARK: - ExtensionIndex.isSupported
@@ -410,6 +459,7 @@ private extension ExtensionCoreTests {
       category: .extension,
       colorScheme: nil,
       colorPatterns: nil,
+      featured: nil,
       latest: makeRelease(version: version, minAppVersion: minAppVersion)
     )
   }

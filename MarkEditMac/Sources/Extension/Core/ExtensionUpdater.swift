@@ -22,25 +22,29 @@ enum ExtensionUpdater {
   ///
   /// - Parameter explicitly: force a refresh and bypass the prompt cadence.
   static func checkForUpdates(explicitly: Bool = false) async {
-    // Refresh cache first; nil means no usable index.
+    // Refresh cache first; nil means no usable index
     guard let index = await ExtensionRegistry.refresh(force: explicitly) else {
       return
     }
 
-    // A refreshed index may change what's outdated, let app-level UI (the menu-bar hint) refresh.
-    NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
+    // A refreshed index may change what's outdated, let app-level UI (the menu-bar hint) refresh
+    requestMenuUpdate()
 
-    // Prompt cadence is tracked separately.
+    // Prompt cadence is tracked separately
     guard explicitly || ExtensionRegistry.shouldPromptUpdates else {
       return
     }
 
-    let updates = ExtensionRegistry.availableUpdates(index: index)
+    // Updates needing a newer app are surfaced in the window only
+    let updates = ExtensionRegistry.availableUpdates(index: index).filter {
+      $0.unmetAppVersion == nil
+    }
+
     guard !updates.isEmpty else {
       return
     }
 
-    // Only advance the prompt cadence when something is actually surfaced.
+    // Only advance the prompt cadence when something is actually surfaced
     switch ExtensionConfig.updateBehavior {
     case .never, .quiet:
       break // Surfaced only in the Extensions window
@@ -52,6 +56,10 @@ enum ExtensionUpdater {
       await apply(updates: updates, promptRelaunch: false)
     }
   }
+
+  static func requestMenuUpdate() {
+    NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
+  }
 }
 
 // MARK: - Private
@@ -59,14 +67,16 @@ enum ExtensionUpdater {
 private extension ExtensionUpdater {
   static func presentPrompt(updates: [ExtensionUpdate]) async {
     let lines = updates.map { update in
-      "• \(update.entry.name) (\(update.installed.version ?? "?") → \(update.entry.latest.version))"
+      "**• \(update.entry.name)** _(\(update.installed.version ?? Localized.Extension.local.lowercased()) → \(update.entry.latest.version))_"
     }
 
     let alert = NSAlert()
     alert.messageText = Localized.Extension.updatesAvailableTitle
-    alert.informativeText = lines.joined(separator: "\n")
     alert.addButton(withTitle: Localized.Extension.updateButton)
     alert.addButton(withTitle: Localized.Extension.laterButton)
+
+    alert.markdownContentWidth = 280
+    alert.markdownBody = lines.joined(separator: "\n\n") + "\n"
 
     guard alert.runModal() == .alertFirstButtonReturn else {
       return
@@ -86,7 +96,7 @@ private extension ExtensionUpdater {
 
     for update in updates {
       do {
-        // Preserve the previous enabled state.
+        // Preserve the previous enabled state
         let merged = try await ExtensionDownloader.downloadUpdate(
           for: update.installed,
           entry: update.entry
@@ -100,8 +110,12 @@ private extension ExtensionUpdater {
       }
     }
 
-    if didUpdate && promptRelaunch {
-      presentRelaunch()
+    if didUpdate {
+      requestMenuUpdate()
+
+      if promptRelaunch {
+        presentRelaunch()
+      }
     }
 
     return failures
@@ -111,18 +125,9 @@ private extension ExtensionUpdater {
     let alert = NSAlert()
     alert.messageText = Localized.Extension.failedTitle
     alert.informativeText = failures
-      .map { "• \($0.name) - \(failureReason($0.error))" }
-      .joined(separator: "\n")
+      .map { "• \($0.name) - \(Localized.Extension.failureMessage(for: $0.error))" }
+      .joined(separator: "\n\n") + "\n"
     alert.runModal()
-  }
-
-  /// A user-facing reason for a failed install, mirroring the single-install path.
-  static func failureReason(_ error: Error) -> String {
-    if case ExtensionDownloader.Failure.incompatible(let minAppVersion) = error {
-      return String(format: Localized.Extension.incompatibleFormat, minAppVersion)
-    }
-
-    return Localized.Extension.failedMessage
   }
 
   static func presentRelaunch() {

@@ -1,4 +1,5 @@
-import { ChangeSpec } from '@codemirror/state';
+import { ChangeSpec, Transaction } from '@codemirror/state';
+import { isComposing } from '../../common/store';
 import { getEditorText } from '../../core';
 
 /**
@@ -13,6 +14,11 @@ export default function formatContent(
   trimTrailingWhitespace: boolean,
   userInitiated: boolean,
 ) {
+  // Editing the document during a composition breaks the composing text
+  if (isComposing()) {
+    return false;
+  }
+
   const editor = window.editor;
   const state = editor.state;
 
@@ -20,6 +26,7 @@ export default function formatContent(
     editor.dispatch({
       changes,
       userEvent: '@none', // Ignore automatic scrolling
+      annotations: Transaction.addToHistory.of(userInitiated),
     });
   };
 

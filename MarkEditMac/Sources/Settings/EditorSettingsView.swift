@@ -6,10 +6,10 @@
 //
 
 import AppKit
-import AppKitExtensions
 import SwiftUI
 import FontPicker
 import SettingsUI
+import SharedUI
 import ExtensionCore
 import MarkEditCore
 import MarkEditKit
@@ -218,7 +218,7 @@ private extension EditorSettingsView {
   }
 
   func getCustomThemes(selection: Binding<String>, revertTo value: String) {
-    ExtensionsWindowController.shared.present(scrollTo: .theme)
+    ExtensionsWindowController.shared.present(scrollTo: .category(.theme))
     NSApp.windows.forEach {
       if $0.contentViewController is SettingsRootViewController {
         $0.close()

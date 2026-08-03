@@ -17,7 +17,7 @@ import { TextEditor } from './editor';
 import { Translator } from './translation';
 import { languageModel } from './languageModel';
 
-import { onAppReady, onEditorReady, saveDocument, closeDocument, addExtension, addMarkdownConfig, addCodeLanguage, runtimeInfo, terminateApp, relaunchApp } from './methods';
+import { onAppReady, onEditorReady, saveDocument, closeDocument, addExtension, addMarkdownConfig, addCodeLanguage, overrideHTMLLanguage, runtimeInfo, terminateApp, relaunchApp } from './methods';
 import { addMainMenuItem, showContextMenu, showAlert, showTextBox, showSavePanel, runService } from './ui';
 import { openFile, createFile, deleteFile, moveFile, revealFile, listFiles, getFileContent, getFileObject, getFileInfo, getDirectoryPath } from './files';
 import { getPasteboardItems, getPasteboardString } from './pasteboard';
@@ -59,6 +59,7 @@ export function initMarkEditModules() {
   MarkEdit.addExtension = addExtension;
   MarkEdit.addMarkdownConfig = addMarkdownConfig;
   MarkEdit.addCodeLanguage = addCodeLanguage;
+  MarkEdit.overrideHTMLLanguage = overrideHTMLLanguage;
   MarkEdit.addMainMenuItem = addMainMenuItem;
   MarkEdit.showContextMenu = showContextMenu;
   MarkEdit.showAlert = showAlert;
@@ -115,14 +116,26 @@ export function initMarkEditModules() {
 }
 
 export function initThemeExtractors() {
-  type Theme = cmState.Extension & {
+  type Extension = cmState.Extension;
+  type Theme = Extension & {
     value?: {
       rules?: string[];
       specs?: cmLanguage.TagStyle[];
     };
   };
 
+  function flattenThemes(node: Extension): Extension[] {
+    if (Array.isArray(node)) {
+      return node.flatMap(flattenThemes);
+    } else if ('extension' in node && node.extension !== node) {
+      return flattenThemes(node.extension);
+    } else {
+      return [node];
+    }
+  }
+
   // Private methods used in MarkEdit-theming to stably extract theme properties
   window.__extractStyleRules__ = (theme: Theme) => theme.value?.rules;
   window.__extractHighlightSpecs__ = (theme: Theme) => theme.value?.specs;
+  window.__flattenThemeExtensions__ = flattenThemes;
 }

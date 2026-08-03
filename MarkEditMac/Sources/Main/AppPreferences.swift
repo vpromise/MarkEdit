@@ -267,6 +267,7 @@ extension FontStyle {
 extension AppPreferences {
   static func editorConfig(theme: String) -> EditorConfig {
     EditorConfig(
+      host: .mainApp,
       text: "",
       theme: theme,
       fontFace: Editor.fontStyle.webFontFace,
@@ -304,6 +305,7 @@ extension AppPreferences {
       // Runtime config from settings.json, not dynamically changeable
       autoCharacterPairs: AppRuntimeConfig.autoCharacterPairs,
       indentBehavior: AppRuntimeConfig.indentBehavior,
+      undoGroupingInterval: AppRuntimeConfig.undoGroupingInterval,
       headerFontSizeDiffs: AppRuntimeConfig.headerFontSizeDiffs,
       visibleWhitespaceCharacter: AppRuntimeConfig.visibleWhitespaceCharacter,
       visibleLineBreakCharacter: AppRuntimeConfig.visibleLineBreakCharacter,
@@ -344,7 +346,7 @@ extension AppPreferences.Window {
 
 // MARK: - Types
 
-enum Appearance: Codable {
+enum Appearance: String, CompactCodableEnum {
   case system
   case light
   case dark
@@ -361,7 +363,7 @@ enum Appearance: Codable {
   }
 }
 
-enum IndentUnit: Codable {
+enum IndentUnit: String, CompactCodableEnum {
   case twoSpaces
   case fourSpaces
   case oneTab
@@ -381,7 +383,7 @@ enum IndentUnit: Codable {
   }
 }
 
-enum LineHeight: Codable {
+enum LineHeight: String, CompactCodableEnum {
   case tight
   case normal
   case relaxed
@@ -398,7 +400,7 @@ enum LineHeight: Codable {
   }
 }
 
-enum NewWindowBehavior: Codable {
+enum NewWindowBehavior: String, CompactCodableEnum {
   case openDocument
   case newDocument
 }
@@ -424,7 +426,7 @@ enum NewFilenameExtension: String, Codable, CaseIterable {
   }
 }
 
-enum ToolbarMode: Codable {
+enum ToolbarMode: String, CompactCodableEnum {
   case normal
   case compact
   case hidden

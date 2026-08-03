@@ -22,13 +22,43 @@ protocol ExtensionsPresenting: AnyObject {
 /// Backing state for the Extensions window.
 ///
 /// The filesystem (via `ExtensionConfig`) and the registry (via `ExtensionRegistry`) are the
-/// source of truth; this model flattens both into view-ready `Item` values for the two modes.
+/// source of truth; this model flattens both into view-ready `Item` values for its modes.
 @MainActor
 @Observable
 final class ExtensionsModel {
-  enum Mode: Hashable {
-    case installed
-    case discover
+  enum Mode: Int, CaseIterable {
+    case discover = 0
+    case installed = 1
+    case updates = 2
+
+    /// Both installed and updates are backed by the local extensions list, not the Discover registry.
+    var isLocalList: Bool {
+      self == .installed || self == .updates
+    }
+
+    var title: String {
+      switch self {
+      case .discover: return Localized.Extension.discover
+      case .installed: return Localized.Extension.installed
+      case .updates: return Localized.Extension.updates
+      }
+    }
+
+    var icon: String {
+      switch self {
+      case .discover: return Icons.sparkles
+      case .installed: return Icons.shippingbox
+      case .updates: return Icons.arrowDownCircle
+      }
+    }
+
+    var emptyMessage: String {
+      switch self {
+      case .discover: return Localized.Extension.emptyDiscover
+      case .installed: return Localized.Extension.emptyInstalled
+      case .updates: return Localized.Extension.emptyUpdates
+      }
+    }
   }
 
   enum Phase: Equatable {
@@ -37,7 +67,7 @@ final class ExtensionsModel {
     case failed
   }
 
-  /// A flattened, view-ready extension for either mode.
+  /// A flattened, view-ready extension for any mode.
   struct Item: Identifiable, Equatable {
     let id: String
     let name: String
@@ -48,6 +78,9 @@ final class ExtensionsModel {
     let isEnabled: Bool
     let isInstalled: Bool
     let updateVersion: String?
+
+    /// The app version needed, set only when this app is too old for the update.
+    let unmetAppVersion: String?
 
     // Backing values used to perform actions
     let installed: ExtensionConfig.Installed?
@@ -73,14 +106,47 @@ final class ExtensionsModel {
       author.caseInsensitiveCompare("MarkEdit-app") == .orderedSame
     }
 
+    /// Whether the registry marks this as a featured (recommended) entry.
+    var isFeatured: Bool {
+      entry?.featured ?? false
+    }
+
     /// An installed extension with no tracked version, a local script not from the registry.
     var isLocal: Bool {
       isInstalled && version == nil
     }
 
+    /// A local script with no registry entry and no source url, only its file name is meaningful.
+    var isUntracked: Bool {
+      isLocal && entry == nil && installed?.url == nil
+    }
+
+    /// Row title, the registry name or the local file path for untracked scripts.
+    var displayName: String {
+      if isUntracked, let file = installed?.file, !file.isEmpty {
+        return "Documents ‣ scripts ‣ \(file)"
+      }
+
+      return name
+    }
+
     /// A browsable page for the latest release (release or tag page), when known.
     var latestReleaseURL: URL? {
       entry?.latest.pageURL
+    }
+
+    /// Release notes for the latest release.
+    var updateNotes: String? {
+      entry?.latest.notes
+    }
+
+    /// The latest release url, only when it points to a GitHub release page.
+    var releasePageURL: URL? {
+      guard let url = latestReleaseURL, url.host() == "github.com", url.path().contains("/releases/tag/") else {
+        return nil
+      }
+
+      return url
     }
 
     /// Whether the item matches a search query, by name, author, id, or details.
@@ -91,6 +157,7 @@ final class ExtensionsModel {
 
   var mode: Mode = .discover
   var phase: Phase = .loading
+  var hasLoadedIndex = false
   var pendingRelaunch = false
   var isBusy = false
 
@@ -103,15 +170,25 @@ final class ExtensionsModel {
   /// A whole-page progress message shown over the (emptied) list during Refresh or Update All.
   var loadingMessage: String?
 
+  /// Determinate progress (completed, total) for a multi-extension "Update All"; nil shows an indeterminate spinner.
+  var updateProgress: (completed: Int, total: Int)?
+
   /// The item currently running an install/update, used to show a per-item spinner.
   var busyItemID: String?
 
-  private var installedItems: [Item] = []
-  private var discoverItems: [Item] = []
+  /// The item to flash, typically after revealing it from a deep link.
+  var highlightedItemID: String?
 
-  /// Items for the current mode, filtered by the search query.
+  private var discoverItems: [Item] = []
+  private var installedItems: [Item] = []
+
+  /// Items for the current mode, filtered to updatable extensions in the Updates mode and by the search query.
   var items: [Item] {
-    let base = mode == .installed ? installedItems : discoverItems
+    var base = mode.isLocalList ? installedItems : discoverItems
+    if mode == .updates {
+      base = base.filter { $0.updateVersion != nil }
+    }
+
     let query = searchQuery.trimmingCharacters(in: .whitespacesAndNewlines)
     guard !query.isEmpty else {
       return base
@@ -120,18 +197,34 @@ final class ExtensionsModel {
     return base.filter { $0.matches(query: query) }
   }
 
-  /// Item counts per mode, surfaced as segmented-control tooltips.
-  var discoverCount: Int { discoverItems.count }
-  var installedCount: Int { installedItems.count }
+  /// Reordering applies only to the full installed list (the injection order), not filtered
+  /// subsets like Updates or search, where a drag would persist a partial order.
+  var canReorderItems: Bool {
+    mode == .installed && searchQuery.isEmpty
+  }
+
+  /// Number of installed extensions with a newer release available.
+  var availableUpdateCount: Int {
+    installedItems.count { $0.updateVersion != nil }
+  }
+
+  /// Updates this app version can actually install.
+  var installableUpdateCount: Int {
+    installedItems.count { $0.updateVersion != nil && $0.unmetAppVersion == nil }
+  }
 
   /// The latest item for `id`, so a cell can read live state instead of a stale snapshot.
   func liveItem(id: String) -> Item? {
     items.first { $0.id == id }
   }
 
-  /// Number of installed extensions with a newer release available.
-  var availableUpdateCount: Int {
-    installedItems.count { $0.updateVersion != nil }
+  /// Item count for `mode`, surfaced as the segment tooltip.
+  func count(for mode: Mode) -> Int {
+    switch mode {
+    case .discover: return discoverItems.count
+    case .installed: return installedItems.count
+    case .updates: return availableUpdateCount
+    }
   }
 }
 
@@ -152,8 +245,8 @@ extension ExtensionsModel {
     rebuildItems(index: index)
     phase = index == nil ? .failed : .ready
 
-    // A fresh index may surface or clear updates, let the menu-bar hint refresh.
-    NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
+    // A fresh index may surface or clear updates, let the menu-bar hint refresh
+    ExtensionUpdater.requestMenuUpdate()
   }
 }
 
@@ -209,7 +302,8 @@ extension ExtensionsModel {
   /// Updates every installed extension that has a newer release.
   func updateAllExtensions() async {
     let updatable = installedItems.compactMap { item -> (ExtensionConfig.Installed, ExtensionEntry)? in
-      guard let installed = item.installed, let entry = item.entry, item.updateVersion != nil else {
+      guard let installed = item.installed, let entry = item.entry,
+            item.updateVersion != nil, item.unmetAppVersion == nil else {
         return nil
       }
 
@@ -220,16 +314,32 @@ extension ExtensionsModel {
       return
     }
 
-    // Continue past per-item failures so one bad extension doesn't abort the batch.
+    // Show determinate progress when more than one extension is being updated
+    let total = updatable.count
+    let tracksProgress = total > 1
+
+    // Continue past per-item failures so one bad extension doesn't abort the batch
     var failures: [Error] = []
     await runBusyAction {
-      for (installed, entry) in updatable {
+      // Set here (not before), so a re-entrant call doesn't flash a stale 0/total
+      if tracksProgress {
+        updateProgress = (0, total)
+      }
+
+      for (index, (installed, entry)) in updatable.enumerated() {
         do {
           let merged = try await ExtensionDownloader.downloadUpdate(for: installed, entry: entry)
           ExtensionConfig.upsertInstalled(merged)
         } catch {
           Logger.log(.error, "Failed to update extension \(installed.id): \(error)")
           failures.append(error)
+        }
+
+        if tracksProgress {
+          updateProgress = (index + 1, total)
+          if total < 10 {
+            try? await Task.sleep(for: Constants.progressStepDelay)
+          }
         }
       }
     }
@@ -270,18 +380,24 @@ extension ExtensionsModel {
 private extension ExtensionsModel {
   enum Constants {
     /// Minimum time the busy spinner stays visible so a fast action doesn't flash.
-    static let minimumBusyDuration: TimeInterval = 1.5
+    static let minimumBusyDuration: TimeInterval = 1.2
     /// Brief settle so the swapped-in control renders before the spinner clears.
     static let busyRenderDelay: Duration = .milliseconds(50)
+    /// Extra dwell after each "Update All" step so the count ticks up at a readable pace.
+    static let progressStepDelay: Duration = .milliseconds(400)
   }
 
   /// Rebuilds both lists; `installed` is injectable so the mapping can be tested in isolation.
   func rebuildItems(index: ExtensionIndex?, installed: [ExtensionConfig.Installed] = ExtensionConfig.installed) {
+    if index != nil {
+      hasLoadedIndex = true
+    }
+
     let entries = index?.extensions ?? []
     let entryByID = Dictionary(entries.map { ($0.id, $0) }) { lhs, _ in lhs }
 
     let updates = index.map { ExtensionRegistry.availableUpdates(index: $0, installed: installed) } ?? []
-    let updateByID = Dictionary(updates.map { ($0.installed.id, $0.entry.latest.version) }) { lhs, _ in lhs }
+    let updateByID = Dictionary(updates.map { ($0.installed.id, $0) }) { lhs, _ in lhs }
 
     installedItems = extensionsFirst(installed.map { installed in
       let entry = entryByID[installed.id]
@@ -294,14 +410,15 @@ private extension ExtensionsModel {
         version: installed.version,
         isEnabled: installed.enabled != false,
         isInstalled: true,
-        updateVersion: updateByID[installed.id],
+        updateVersion: updateByID[installed.id]?.entry.latest.version,
+        unmetAppVersion: updateByID[installed.id]?.unmetAppVersion,
         installed: installed,
         entry: entry
       )
     })
 
     let installedByID = Dictionary(installed.map { ($0.id, $0) }) { lhs, _ in lhs }
-    discoverItems = extensionsFirst(entries.map { entry in
+    discoverItems = discoverOrder(entries.map { entry in
       let installed = installedByID[entry.id]
       return Item(
         id: entry.id,
@@ -312,7 +429,8 @@ private extension ExtensionsModel {
         version: entry.latest.version,
         isEnabled: installed?.enabled != false,
         isInstalled: installed != nil,
-        updateVersion: updateByID[entry.id],
+        updateVersion: updateByID[entry.id]?.entry.latest.version,
+        unmetAppVersion: updateByID[entry.id]?.unmetAppVersion,
         installed: installed,
         entry: entry
       )
@@ -322,6 +440,15 @@ private extension ExtensionsModel {
   /// Extensions first, then themes, preserving each group's original order.
   func extensionsFirst(_ items: [Item]) -> [Item] {
     items.filter { $0.category == .extension } + items.filter { $0.category != .extension }
+  }
+
+  /// Discover order: extensions before themes, featured floated to the top of each group.
+  func discoverOrder(_ items: [Item]) -> [Item] {
+    let featuredFirst: ([Item]) -> [Item] = { items in
+      items.filter { $0.isFeatured } + items.filter { !$0.isFeatured }
+    }
+
+    return extensionsFirst(featuredFirst(items))
   }
 
   /// Runs a mutating action in the busy state (ignoring re-entrant calls), keeping the spinner briefly visible and reporting failures.
@@ -350,7 +477,7 @@ private extension ExtensionsModel {
       markChanged()
       try? await Task.sleep(for: Constants.busyRenderDelay)
     } catch is CancellationError {
-      // Cancelled (e.g. the window closed mid-action); not a user-facing failure.
+      // Cancelled (e.g. the window closed mid-action); not a user-facing failure
     } catch {
       Logger.log(.error, "Extension action failed: \(error)")
       await presenter?.reportFailure(error)
@@ -361,6 +488,6 @@ private extension ExtensionsModel {
   func markChanged() {
     pendingRelaunch = true
     rebuildItems(index: ExtensionRegistry.cachedIndex)
-    NotificationCenter.default.post(name: .extensionsMenuNeedsUpdate, object: nil)
+    ExtensionUpdater.requestMenuUpdate()
   }
 }

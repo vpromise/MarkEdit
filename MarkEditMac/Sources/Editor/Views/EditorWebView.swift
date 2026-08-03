@@ -21,6 +21,8 @@ enum WKContextMenuItemTag: Int {
   case showFonts = 41
   case defaultDirection = 52
   case textDirectionDefault = 59
+  case playAllAnimations = 84
+  case pauseAllAnimations = 85
   case copyLinkWithHighlight = 102
 
   /**
@@ -70,8 +72,7 @@ final class EditorWebView: WKWebView {
 
   override func performKeyEquivalent(with event: NSEvent) -> Bool {
     // Silence the incorrect "beep" in WebKit
-    if event.modifierFlags.contains([.control, .command]),
-       event.keyCode == .kVK_LeftArrow || event.keyCode == .kVK_RightArrow {
+    if event.modifierFlags.contains([.control, .command]), arrowKeyCodes.contains(event.keyCode) {
       // Event will be handled in CoreEditor instead
       return false
     }
@@ -85,18 +86,7 @@ final class EditorWebView: WKWebView {
     }
 
     menu.items = menu.items.filter { item in
-      // Remove "Download Image"
-      if item.tag == WKContextMenuItemTag.downloadImage.rawValue {
-        return false
-      }
-
-      // Remove "Reload"
-      if item.tag == WKContextMenuItemTag.reload.rawValue {
-        return false
-      }
-
-      // Remove "Copy Link with Highlight"
-      if item.tag == WKContextMenuItemTag.copyLinkWithHighlight.rawValue {
+      if hiddenMenuTags.contains(item.tag) {
         return false
       }
 
@@ -132,8 +122,8 @@ final class EditorWebView: WKWebView {
     )
 
     if AppDesign.menuIconEvolution {
-      findSelectionItem.image = NSImage(systemSymbolName: "text.page.badge.magnifyingglass", accessibilityDescription: nil)
-      selectAllOccurrencesItem.image = NSImage(systemSymbolName: "selection.pin.in.out", accessibilityDescription: nil)
+      findSelectionItem.image = NSImage(systemSymbolName: "text.page.badge.magnifyingglass")
+      selectAllOccurrencesItem.image = NSImage(systemSymbolName: "selection.pin.in.out")
     }
 
     // Only add text format items when it's not read-only
@@ -143,7 +133,7 @@ final class EditorWebView: WKWebView {
       item.submenu = NSApp.appDelegate?.textFormatMenu?.copiedMenu
 
       if AppDesign.menuIconEvolution {
-        item.image = NSImage(systemSymbolName: "bold.italic.underline", accessibilityDescription: nil)
+        item.image = NSImage(systemSymbolName: "bold.italic.underline")
       }
 
       menu.addItem(item)
@@ -216,7 +206,7 @@ private extension EditorWebView {
           item.keyEquivalentModifierMask = [.option, .command]
 
           if AppDesign.menuIconEvolution {
-            item.image = NSImage(systemSymbolName: "ladybug", accessibilityDescription: nil)
+            item.image = NSImage(systemSymbolName: "ladybug")
           }
         }
 
@@ -269,3 +259,22 @@ private extension NSUserInterfaceItemIdentifier {
   static let shareMenu = Self("WKMenuItemIdentifierShareMenu")
   static let inspectElement = Self("WKMenuItemIdentifierInspectElement")
 }
+
+private let arrowKeyCodes: [UInt16] = [
+  .kVK_LeftArrow,
+  .kVK_RightArrow,
+  .kVK_DownArrow,
+  .kVK_UpArrow,
+]
+
+private let hiddenMenuTags: Set<Int> = {
+  let tags: [WKContextMenuItemTag] = [
+    .downloadImage,
+    .reload,
+    .playAllAnimations,
+    .pauseAllAnimations,
+    .copyLinkWithHighlight,
+  ]
+
+  return Set(tags.map(\.rawValue))
+}()

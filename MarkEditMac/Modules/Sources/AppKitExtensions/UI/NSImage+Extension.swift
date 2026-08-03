@@ -5,9 +5,12 @@
 //
 
 import AppKit
-import SwiftUI
 
 public extension NSImage {
+  convenience init?(systemSymbolName: String) {
+    self.init(systemSymbolName: systemSymbolName, accessibilityDescription: nil)
+  }
+
   static func with(
     symbolName: String,
     pointSize: Double,
@@ -44,23 +47,5 @@ public extension NSImage {
     }
 
     perform(sel_getUid("_setTintColor:"), with: tintColor)
-  }
-}
-
-public extension Image {
-  static func alwaysVisibleSymbol(named symbolName: String) -> Self {
-    guard #available(macOS 27.0, *) else {
-      return Self(systemName: symbolName)
-    }
-
-    guard let image = NSImage(systemSymbolName: symbolName, accessibilityDescription: nil) else {
-      assertionFailure("Failed to create image with symbol \"\(symbolName)\"")
-      return Self(systemName: symbolName)
-    }
-
-    // [macOS 27] FB23544345 SwiftUI lack of support for preferred image visibility
-    let redrawn = image.resized(with: image.size)
-    redrawn.isTemplate = true
-    return Self(nsImage: redrawn)
   }
 }

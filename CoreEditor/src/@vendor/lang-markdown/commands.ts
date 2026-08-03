@@ -116,6 +116,8 @@ export const insertNewlineContinueMarkupCommand = (config: {
     let emptyLine = pos >= (inner.to - inner.spaceAfter.length) && !/\S/.test(line.text.slice(inner.to))
     // Empty line in list
     if (inner.item && emptyLine) {
+      if (inner.item.from < line.from && !/^[\s>]*$/.test(line.text.slice(0, inner.to)))
+        return dont = {range}
       let first = inner.node.firstChild!, second = inner.node.getChild("ListItem", "ListItem")
       // Not second item or blank line before: delete a level of markup
       if (first.to >= pos || second && second.to < pos ||
@@ -164,7 +166,7 @@ export const insertNewlineContinueMarkupCommand = (config: {
     let from = pos
     while (from > line.from && /\s/.test(line.text.charAt(from - line.from - 1))) from--
     insert = normalizeIndent(insert, state)
-    if (nonTightList(inner.node, state.doc)) insert = blankLine(context, state, line) + state.lineBreak + insert
+    if (config.nonTightLists !== false && nonTightList(inner.node, state.doc)) insert = blankLine(context, state, line) + state.lineBreak + insert
     changes.push({from, to: pos, insert: state.lineBreak + insert})
     return {range: EditorSelection.cursor(from + insert.length + 1), changes}
   })
@@ -256,7 +258,7 @@ export const deleteMarkupBackward: StateCommand = ({state, dispatch}) => {
             // Only apply this if we're on the line that has the
             // construct's syntax, or there's only indentation in the
             // target range
-            (!inner.item || line.from <= inner.item.from || !/\S/.test(line.text.slice(0, inner.to)))) {
+            ((inner.item && line.from <= inner.item.from) || /^[\s>]*$/.test(line.text.slice(0, inner.to)))) {
           let start = line.from + inner.from
           // Replace a list item marker with blank space
           if (inner.item && inner.node.from < inner.item.from && /\S/.test(line.text.slice(inner.from, inner.to))) {

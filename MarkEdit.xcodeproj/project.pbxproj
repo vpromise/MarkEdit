@@ -19,7 +19,6 @@
 		870A51BC294702AF0095C7EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A51B7294702AF0095C7EB /* AppDelegate.swift */; };
 		870A51BD294702AF0095C7EB /* EditorDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A51B8294702AF0095C7EB /* EditorDocument.swift */; };
 		870A51C9294752530095C7EB /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 870A51C8294752530095C7EB /* index.html */; };
-		870C59C72EC61261003882BD /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 870C59C62EC61261003882BD /* Localizable.xcstrings */; };
 		870F17662984D2C000003DA7 /* EditorViewController+LineEndings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870F17652984D2C000003DA7 /* EditorViewController+LineEndings.swift */; };
 		870F17682985285B00003DA7 /* EditorViewController+Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870F17672985285B00003DA7 /* EditorViewController+Config.swift */; };
 		870F177D29855CA500003DA7 /* MarkEditKit in Frameworks */ = {isa = PBXBuildFile; productRef = 870F177C29855CA500003DA7 /* MarkEditKit */; };
@@ -28,23 +27,20 @@
 		870F17922985775B00003DA7 /* Previewer in Frameworks */ = {isa = PBXBuildFile; productRef = 870F17912985775B00003DA7 /* Previewer */; };
 		870F17962985775B00003DA7 /* SettingsUI in Frameworks */ = {isa = PBXBuildFile; productRef = 870F17952985775B00003DA7 /* SettingsUI */; };
 		87132AA32C188FE900FD262B /* AppShortcuts.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 87132AA22C188FE900FD262B /* AppShortcuts.xcstrings */; };
-		87152BA12EC599CA00B39F06 /* FinderExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 87152B9A2EC599CA00B39F06 /* FinderExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		87152BAC2EC599DD00B39F06 /* FinderTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87152BA92EC599DD00B39F06 /* FinderTools.swift */; };
 		871C995B2973F1E6003FF3A7 /* AppDelegate+Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871C995A2973F1E6003FF3A7 /* AppDelegate+Document.swift */; };
 		871C995D2973F20E003FF3A7 /* AppDelegate+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871C995C2973F20E003FF3A7 /* AppDelegate+Menu.swift */; };
 		8723B46929C0A6EA0013D5D5 /* EvaluateJavaScriptIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8723B46829C0A6EA0013D5D5 /* EvaluateJavaScriptIntent.swift */; };
 		8725E0802977EEB3006A4961 /* EditorToolbarItems.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8725E07F2977EEB3006A4961 /* EditorToolbarItems.swift */; };
 		8725E0822977EF46006A4961 /* EditorViewController+Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8725E0812977EF46006A4961 /* EditorViewController+Toolbar.swift */; };
-		872924062951525C007156B1 /* PreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872924052951525C007156B1 /* PreviewViewController.swift */; };
+		872924062951525C007156B1 /* QuickLookViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872924052951525C007156B1 /* QuickLookViewController.swift */; };
 		8729240B2951525C007156B1 /* Main.xib in Resources */ = {isa = PBXBuildFile; fileRef = 872924092951525C007156B1 /* Main.xib */; };
-		872924102951525C007156B1 /* PreviewExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 872924002951525C007156B1 /* PreviewExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		872924102951525C007156B1 /* QuickLookExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 872924002951525C007156B1 /* QuickLookExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8729C5A6294B5E6B006F262B /* EditorViewController+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8729C5A5294B5E6B006F262B /* EditorViewController+Menu.swift */; };
 		872E5FC0300918FA00D34792 /* ExtensionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 872E5FBF300918FA00D34792 /* ExtensionsViewController.swift */; };
 		873126E4297BAC9C001521A0 /* EditorViewController+Pandoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873126E3297BAC9C001521A0 /* EditorViewController+Pandoc.swift */; };
 		873ACD4729644E2F00431498 /* EditorViewController+Encoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873ACD4629644E2F00431498 /* EditorViewController+Encoding.swift */; };
 		873D6402295FCC3E0095DEF7 /* AppResources.swift in Sources */ = {isa = PBXBuildFile; fileRef = 873D6401295FCC3E0095DEF7 /* AppResources.swift */; };
 		874065792BB505F500B5CE5A /* EditorViewController+Events.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874065782BB505F500B5CE5A /* EditorViewController+Events.swift */; };
-		874788622C85E11D00ECF05B /* EditorChunkLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874788612C85E11D00ECF05B /* EditorChunkLoader.swift */; };
 		874823CE29B0BD980067EC49 /* TextCompletion in Frameworks */ = {isa = PBXBuildFile; productRef = 874823CD29B0BD980067EC49 /* TextCompletion */; };
 		874AAE2E2959F197000E0E84 /* EditorReplacePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874AAE2D2959F197000E0E84 /* EditorReplacePanel.swift */; };
 		874BE6F429BB37FA002F83BA /* IntentProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 874BE6F329BB37FA002F83BA /* IntentProvider.swift */; };
@@ -59,7 +55,6 @@
 		87585FE32DA3EC7A0053069E /* NSColor+Scripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87585FDF2DA3EC7A0053069E /* NSColor+Scripting.swift */; };
 		87585FE42DA3EC7A0053069E /* Error+Scripting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87585FE02DA3EC7A0053069E /* Error+Scripting.swift */; };
 		8763C3202F92574D00A3841D /* EditorHistoryStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8763C31E2F92574900A3841D /* EditorHistoryStorage.swift */; };
-		876578FA2993853500A1388A /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 876578F92993853500A1388A /* index.html */; };
 		8765FD252AF28F1000C645A8 /* AppUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8765FD242AF28F1000C645A8 /* AppUpdater.swift */; };
 		8765FD292AF291D300C645A8 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8765FD282AF291D300C645A8 /* AppVersion.swift */; };
 		8767BBAF295A8BA500BFACAE /* EditorViewController+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8767BBAE295A8BA500BFACAE /* EditorViewController+UI.swift */; };
@@ -81,10 +76,10 @@
 		8790ABD42A98F5F40083825C /* EditorViewController+Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8790ABD32A98F5F40083825C /* EditorViewController+Statistics.swift */; };
 		8790ABDB2A98FF610083825C /* Statistics in Frameworks */ = {isa = PBXBuildFile; productRef = 8790ABDA2A98FF610083825C /* Statistics */; };
 		8790B6EC297036B2000DFC1A /* EditorWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8790B6EB297036B2000DFC1A /* EditorWindow.swift */; };
-		8794A0632FC52551005CCC73 /* PreviewViewWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A0612FC5254E005CCC73 /* PreviewViewWebView.swift */; };
-		8794A06C2FC525E2005CCC73 /* PreviewViewConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A06A2FC525DF005CCC73 /* PreviewViewConfig.swift */; };
-		8794A0832FC53BCC005CCC73 /* PreviewViewController+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A0822FC53BCB005CCC73 /* PreviewViewController+UI.swift */; };
-		8794A08C2FC53C28005CCC73 /* PreviewViewController+Dragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A08A2FC53C26005CCC73 /* PreviewViewController+Dragging.swift */; };
+		8794A0632FC52551005CCC73 /* QuickLookWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A0612FC5254E005CCC73 /* QuickLookWebView.swift */; };
+		8794A06C2FC525E2005CCC73 /* QuickLookConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A06A2FC525DF005CCC73 /* QuickLookConfig.swift */; };
+		8794A0832FC53BCC005CCC73 /* QuickLookViewController+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A0822FC53BCB005CCC73 /* QuickLookViewController+UI.swift */; };
+		8794A08C2FC53C28005CCC73 /* QuickLookViewController+Dragging.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8794A08A2FC53C26005CCC73 /* QuickLookViewController+Dragging.swift */; };
 		879715C92D11548C0069964D /* EditorSaveOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 879715C82D11547F0069964D /* EditorSaveOptionsView.swift */; };
 		87A73AB3294C4B27006A710E /* EditorWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A73AB2294C4B27006A710E /* EditorWebView.swift */; };
 		87A73AB5294C4B48006A710E /* EditorFindPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87A73AB4294C4B48006A710E /* EditorFindPanel.swift */; };
@@ -93,8 +88,8 @@
 		87AAEDF7295825D800C8E61C /* EditorFindPanel+Delegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AAEDF6295825D800C8E61C /* EditorFindPanel+Delegate.swift */; };
 		87AAEDF929582C2700C8E61C /* EditorFindPanel+Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AAEDF829582C2700C8E61C /* EditorFindPanel+Menu.swift */; };
 		87AAEE0229585ADC00C8E61C /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87AAEE0129585ADC00C8E61C /* AppPreferences.swift */; };
-		87ACA65C2C858AF4008E24BA /* chunks in Resources */ = {isa = PBXBuildFile; fileRef = 87ACA65B2C858AF4008E24BA /* chunks */; };
 		87ACB6942BD8CA8400CE6F9E /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87ACB6932BD8CA8400CE6F9E /* Application.swift */; };
+		87B0D1022F1A4C0100B0D101 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 87B0D1012F1A4C0100B0D101 /* Localizable.xcstrings */; };
 		87B3ED5A2CBCA97D001FA6CE /* AppDocumentController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B3ED592CBCA97D001FA6CE /* AppDocumentController.swift */; };
 		87B3ED5D2CBCADD6001FA6CE /* NSDocumentController+Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87B3ED5C2CBCADD6001FA6CE /* NSDocumentController+Extras.swift */; };
 		87B3ED8F2CBE1E12001FA6CE /* DiffKit in Frameworks */ = {isa = PBXBuildFile; productRef = 87B3ED8E2CBE1E12001FA6CE /* DiffKit */; };
@@ -128,19 +123,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		87152B9F2EC599CA00B39F06 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 870A519A294700DE0095C7EB /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 87152B992EC599CA00B39F06;
-			remoteInfo = FinderExtension;
-		};
 		8729240E2951525C007156B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 870A519A294700DE0095C7EB /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 872923FF2951525C007156B1;
-			remoteInfo = PreviewExtension;
+			remoteInfo = QuickLookMac;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -151,8 +139,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				872924102951525C007156B1 /* PreviewExtension.appex in Embed Foundation Extensions */,
-				87152BA12EC599CA00B39F06 /* FinderExtension.appex in Embed Foundation Extensions */,
+				872924102951525C007156B1 /* QuickLookExtension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -174,23 +161,18 @@
 		870A51B8294702AF0095C7EB /* EditorDocument.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorDocument.swift; sourceTree = "<group>"; };
 		870A51BE294702FD0095C7EB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		870A51C8294752530095C7EB /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = CoreEditor/dist/index.html; sourceTree = SOURCE_ROOT; };
-		870C59C62EC61261003882BD /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		870F17652984D2C000003DA7 /* EditorViewController+LineEndings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+LineEndings.swift"; sourceTree = "<group>"; };
 		870F17672985285B00003DA7 /* EditorViewController+Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+Config.swift"; sourceTree = "<group>"; };
 		870F17752985546500003DA7 /* MarkEditCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = MarkEditCore; sourceTree = "<group>"; };
 		870F178C2985774D00003DA7 /* Modules */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Modules; sourceTree = "<group>"; };
 		87132AA22C188FE900FD262B /* AppShortcuts.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = AppShortcuts.xcstrings; sourceTree = "<group>"; };
-		87152B9A2EC599CA00B39F06 /* FinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = FinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		87152BA92EC599DD00B39F06 /* FinderTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinderTools.swift; sourceTree = "<group>"; };
-		87152BAA2EC599DD00B39F06 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		87152BD22EC59C7900B39F06 /* Info.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Info.entitlements; sourceTree = "<group>"; };
 		871C995A2973F1E6003FF3A7 /* AppDelegate+Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Document.swift"; sourceTree = "<group>"; };
 		871C995C2973F20E003FF3A7 /* AppDelegate+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+Menu.swift"; sourceTree = "<group>"; };
 		8723B46829C0A6EA0013D5D5 /* EvaluateJavaScriptIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EvaluateJavaScriptIntent.swift; sourceTree = "<group>"; };
 		8725E07F2977EEB3006A4961 /* EditorToolbarItems.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorToolbarItems.swift; sourceTree = "<group>"; };
 		8725E0812977EF46006A4961 /* EditorViewController+Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+Toolbar.swift"; sourceTree = "<group>"; };
-		872924002951525C007156B1 /* PreviewExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PreviewExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		872924052951525C007156B1 /* PreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewController.swift; sourceTree = "<group>"; };
+		872924002951525C007156B1 /* QuickLookExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = QuickLookExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		872924052951525C007156B1 /* QuickLookViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookViewController.swift; sourceTree = "<group>"; };
 		8729240A2951525C007156B1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Main.xib; sourceTree = "<group>"; };
 		8729240C2951525C007156B1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8729240D2951525C007156B1 /* Info.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Info.entitlements; sourceTree = "<group>"; };
@@ -201,7 +183,6 @@
 		873D6401295FCC3E0095DEF7 /* AppResources.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppResources.swift; sourceTree = "<group>"; };
 		874065782BB505F500B5CE5A /* EditorViewController+Events.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+Events.swift"; sourceTree = "<group>"; };
 		8743B26229593B2000F83DAE /* Build.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Build.xcconfig; sourceTree = "<group>"; };
-		874788612C85E11D00ECF05B /* EditorChunkLoader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditorChunkLoader.swift; sourceTree = "<group>"; };
 		874AAE2D2959F197000E0E84 /* EditorReplacePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorReplacePanel.swift; sourceTree = "<group>"; };
 		874BE6F329BB37FA002F83BA /* IntentProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentProvider.swift; sourceTree = "<group>"; };
 		874BE6F629BB57AC002F83BA /* IntentError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentError.swift; sourceTree = "<group>"; };
@@ -217,7 +198,6 @@
 		87585FDF2DA3EC7A0053069E /* NSColor+Scripting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSColor+Scripting.swift"; sourceTree = "<group>"; };
 		87585FE02DA3EC7A0053069E /* Error+Scripting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Error+Scripting.swift"; sourceTree = "<group>"; };
 		8763C31E2F92574900A3841D /* EditorHistoryStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorHistoryStorage.swift; sourceTree = "<group>"; };
-		876578F92993853500A1388A /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = "CoreEditor/src/@light/dist/index.html"; sourceTree = SOURCE_ROOT; };
 		8765FD242AF28F1000C645A8 /* AppUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppUpdater.swift; sourceTree = "<group>"; };
 		8765FD282AF291D300C645A8 /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		8767BBAE295A8BA500BFACAE /* EditorViewController+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+UI.swift"; sourceTree = "<group>"; };
@@ -237,10 +217,10 @@
 		878B7B992CE0DA7D00220F39 /* EditorViewController+FileVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+FileVersion.swift"; sourceTree = "<group>"; };
 		8790ABD32A98F5F40083825C /* EditorViewController+Statistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+Statistics.swift"; sourceTree = "<group>"; };
 		8790B6EB297036B2000DFC1A /* EditorWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWindow.swift; sourceTree = "<group>"; };
-		8794A0612FC5254E005CCC73 /* PreviewViewWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewWebView.swift; sourceTree = "<group>"; };
-		8794A06A2FC525DF005CCC73 /* PreviewViewConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewViewConfig.swift; sourceTree = "<group>"; };
-		8794A0822FC53BCB005CCC73 /* PreviewViewController+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewViewController+UI.swift"; sourceTree = "<group>"; };
-		8794A08A2FC53C26005CCC73 /* PreviewViewController+Dragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PreviewViewController+Dragging.swift"; sourceTree = "<group>"; };
+		8794A0612FC5254E005CCC73 /* QuickLookWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookWebView.swift; sourceTree = "<group>"; };
+		8794A06A2FC525DF005CCC73 /* QuickLookConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookConfig.swift; sourceTree = "<group>"; };
+		8794A0822FC53BCB005CCC73 /* QuickLookViewController+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuickLookViewController+UI.swift"; sourceTree = "<group>"; };
+		8794A08A2FC53C26005CCC73 /* QuickLookViewController+Dragging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "QuickLookViewController+Dragging.swift"; sourceTree = "<group>"; };
 		879715C82D11547F0069964D /* EditorSaveOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSaveOptionsView.swift; sourceTree = "<group>"; };
 		87A73AB2294C4B27006A710E /* EditorWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorWebView.swift; sourceTree = "<group>"; };
 		87A73AB4294C4B48006A710E /* EditorFindPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorFindPanel.swift; sourceTree = "<group>"; };
@@ -249,8 +229,8 @@
 		87AAEDF6295825D800C8E61C /* EditorFindPanel+Delegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorFindPanel+Delegate.swift"; sourceTree = "<group>"; };
 		87AAEDF829582C2700C8E61C /* EditorFindPanel+Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorFindPanel+Menu.swift"; sourceTree = "<group>"; };
 		87AAEE0129585ADC00C8E61C /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
-		87ACA65B2C858AF4008E24BA /* chunks */ = {isa = PBXFileReference; lastKnownFileType = folder; name = chunks; path = CoreEditor/dist/chunks; sourceTree = SOURCE_ROOT; };
 		87ACB6932BD8CA8400CE6F9E /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
+		87B0D1012F1A4C0100B0D101 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		87B3ED592CBCA97D001FA6CE /* AppDocumentController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDocumentController.swift; sourceTree = "<group>"; };
 		87B3ED5C2CBCADD6001FA6CE /* NSDocumentController+Extras.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSDocumentController+Extras.swift"; sourceTree = "<group>"; };
 		87BB5A292E929BA700A17C14 /* AppExceptionCatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppExceptionCatcher.swift; sourceTree = "<group>"; };
@@ -301,13 +281,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		87152B972EC599CA00B39F06 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		872923FD2951525C007156B1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -326,8 +299,7 @@
 				87C3CBFA29545944002A3436 /* MarkEditKit */,
 				87BFF238298AAC75006C31E4 /* MarkEditTools */,
 				870A51A4294700DE0095C7EB /* MarkEditMac */,
-				872924042951525C007156B1 /* PreviewExtension */,
-				87152BAB2EC599DD00B39F06 /* FinderExtension */,
+				872924042951525C007156B1 /* QuickLookMac */,
 				870A51A3294700DE0095C7EB /* Products */,
 				874823CC29B0BD980067EC49 /* Frameworks */,
 				8743B26229593B2000F83DAE /* Build.xcconfig */,
@@ -342,8 +314,7 @@
 			isa = PBXGroup;
 			children = (
 				870A51A2294700DE0095C7EB /* MarkEdit.app */,
-				872924002951525C007156B1 /* PreviewExtension.appex */,
-				87152B9A2EC599CA00B39F06 /* FinderExtension.appex */,
+				872924002951525C007156B1 /* QuickLookExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -373,7 +344,6 @@
 		870A51C229470D5C0095C7EB /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				87ACA65B2C858AF4008E24BA /* chunks */,
 				870A51C8294752530095C7EB /* index.html */,
 				870A51A9294700E00095C7EB /* Assets.xcassets */,
 				876D70862E7A8E9D00E308A4 /* AppIcon.icon */,
@@ -389,7 +359,6 @@
 				87A73AAB294C3788006A710E /* Models */,
 				87A73AB1294C4B0A006A710E /* Views */,
 				8767BBAC295A893200BFACAE /* Controllers */,
-				874788612C85E11D00ECF05B /* EditorChunkLoader.swift */,
 				8790B6EB297036B2000DFC1A /* EditorWindow.swift */,
 				870A51B5294702AF0095C7EB /* EditorWindowController.swift */,
 				8763C31E2F92574900A3841D /* EditorHistoryStorage.swift */,
@@ -415,16 +384,6 @@
 			path = Sources;
 			sourceTree = "<group>";
 		};
-		870C59782EC5B337003882BD /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				87152BAA2EC599DD00B39F06 /* Info.plist */,
-				87152BD22EC59C7900B39F06 /* Info.entitlements */,
-				870C59C62EC61261003882BD /* Localizable.xcstrings */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
 		870F1797298577A000003DA7 /* Panels */ = {
 			isa = PBXGroup;
 			children = (
@@ -432,15 +391,6 @@
 				87AAEDF12958244D00C8E61C /* Replace */,
 			);
 			path = Panels;
-			sourceTree = "<group>";
-		};
-		87152BAB2EC599DD00B39F06 /* FinderExtension */ = {
-			isa = PBXGroup;
-			children = (
-				87152BA92EC599DD00B39F06 /* FinderTools.swift */,
-				870C59782EC5B337003882BD /* Supporting Files */,
-			);
-			path = FinderExtension;
 			sourceTree = "<group>";
 		};
 		871C99592973F1C2003FF3A7 /* Application */ = {
@@ -456,17 +406,16 @@
 			path = Application;
 			sourceTree = "<group>";
 		};
-		872924042951525C007156B1 /* PreviewExtension */ = {
+		872924042951525C007156B1 /* QuickLookMac */ = {
 			isa = PBXGroup;
 			children = (
-				872924052951525C007156B1 /* PreviewViewController.swift */,
-				8794A0822FC53BCB005CCC73 /* PreviewViewController+UI.swift */,
-				8794A08A2FC53C26005CCC73 /* PreviewViewController+Dragging.swift */,
-				8794A06A2FC525DF005CCC73 /* PreviewViewConfig.swift */,
-				8794A0612FC5254E005CCC73 /* PreviewViewWebView.swift */,
+				879FCC6E30184C1A00B46145 /* Extensions */,
+				8794A0612FC5254E005CCC73 /* QuickLookWebView.swift */,
+				872924052951525C007156B1 /* QuickLookViewController.swift */,
+				8794A06A2FC525DF005CCC73 /* QuickLookConfig.swift */,
 				872924262951A134007156B1 /* Supporting Files */,
 			);
-			path = PreviewExtension;
+			path = QuickLookMac;
 			sourceTree = "<group>";
 		};
 		872924262951A134007156B1 /* Supporting Files */ = {
@@ -475,7 +424,7 @@
 				8729240C2951525C007156B1 /* Info.plist */,
 				8729240D2951525C007156B1 /* Info.entitlements */,
 				872924092951525C007156B1 /* Main.xib */,
-				876578F92993853500A1388A /* index.html */,
+				87B0D1012F1A4C0100B0D101 /* Localizable.xcstrings */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -622,6 +571,15 @@
 			path = Extras;
 			sourceTree = "<group>";
 		};
+		879FCC6E30184C1A00B46145 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				8794A0822FC53BCB005CCC73 /* QuickLookViewController+UI.swift */,
+				8794A08A2FC53C26005CCC73 /* QuickLookViewController+Dragging.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
 		87A35DF830026B720079CF08 /* Extension */ = {
 			isa = PBXGroup;
 			children = (
@@ -687,7 +645,6 @@
 			dependencies = (
 				87BFF24E298AB754006C31E4 /* PBXTargetDependency */,
 				8729240F2951525C007156B1 /* PBXTargetDependency */,
-				87152BA02EC599CA00B39F06 /* PBXTargetDependency */,
 			);
 			name = MarkEditMac;
 			packageProductDependencies = (
@@ -709,28 +666,9 @@
 			productReference = 870A51A2294700DE0095C7EB /* MarkEdit.app */;
 			productType = "com.apple.product-type.application";
 		};
-		87152B992EC599CA00B39F06 /* FinderExtension */ = {
+		872923FF2951525C007156B1 /* QuickLookMac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 87152BA52EC599CA00B39F06 /* Build configuration list for PBXNativeTarget "FinderExtension" */;
-			buildPhases = (
-				87152B962EC599CA00B39F06 /* Sources */,
-				87152B972EC599CA00B39F06 /* Frameworks */,
-				87152B982EC599CA00B39F06 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = FinderExtension;
-			packageProductDependencies = (
-			);
-			productName = FinderExtension;
-			productReference = 87152B9A2EC599CA00B39F06 /* FinderExtension.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
-		872923FF2951525C007156B1 /* PreviewExtension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 872924142951525C007156B1 /* Build configuration list for PBXNativeTarget "PreviewExtension" */;
+			buildConfigurationList = 872924142951525C007156B1 /* Build configuration list for PBXNativeTarget "QuickLookMac" */;
 			buildPhases = (
 				87D71F7000000000000000A2 /* Check Entitlements Drift */,
 				872923FC2951525C007156B1 /* Sources */,
@@ -741,12 +679,12 @@
 			);
 			dependencies = (
 			);
-			name = PreviewExtension;
+			name = QuickLookMac;
 			packageProductDependencies = (
 				87EB9900295755DA00A56B97 /* MarkEditCore */,
 			);
-			productName = PreviewExtension;
-			productReference = 872924002951525C007156B1 /* PreviewExtension.appex */;
+			productName = QuickLookMac;
+			productReference = 872924002951525C007156B1 /* QuickLookExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -762,9 +700,6 @@
 					870A51A1294700DE0095C7EB = {
 						CreatedOnToolsVersion = 14.1;
 						LastSwiftMigration = 1410;
-					};
-					87152B992EC599CA00B39F06 = {
-						CreatedOnToolsVersion = 26.1.1;
 					};
 					872923FF2951525C007156B1 = {
 						CreatedOnToolsVersion = 14.1;
@@ -787,8 +722,7 @@
 			projectRoot = "";
 			targets = (
 				870A51A1294700DE0095C7EB /* MarkEditMac */,
-				872923FF2951525C007156B1 /* PreviewExtension */,
-				87152B992EC599CA00B39F06 /* FinderExtension */,
+				872923FF2951525C007156B1 /* QuickLookMac */,
 			);
 		};
 /* End PBXProject section */
@@ -798,7 +732,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				87ACA65C2C858AF4008E24BA /* chunks in Resources */,
 				870A51C9294752530095C7EB /* index.html in Resources */,
 				87132AA32C188FE900FD262B /* AppShortcuts.xcstrings in Resources */,
 				870A51AA294700E00095C7EB /* Assets.xcassets in Resources */,
@@ -809,20 +742,12 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		87152B982EC599CA00B39F06 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				870C59C72EC61261003882BD /* Localizable.xcstrings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		872923FE2951525C007156B1 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				8729240B2951525C007156B1 /* Main.xib in Resources */,
-				876578FA2993853500A1388A /* index.html in Resources */,
+				87B0D1022F1A4C0100B0D101 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -859,8 +784,8 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/PreviewExtension/Info.entitlements",
-				"$(SRCROOT)/PreviewExtension/Info.local.entitlements",
+				"$(SRCROOT)/QuickLookMac/Info.entitlements",
+				"$(SRCROOT)/QuickLookMac/Info.local.entitlements",
 			);
 			name = "Check Entitlements Drift";
 			outputFileListPaths = (
@@ -928,7 +853,6 @@
 				87DE081B294DDA49004AD33A /* AppTheme.swift in Sources */,
 				870F17682985285B00003DA7 /* EditorViewController+Config.swift in Sources */,
 				8780AC1C29829EDD00065EF4 /* GeneralSettingsView.swift in Sources */,
-				874788622C85E11D00ECF05B /* EditorChunkLoader.swift in Sources */,
 				EE100008EEEE000000000008 /* ExtensionInstaller.swift in Sources */,
 				EE10000AEEEE00000000000A /* ExtensionUpdater.swift in Sources */,
 				EE10000CEEEE00000000000C /* ExtensionsModel.swift in Sources */,
@@ -966,37 +890,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		87152B962EC599CA00B39F06 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				87152BAC2EC599DD00B39F06 /* FinderTools.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		872923FC2951525C007156B1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				872924062951525C007156B1 /* PreviewViewController.swift in Sources */,
-				8794A0632FC52551005CCC73 /* PreviewViewWebView.swift in Sources */,
-				8794A08C2FC53C28005CCC73 /* PreviewViewController+Dragging.swift in Sources */,
-				8794A0832FC53BCC005CCC73 /* PreviewViewController+UI.swift in Sources */,
-				8794A06C2FC525E2005CCC73 /* PreviewViewConfig.swift in Sources */,
+				872924062951525C007156B1 /* QuickLookViewController.swift in Sources */,
+				8794A0632FC52551005CCC73 /* QuickLookWebView.swift in Sources */,
+				8794A08C2FC53C28005CCC73 /* QuickLookViewController+Dragging.swift in Sources */,
+				8794A0832FC53BCC005CCC73 /* QuickLookViewController+UI.swift in Sources */,
+				8794A06C2FC525E2005CCC73 /* QuickLookConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		87152BA02EC599CA00B39F06 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 87152B992EC599CA00B39F06 /* FinderExtension */;
-			targetProxy = 87152B9F2EC599CA00B39F06 /* PBXContainerItemProxy */;
-		};
 		8729240F2951525C007156B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 872923FF2951525C007156B1 /* PreviewExtension */;
+			target = 872923FF2951525C007156B1 /* QuickLookMac */;
 			targetProxy = 8729240E2951525C007156B1 /* PBXContainerItemProxy */;
 		};
 		87BFF24E298AB754006C31E4 /* PBXTargetDependency */ = {
@@ -1237,102 +1148,11 @@
 			};
 			name = Release;
 		};
-		87152BA22EC599CA00B39F06 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8743B26229593B2000F83DAE /* Build.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = FinderExtension/Info.entitlements;
-				CODE_SIGN_IDENTITY = "$(inherited)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = "$(inherited)";
-				DEVELOPMENT_TEAM = "$(inherited)";
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = FinderExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MarkEdit;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).finder-extension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		87152BA32EC599CA00B39F06 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8743B26229593B2000F83DAE /* Build.xcconfig */;
-			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = FinderExtension/Info.entitlements;
-				CODE_SIGN_IDENTITY = "$(inherited)";
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = "$(inherited)";
-				DEVELOPMENT_TEAM = "$(inherited)";
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = FinderExtension/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = MarkEdit;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-					"@executable_path/../../../../Frameworks",
-				);
-				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).finder-extension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 		872924122951525C007156B1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8743B26229593B2000F83DAE /* Build.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(PREVIEWEXTENSION_ENTITLEMENTS)";
+				CODE_SIGN_ENTITLEMENTS = "$(QUICKLOOKMAC_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(inherited)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(inherited)";
@@ -1340,7 +1160,7 @@
 				DEVELOPMENT_TEAM = "$(inherited)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PreviewExtension/Info.plist;
+				INFOPLIST_FILE = QuickLookMac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MarkEdit;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1350,8 +1170,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).preview-extension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).quicklook-extension";
+				PRODUCT_NAME = QuickLookExtension;
 				REGISTER_APP_GROUPS = "$(inherited)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1363,7 +1183,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8743B26229593B2000F83DAE /* Build.xcconfig */;
 			buildSettings = {
-				CODE_SIGN_ENTITLEMENTS = "$(PREVIEWEXTENSION_ENTITLEMENTS)";
+				CODE_SIGN_ENTITLEMENTS = "$(QUICKLOOKMAC_ENTITLEMENTS)";
 				CODE_SIGN_IDENTITY = "$(inherited)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(inherited)";
@@ -1371,7 +1191,7 @@
 				DEVELOPMENT_TEAM = "$(inherited)";
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PreviewExtension/Info.plist;
+				INFOPLIST_FILE = QuickLookMac/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MarkEdit;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1381,8 +1201,8 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = "$(inherited)";
-				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).preview-extension";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "$(inherited).quicklook-extension";
+				PRODUCT_NAME = QuickLookExtension;
 				REGISTER_APP_GROUPS = "$(inherited)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1411,16 +1231,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		87152BA52EC599CA00B39F06 /* Build configuration list for PBXNativeTarget "FinderExtension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				87152BA22EC599CA00B39F06 /* Debug */,
-				87152BA32EC599CA00B39F06 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		872924142951525C007156B1 /* Build configuration list for PBXNativeTarget "PreviewExtension" */ = {
+		872924142951525C007156B1 /* Build configuration list for PBXNativeTarget "QuickLookMac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				872924122951525C007156B1 /* Debug */,

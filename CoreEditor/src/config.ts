@@ -4,6 +4,15 @@ import { WebFontFace } from './@types/WebFontFace';
 
 /**
  * @shouldExport true
+ * @overrideModuleName EditorHost
+ */
+export enum Host {
+  mainApp = 'mainApp',
+  quicklook = 'quicklook',
+}
+
+/**
+ * @shouldExport true
  * @overrideModuleName EditorLocalizable
  */
 export interface Localizable {
@@ -47,6 +56,7 @@ export enum IndentBehavior {
  * @overrideModuleName EditorConfig
  */
 export interface Config {
+  host: Host;
   text: string;
   theme: string; // MarkEdit-theming relies on this, add a fallback if renaming becomes necessary
   fontFace: WebFontFace;
@@ -69,6 +79,7 @@ export interface Config {
   // Runtime config from settings.json, not dynamically changeable
   autoCharacterPairs: boolean;
   indentBehavior: IndentBehavior;
+  undoGroupingInterval?: number;
   headerFontSizeDiffs?: number[];
   visibleWhitespaceCharacter?: string;
   visibleLineBreakCharacter?: string;
