@@ -12,7 +12,7 @@ import os.log
 ///
 /// E.g., image-loader://Image.png
 public final class EditorImageLoader: NSObject, WKURLSchemeHandler {
-  public static let scheme = "image-loader"
+  public static let scheme = imageLoaderScheme
   private let getBaseURL: () -> URL?
 
   public init(getBaseURL: @escaping () -> URL?) {
@@ -30,8 +30,10 @@ public final class EditorImageLoader: NSObject, WKURLSchemeHandler {
       return os_logger.log(level: .error, "Invalid baseURL")
     }
 
-    let fileName = url.absoluteString.replacingOccurrences(of: "\(Self.scheme)://", with: "")
-    let fileURL = baseURL.appending(path: fileName.removingPercentEncoding ?? fileName, directoryHint: .notDirectory)
+    guard let fileURL = Self.fileURL(for: url, relativeTo: baseURL) else {
+      urlSchemeTask.didFailWithError(URLError(.badURL))
+      return assertionFailure("Invalid image loader URL")
+    }
 
     if let fileData = try? Data(contentsOf: fileURL) {
       let response = URLResponse(
@@ -65,6 +67,28 @@ public final class EditorImageLoader: NSObject, WKURLSchemeHandler {
   public func webView(_ webView: WKWebView, stop urlSchemeTask: WKURLSchemeTask) {
     // no-op
   }
+
+  nonisolated static func fileURL(for url: URL, relativeTo baseURL: URL) -> URL? {
+    let prefix = "\(imageLoaderScheme)://"
+    guard url.absoluteString.hasPrefix(prefix) else {
+      return nil
+    }
+
+    let encodedPath = url.absoluteString.dropFirst(prefix.count)
+    let pathEnd = encodedPath.firstIndex { $0 == "?" || $0 == "#" } ?? encodedPath.endIndex
+    let rawPath = String(encodedPath[..<pathEnd])
+    let path = rawPath.removingPercentEncoding ?? rawPath
+    guard !path.isEmpty else {
+      return nil
+    }
+
+    if path.hasPrefix("/") {
+      return URL(filePath: path, directoryHint: .notDirectory)
+    }
+
+    return baseURL.appending(path: path, directoryHint: .notDirectory)
+  }
 }
 
+private let imageLoaderScheme = "image-loader"
 private let os_logger = os.Logger()

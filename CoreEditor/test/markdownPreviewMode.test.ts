@@ -30,7 +30,9 @@ describe('Markdown preview mode', () => {
     expect(rewriteImageSource('/Volumes/Data/image.png')).toBe('image-loader:///Volumes/Data/image.png');
     expect(rewriteImageSource('/docs/image.png')).toBe('/docs/image.png');
     expect(rewriteImageSource('https://example.com/image.png')).toBe('https://example.com/image.png');
-    expect(rewriteImageSource('file:///Users/example/image.png')).toBe('file:///Users/example/image.png');
+    expect(rewriteImageSource('file:///Users/example/image.png')).toBe('image-loader:///Users/example/image.png');
+    expect(rewriteImageSource('file:///Users/example/a%20b.png?raw=1#preview')).toBe('image-loader:///Users/example/a%20b.png?raw=1#preview');
+    expect(rewriteImageSource('file://server/share/image.png')).toBe('file://server/share/image.png');
     expect(rewriteImageSource('data:image/png;base64,AAAA')).toBe('data:image/png;base64,AAAA');
   });
 

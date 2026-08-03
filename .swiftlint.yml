@@ -1,5 +1,5 @@
 excluded:
-  - MarkEditMac/Modules/.build
+  - "**/.build"
   - MarkEditKit/Sources/Bridge/Native/Generated
   - "**/resource_bundle_accessor.swift"
 

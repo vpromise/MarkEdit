@@ -41,7 +41,15 @@ export function resetMarkdownPreviewMode() {
 
 export function rewriteImageSource(source: string): string {
   const trimmed = source.trim();
-  if (trimmed === '' || trimmed.startsWith('#') || trimmed.startsWith('//') || absoluteSchemePattern.test(trimmed)) {
+  if (trimmed === '' || trimmed.startsWith('#') || trimmed.startsWith('//')) {
+    return source;
+  }
+
+  if (trimmed.toLowerCase().startsWith('file:')) {
+    return rewriteFileImageSource(trimmed) ?? source;
+  }
+
+  if (absoluteSchemePattern.test(trimmed)) {
     return source;
   }
 
@@ -50,6 +58,19 @@ export function rewriteImageSource(source: string): string {
   }
 
   return `${imageLoaderScheme}${trimmed}`;
+}
+
+function rewriteFileImageSource(source: string): string | undefined {
+  try {
+    const url = new URL(source);
+    if (url.protocol !== 'file:' || (url.hostname !== '' && url.hostname !== 'localhost')) {
+      return undefined;
+    }
+
+    return `${imageLoaderScheme}${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return undefined;
+  }
 }
 
 function showMarkdownPreview(markdownText?: string): boolean {
@@ -64,8 +85,7 @@ function showMarkdownPreview(markdownText?: string): boolean {
   const scrollRatio = scrollTopRatio(editor.scrollDOM);
 
   container.innerHTML = renderMarkdown(markdownText ?? editor.state.doc.toString());
-  applyHeadingAnchors(container);
-  rewriteLocalImageSources(container);
+  prepareMarkdownPreview(container);
   void renderMermaidDiagrams(container, editor.state.facet(EditorView.darkTheme) ? 'dark' : 'default');
   container.hidden = false;
 
@@ -127,6 +147,11 @@ function previewContainer(parent: Element, before: Element) {
   parent.insertBefore(container, before);
   storage.container = container;
   return container;
+}
+
+export function prepareMarkdownPreview(container: HTMLElement) {
+  applyHeadingAnchors(container);
+  rewriteLocalImageSources(container);
 }
 
 function applyHeadingAnchors(container: HTMLElement) {

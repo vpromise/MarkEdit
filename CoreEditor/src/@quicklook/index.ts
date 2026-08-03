@@ -2,7 +2,7 @@ import { Config } from '../config';
 import { setEditorColors } from '../styling/config';
 import { renderMarkdown } from '../modules/markdown/markdownRenderer';
 import { renderMermaidDiagrams } from '../modules/markdown/mermaidRenderer';
-import { rewriteImageSource } from '../modules/markdown/previewMode';
+import { handlePreviewLinkClick, prepareMarkdownPreview } from '../modules/markdown/previewMode';
 import { enablePinchZoom, PinchZoomTarget } from './zoom';
 
 import GitHubLight from '../styling/themes/github-light';
@@ -29,7 +29,8 @@ export function setUpQuickLook(config: Config) {
   const preview = document.createElement('article');
   preview.className = 'markdown-preview';
   preview.innerHTML = renderMarkdown(config.text);
-  rewriteLocalImageSources(preview);
+  prepareMarkdownPreview(preview);
+  preview.addEventListener('click', handleInternalPreviewLink);
   parent.replaceChildren(preview);
 
   const colorSchemeQuery = matchMedia('(prefers-color-scheme: dark)');
@@ -46,10 +47,14 @@ export function setUpQuickLook(config: Config) {
   window.scrollTo({ top: 0, left: 0 });
 }
 
-function rewriteLocalImageSources(container: HTMLElement) {
-  container.querySelectorAll<HTMLImageElement>('img[src]').forEach(image => {
-    image.setAttribute('src', rewriteImageSource(image.getAttribute('src') ?? ''));
-  });
+function handleInternalPreviewLink(event: MouseEvent) {
+  const anchor = (event.target as HTMLElement | null)?.closest<HTMLAnchorElement>('a[href^="#"]');
+  if (anchor === null || anchor === undefined) {
+    return;
+  }
+
+  event.preventDefault();
+  handlePreviewLinkClick(anchor.getAttribute('href') ?? '');
 }
 
 /**
