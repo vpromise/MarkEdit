@@ -312,7 +312,7 @@ extension EditorViewController {
 
   @discardableResult
   func removePresentedPopovers(contentClass: AnyClass) -> Bool {
-    guard let presented = presentedViewControllers?.filter({ $0.isKind(of: contentClass) }) else {
+    guard let presented = (presentedViewControllers?.filter { $0.isKind(of: contentClass) }) else {
       return false
     }
 
@@ -344,7 +344,7 @@ extension EditorViewController {
   }
 
   func resetUserDefinedMenuItems() {
-    guard view.window?.isKeyWindow == true else {
+    guard isViewLoaded, view.window?.isKeyWindow == true else {
       return Logger.log(.debug, "Menu items are for the key window")
     }
 

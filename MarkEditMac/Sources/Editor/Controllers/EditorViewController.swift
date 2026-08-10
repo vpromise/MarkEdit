@@ -298,7 +298,7 @@ final class EditorViewController: NSViewController {
     if completionContext.isPanelVisible {
       cancelCompletion()
     } else {
-      bridge.completion.startCompletion(afterDelay: 0)
+      bridge.completion.startCompletion()
     }
   }
 

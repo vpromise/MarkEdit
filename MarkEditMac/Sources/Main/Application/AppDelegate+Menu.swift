@@ -27,7 +27,7 @@ extension AppDelegate: NSMenuDelegate {
     case mainExtensionsMenu:
       reconfigureMainExtensionsMenu(document: currentDocument)
     case mainWindowMenu:
-      reconfigureMainWindowMenu(document: currentDocument)
+      reconfigureMainWindowMenu(window: NSApp.keyWindow)
     case openFileInMenu:
       reconfigureOpenFileInMenu(document: currentDocument)
     case reopenFileMenu:
@@ -37,6 +37,11 @@ extension AppDelegate: NSMenuDelegate {
     default:
       break
     }
+  }
+
+  func reconfigureMainWindowMenu(window: NSWindow?) {
+    windowFloatingItem?.isEnabled = window is EditorWindow
+    windowFloatingItem?.setOn(window?.level == .floating)
   }
 }
 
@@ -95,11 +100,6 @@ private extension AppDelegate {
       let isEnabled = $0.target === NSApp.appDelegate || document != nil
       $0.setEnabledRecursively(isEnabled: isEnabled)
     }
-  }
-
-  func reconfigureMainWindowMenu(document: EditorDocument?) {
-    windowFloatingItem?.isEnabled = NSApp.keyWindow is EditorWindow
-    windowFloatingItem?.setOn(NSApp.keyWindow?.level == .floating)
   }
 
   @MainActor
@@ -214,5 +214,9 @@ private extension AppDelegate {
 
   @IBAction func openVersionHistory(_ sender: Any?) {
     NSWorkspace.shared.safelyOpenURL(string: "https://github.com/MarkEdit-app/MarkEdit/releases")
+  }
+
+  @IBAction func openUpdateBehavior(_ sender: Any?) {
+    NSWorkspace.shared.safelyOpenURL(string: "https://github.com/MarkEdit-app/MarkEdit/wiki/Customization#generalupdatebehavior")
   }
 }
