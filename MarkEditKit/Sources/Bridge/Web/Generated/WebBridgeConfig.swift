@@ -137,6 +137,30 @@ public final class WebBridgeConfig {
 
     webView?.invoke(path: "webModules.config.setSuggestWhileTyping", message: message, completion: completion)
   }
+
+  public func setSmartQuotesEnabled(enabled: Bool, completion: ((Result<Void, WKWebView.InvokeError>) -> Void)? = nil) {
+    let message = BridgeMessage(
+      ("enabled", enabled)
+    )
+
+    webView?.invoke(path: "webModules.config.setSmartQuotesEnabled", message: message, completion: completion)
+  }
+
+  public func setReadingWidth(width: Double, completion: ((Result<Void, WKWebView.InvokeError>) -> Void)? = nil) {
+    let message = BridgeMessage(
+      ("width", width)
+    )
+
+    webView?.invoke(path: "webModules.config.setReadingWidth", message: message, completion: completion)
+  }
+
+  public func setEnhancedPasteEnabled(enabled: Bool, completion: ((Result<Void, WKWebView.InvokeError>) -> Void)? = nil) {
+    let message = BridgeMessage(
+      ("enabled", enabled)
+    )
+
+    webView?.invoke(path: "webModules.config.setEnhancedPasteEnabled", message: message, completion: completion)
+  }
 }
 
 public enum TabKeyBehavior: Int, Codable {

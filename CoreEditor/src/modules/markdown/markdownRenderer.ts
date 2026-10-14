@@ -1,6 +1,11 @@
 import DOMPurify from 'dompurify';
 import katex from 'katex';
 import MarkdownIt from 'markdown-it';
+import footnote from 'markdown-it-footnote';
+import taskLists from 'markdown-it-task-lists';
+import { highlightCode } from './codeHighlight';
+import { githubAlerts } from './githubAlerts';
+import { resolveTaskToggle } from './task';
 import type { Config as DOMPurifyConfig } from 'dompurify';
 import type StateBlock from 'markdown-it/lib/rules_block/state_block.mjs';
 import type StateInline from 'markdown-it/lib/rules_inline/state_inline.mjs';
@@ -21,7 +26,22 @@ const markdown = new MarkdownIt({
   html: true,
   linkify: true,
   typographer: true,
+  highlight: highlightCode,
 });
+
+markdown.use(footnote);
+markdown.use(taskLists, { enabled: false });
+markdown.use(githubAlerts);
+
+export interface TaskMarker {
+  id: string;
+  line: number;
+}
+
+export interface MarkdownRenderResult {
+  html: string;
+  tasks: TaskMarker[];
+}
 
 type MathReplacement = {
   readonly index: number;
@@ -36,6 +56,7 @@ type MathSegment = {
 type MathEnvironment = {
   readonly mathNonce: string;
   readonly mathSegments: MathSegment[];
+  readonly tasks: TaskMarker[];
 };
 
 type MathDelimiter = {
@@ -47,6 +68,22 @@ type MathDelimiter = {
 markdown.validateLink = value => isAllowedMarkdownResource(value);
 markdown.block.ruler.before('paragraph', 'markedit_math_block', mathBlockRule, { alt: ['paragraph', 'reference', 'blockquote', 'list'] });
 markdown.inline.ruler.before('escape', 'markedit_math_inline', mathInlineRule);
+markdown.core.ruler.after('github-task-lists', 'markedit_task_markers', state => {
+  const env = state.env as MathEnvironment;
+  const lines = state.src.split('\n');
+  state.tokens.forEach(token => {
+    const checkbox = token.type === 'inline' ? token.children?.[0] : undefined;
+    const line = token.map?.[0];
+    if (checkbox?.type !== 'html_inline' || !checkbox.content.startsWith('<input class="task-list-item-checkbox"')
+      || line === undefined || resolveTaskToggle(lines[line] ?? '') === null) {
+      return;
+    }
+
+    const id = `${env.mathNonce}-task-${env.tasks.length}`;
+    checkbox.content = checkbox.content.replace('<input ', `<input data-markedit-task="${id}" `);
+    env.tasks.push({ id, line });
+  });
+});
 const defaultFenceRenderer = markdown.renderer.rules.fence;
 markdown.renderer.rules.fence = (tokens, index, options, env, renderer) => {
   const token = tokens[index];
@@ -89,9 +126,13 @@ DOMPurify.addHook('uponSanitizeAttribute', (node, data) => {
 });
 
 export function renderMarkdown(markdownText: string): string {
+  return renderMarkdownResult(markdownText).html;
+}
+
+export function renderMarkdownResult(markdownText: string): MarkdownRenderResult {
   const env = createMathEnvironment();
   const sanitizedHTML = DOMPurify.sanitize(markdown.render(markdownText, env), sanitizeConfig);
-  return restoreMathSegments(sanitizedHTML, env);
+  return { html: restoreMathSegments(sanitizedHTML, env), tasks: env.tasks };
 }
 
 function fenceLanguage(info: string): string {
@@ -102,6 +143,7 @@ function createMathEnvironment(): MathEnvironment {
   return {
     mathNonce: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
     mathSegments: [],
+    tasks: [],
   };
 }
 

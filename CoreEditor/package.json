@@ -28,15 +28,21 @@
     "@lezer/lr": "^1.0.0",
     "@lezer/markdown": "^1.0.0",
     "dompurify": "^3.4.5",
+    "highlight.js": "^11.12.0",
     "katex": "^0.17.0",
     "markdown-it": "^14.1.1",
-    "mermaid": "^11.15.0"
+    "markdown-it-footnote": "^4.0.0",
+    "markdown-it-task-lists": "^2.1.1",
+    "mermaid": "^11.15.0",
+    "turndown": "^7.2.4"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.0",
     "@stylistic/eslint-plugin": "^5.5.0",
     "@types/jest": "^29.5.4",
     "@types/markdown-it": "^14.1.2",
+    "@types/markdown-it-footnote": "^3.0.4",
+    "@types/turndown": "^5.0.6",
     "@typescript-eslint/parser": "^8.46.2",
     "eslint": "^9.39.0",
     "eslint-plugin-compat": "^6.0.2",

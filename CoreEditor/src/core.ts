@@ -68,7 +68,7 @@ export async function resetEditor(
 ): Promise<boolean> {
   // Used to restore the scroll position if the document is not changed
   const previousOffset = (() => {
-    if (documentChanged) {
+    if (documentChanged || selectionRange !== undefined) {
       return undefined;
     }
 
@@ -81,7 +81,7 @@ export async function resetEditor(
   })();
 
   // Used to restore the selection if the document is not changed
-  if (!documentChanged) {
+  if (!documentChanged && selectionRange === undefined) {
     selectionRange = tryGetEditor()?.state.selection.main;
   }
 
@@ -89,6 +89,9 @@ export async function resetEditor(
   const initialDoc = normalizeLineBreaks(initialContent, lineBreak);
   const initialSelection = normalizeSelection(initialDoc.length, selectionRange);
   const selectionRestored = selectionRange !== undefined && (selectionRange.anchor !== 0 || selectionRange.head !== 0);
+  const initialScroll = selectionRestored && previousOffset === undefined
+    ? EditorView.scrollIntoView(initialSelection.head, caretScrollDefaults)
+    : undefined;
 
   // Honest flag, set before the view so extensions don't need an extra reconfigure pass
   editingState.hasSelection = !initialSelection.empty;
@@ -101,10 +104,7 @@ export async function resetEditor(
       extensions: extensions({ lineBreak }),
     }),
     parent: document.querySelector('#editor') ?? document.body,
-    // Initial scroll to avoid an extra transaction
-    scrollTo: (selectionRestored && previousOffset === undefined)
-      ? EditorView.scrollIntoView(initialSelection.head, caretScrollDefaults)
-      : undefined,
+    scrollTo: initialScroll,
   });
 
   const editor = window.editor;
@@ -174,6 +174,11 @@ export async function resetEditor(
   // Reconfigure, window.config might have changed
   setUp(window.config, loadTheme(window.config.theme).colors);
 
+  // Styling can change the geometry after the initial scroll restoration.
+  if (initialScroll !== undefined) {
+    editor.dispatch({ effects: initialScroll });
+  }
+
   applyReducedMotion(isMotionReduced());
   observeBackgroundColorChanges(editor.dom);
   afterDomUpdate(notifyBackgroundColor);
@@ -197,7 +202,13 @@ export async function resetEditor(
   markContentClean();
 
   // For user scripts, notify the editor is ready
-  editorReadyListeners().forEach(listener => listener(editor));
+  editorReadyListeners().forEach(listener => {
+    try {
+      listener(editor);
+    } catch (error) {
+      console.error('Editor ready listener failed:', error);
+    }
+  });
 
   // Wait for the first paint: rAF when foregrounded, setTimeout as a fallback when throttled
   await new Promise<void>(resolve => {
@@ -378,6 +389,11 @@ function fixWebKitWheelIssues(scrollDOM: HTMLElement) {
   //
   // Better to fix CodeMirror at some point.
   scrollDOM.addEventListener('mousedown', event => {
+    // Descendant clicks belong to editor content, not the scrollbar
+    if (event.target !== scrollDOM) {
+      return;
+    }
+
     const target = event.target as HTMLElement;
     const clientX = event.clientX;
     const clientWidth = target.clientWidth;

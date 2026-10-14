@@ -12,7 +12,7 @@ import MarkEditKit
 enum AppUpdater {
   private enum Constants {
     static let defaultOSVer = "1.0.0"
-    static let endpoint = "https://api.github.com/repos/MarkEdit-app/MarkEdit/releases/latest"
+    static let endpoint = "https://api.github.com/repos/vpromise/MarkEdit/releases/latest"
     static let minimumDownloadDuration: TimeInterval = 2.5
     static let decoder = {
       let decoder = JSONDecoder()
@@ -53,11 +53,10 @@ enum AppUpdater {
       return
     }
 
-    // A removed bad release may require returning to an older version
     let currentVersion = Bundle.main.shortVersionString
     Logger.assert(currentVersion != "1.0.0", "Invalid current version string")
 
-    guard version.name != currentVersion && !version.releasedToMAS else {
+    guard version.isCompatible && !version.releasedToMAS else {
       return {
         guard explicitly else {
           return

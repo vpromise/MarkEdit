@@ -43,6 +43,11 @@ enum Localized {
     static let previewButtonTitle = String(localized: "Preview", comment: "Button title for code preview")
     static let cmdClickToFollow = String(localized: "⌘-click to follow", comment: "Tooltip for links")
     static let cmdClickToToggleTodo = String(localized: "⌘-click to toggle todo", comment: "Tooltip for tasks")
+    static let copyCode = String(localized: "Copy Code", comment: "Copy a rendered code block")
+    static let copied = String(localized: "Copied", comment: "Code copied to the clipboard")
+    static let copyFailed = String(localized: "Copy Failed", comment: "Clipboard operation failed")
+    static let imagePasteFailedTitle = String(localized: "Unable to Paste Image", comment: "Image paste error title")
+    static let imagePasteFailedMessage = String(localized: "Save this document and grant access to its folder before pasting images.", comment: "Image paste error explanation")
     static let tableColumnName = String(localized: "Column", comment: "Column name for table creation")
     static let tableItemName = String(localized: "Item", comment: "Item name for table creation")
   }
@@ -145,6 +150,13 @@ enum Localized {
     static let lineWrappingLabel = String(localized: "Line Wrapping:", comment: "Label for line wrapping option")
     static let lineWrappingDescription = String(localized: "Wrap lines to editor width", comment: "Explanation for line wrapping option")
     static let lineHeight = String(localized: "Line Height:", comment: "Label for line height option")
+    static let readingWidth = String(localized: "Reading Width:", comment: "Editor and preview content width")
+    static let fullWidth = String(localized: "Full Width", comment: "Disable the reading width limit")
+    static let narrowWidth = String(localized: "Narrow (640 px)", comment: "Narrow reading width")
+    static let comfortableWidth = String(localized: "Comfortable (800 px)", comment: "Comfortable reading width")
+    static let wideWidth = String(localized: "Wide (960 px)", comment: "Wide reading width")
+    static let enhancedPaste = String(localized: "Convert rich text to Markdown and save pasted images", comment: "Enable enhanced paste")
+    static let pasting = String(localized: "Pasting:", comment: "Label for paste options")
     static let tightHeight = String(localized: "Tight", comment: "Tight line spacing")
     static let normalHeight = String(localized: "Normal", comment: "Normal line spacing")
     static let relaxedHeight = String(localized: "Relaxed", comment: "Relaxed line spacing")
@@ -328,7 +340,12 @@ extension EditorLocalizable {
       unfoldLine: Localized.Editor.unfoldLine,
       previewButtonTitle: Localized.Editor.previewButtonTitle,
       cmdClickToFollow: Localized.Editor.cmdClickToFollow,
-      cmdClickToToggleTodo: Localized.Editor.cmdClickToToggleTodo
+      cmdClickToToggleTodo: Localized.Editor.cmdClickToToggleTodo,
+      copyCodeTitle: Localized.Editor.copyCode,
+      copiedTitle: Localized.Editor.copied,
+      copyFailedTitle: Localized.Editor.copyFailed,
+      imagePasteFailedTitle: Localized.Editor.imagePasteFailedTitle,
+      imagePasteFailedMessage: Localized.Editor.imagePasteFailedMessage
     )
   }
 }

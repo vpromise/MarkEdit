@@ -77,6 +77,7 @@ final class EditorDocument: NSDocument {
   }
 
   private var autosaveDelayedTask: Task<Void, Never>?
+  private let pendingFileReads = DispatchGroup()
   private var textBundle: TextBundleWrapper?
   private var revertedDate: Date = .distantPast
   private var suggestedTextEncoding: EditorTextEncoding?
@@ -151,7 +152,8 @@ final class EditorDocument: NSDocument {
         completion?()
       }
 
-      if isOutdated || (userInitiated && needsFormatting) {
+      // Deferred formatting can remain after the editor text has been synchronized
+      if isOutdated || needsFormatting {
         updateContent(userInitiated: userInitiated, saveAction: saveAction)
       } else {
         saveAction()
@@ -243,9 +245,12 @@ extension EditorDocument {
 
   override func canClose(withDelegate delegate: Any, shouldClose shouldCloseSelector: Selector?, contextInfo: UnsafeMutableRawPointer?) {
     let isNewFile = fileURL == nil
+    let confirmsChanges = #selector(confirmsChanges(_:shouldClose:contextInfo:))
+    let canHandleConfirmation = (delegate as? NSObject)?.responds(to: confirmsChanges) == true
+
     let shouldClose: Selector? = {
-      if !isNewFile && !isTerminating && closeAlwaysConfirmsChanges {
-        return #selector(confirmsChanges(_:shouldClose:))
+      if !isNewFile && !isTerminating && closeAlwaysConfirmsChanges && canHandleConfirmation {
+        return confirmsChanges
       }
 
       return shouldCloseSelector
@@ -281,12 +286,15 @@ extension EditorDocument {
   }
 
   override func close() {
-    saveToClosedTabHistory()
-    super.close()
+    if !isTerminating {
+      saveToClosedTabHistory()
+    }
 
     if let spellDocTag {
       NSSpellChecker.shared.closeSpellDocument(withTag: spellDocTag)
     }
+
+    super.close()
   }
 
   override func writableTypes(for saveOperation: NSDocument.SaveOperationType) -> [String] {
@@ -340,6 +348,7 @@ extension EditorDocument {
 
 extension EditorDocument {
   override func read(from data: Data, ofType typeName: String) throws {
+    pendingFileReads.enter()
     DispatchQueue.global(qos: .userInitiated).async {
       let newValue = {
         if let encoding = AppDocumentController.suggestedTextEncoding {
@@ -351,6 +360,7 @@ extension EditorDocument {
       }()
 
       DispatchQueue.main.async {
+        defer { self.pendingFileReads.leave() }
         self.fileData = data
         self.stringValue = newValue
         self.hostViewController?.representedObject = self
@@ -381,17 +391,12 @@ extension EditorDocument {
     //
     // To work around this, check a flag to save the document manually.
     if !hasBeenReverted && isTerminating && hasUnautosavedChanges, let fileURL, let fileType {
-      try? writeSafely(to: fileURL, ofType: fileType, for: .autosaveAsOperation)
+      try writeSafely(to: fileURL, ofType: fileType, for: .autosaveAsOperation)
       fileModificationDate = .now // Prevent immediate presentedItemDidChange calls
+      return
     }
 
-    Task { @MainActor in
-      do {
-        try await super.autosave(withImplicitCancellability: implicitlyCancellable)
-      } catch {
-        Logger.log(.error, "Failed to autosave: \(error)")
-      }
-    }
+    try await super.autosave(withImplicitCancellability: implicitlyCancellable)
   }
 
   override func data(ofType typeName: String) throws -> Data {
@@ -539,7 +544,7 @@ extension EditorDocument: FileVersionPickerDelegate {
     }
 
     stringValue = contents
-    hostViewController?.resetEditor()
+    hostViewController?.resetEditor(resetSelection: true)
     saveContent()
   }
 
@@ -565,8 +570,15 @@ extension EditorDocument {
       return try super.write(to: url, ofType: typeName)
     }
 
-    let fileWrapper = try? textBundle?.fileWrapper(with: try data(ofType: typeName))
-    try fileWrapper?.write(to: url, originalContentsURL: nil)
+    guard let textBundle else {
+      Logger.assertFail("Missing textBundle for document: \(self)")
+      throw CocoaError(.fileWriteUnknown, userInfo: [
+        NSLocalizedDescriptionKey: "Unable to save as TextBundle, file wrapper is missing."
+      ])
+    }
+
+    let fileWrapper = try textBundle.fileWrapper(with: try data(ofType: typeName), assetsFrom: fileURL)
+    try fileWrapper.write(to: url, originalContentsURL: nil)
   }
 
   override func duplicate() throws -> NSDocument {
@@ -585,11 +597,13 @@ extension EditorDocument {
 // MARK: - Printing
 
 extension EditorDocument {
-  @IBAction override func printDocument(_ sender: Any?) {
-    guard let window = hostViewController?.view.window else {
-      return
-    }
-
+  override func print(
+    withSettings printSettings: [NSPrintInfo.AttributeKey: Any],
+    showPrintPanel: Bool,
+    delegate: Any?,
+    didPrint didPrintSelector: Selector?,
+    contextInfo: UnsafeMutableRawPointer?
+  ) {
     // Ideally we should be able to print WKWebView,
     // but it doesn't work well because of the lazily rendering strategy used in CodeMirror.
     //
@@ -597,13 +611,24 @@ extension EditorDocument {
     // we don't expect printing to be used a lot.
 
     Task { @MainActor in
+      await withCheckedContinuation { continuation in
+        pendingFileReads.notify(queue: .main) {
+          continuation.resume()
+        }
+      }
+
+      guard let info = printInfo.copy() as? NSPrintInfo else {
+        return Logger.assertFail("NSPrintInfo.copy() must return NSPrintInfo")
+      }
+
       // Alignment
-      printInfo.isHorizontallyCentered = true
-      printInfo.isVerticallyCentered = false
+      info.isHorizontallyCentered = true
+      info.isVerticallyCentered = false
+      info.dictionary().addEntries(from: printSettings)
 
       // Sizing
-      let width = printInfo.paperSize.width - printInfo.leftMargin - printInfo.rightMargin
-      let height = printInfo.paperSize.height - printInfo.topMargin - printInfo.bottomMargin
+      let width = info.paperSize.width - info.leftMargin - info.rightMargin
+      let height = info.paperSize.height - info.topMargin - info.bottomMargin
       let frame = CGRect(x: 0, y: 0, width: width, height: height)
 
       // Rendering
@@ -611,8 +636,14 @@ extension EditorDocument {
       textView.string = await hostViewController?.editorText ?? stringValue
       textView.sizeToFit()
 
-      let operation = NSPrintOperation(view: textView)
-      operation.runModal(for: window, delegate: nil, didRun: nil, contextInfo: nil)
+      let operation = NSPrintOperation(view: textView, printInfo: info)
+      operation.showsPrintPanel = showPrintPanel
+      runModalPrintOperation(
+        operation,
+        delegate: delegate,
+        didRun: didPrintSelector,
+        contextInfo: contextInfo
+      )
     }
   }
 }
@@ -678,7 +709,11 @@ private extension EditorDocument {
     bridge?.history.markContentClean()
   }
 
-  @objc func confirmsChanges(_ document: EditorDocument, shouldClose: Bool) {
+  @objc func confirmsChanges(
+    _ document: EditorDocument,
+    shouldClose: Bool,
+    contextInfo: UnsafeMutableRawPointer?
+  ) {
     guard shouldClose else {
       return // Cancelled
     }

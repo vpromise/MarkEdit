@@ -110,4 +110,16 @@ extension EditorViewController {
   func setSuggestWhileTyping(enabled: Bool) {
     bridge.config.setSuggestWhileTyping(enabled: enabled)
   }
+
+  func setSmartQuotesEnabled(enabled: Bool) {
+    bridge.config.setSmartQuotesEnabled(enabled: enabled)
+  }
+
+  func setReadingWidth(_ width: ReadingWidth) {
+    bridge.config.setReadingWidth(width: width.pixels)
+  }
+
+  func setEnhancedPasteEnabled(enabled: Bool) {
+    bridge.config.setEnhancedPasteEnabled(enabled: enabled)
+  }
 }

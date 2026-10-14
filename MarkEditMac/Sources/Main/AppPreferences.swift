@@ -146,6 +146,20 @@ enum AppPreferences {
       }
     }
 
+    @Storage(key: "editor.reading-width", defaultValue: .comfortable)
+    static var readingWidth: ReadingWidth {
+      didSet {
+        performUpdates { $0.setReadingWidth(readingWidth) }
+      }
+    }
+
+    @Storage(key: "editor.enhanced-paste", defaultValue: true)
+    static var enhancedPasteEnabled: Bool {
+      didSet {
+        performUpdates { $0.setEnhancedPasteEnabled(enabled: enhancedPasteEnabled) }
+      }
+    }
+
     @Storage(key: "editor.tab-key-behavior", defaultValue: .insertTab)
     static var tabKeyBehavior: TabKeyBehavior {
       didSet {
@@ -158,6 +172,18 @@ enum AppPreferences {
       didSet {
         performUpdates { $0.setIndentUnit(indentUnit) }
       }
+    }
+
+    static var smartQuotesEnabled: Bool {
+      guard UserDefaults.standard.object(forKey: WKAutomaticQuoteSubstitutionEnabled) != nil else {
+        return NSSpellChecker.isAutomaticQuoteSubstitutionEnabled
+      }
+
+      return UserDefaults.standard.bool(forKey: WKAutomaticQuoteSubstitutionEnabled)
+    }
+
+    static func smartQuotesOptionToggled() {
+      performUpdates { $0.setSmartQuotesEnabled(enabled: smartQuotesEnabled) }
     }
   }
 
@@ -314,6 +340,9 @@ extension AppPreferences {
       tabKeyBehavior: Editor.tabKeyBehavior.rawValue,
       indentUnit: Editor.indentUnit.characters,
       localizable: EditorLocalizable.main,
+      smartQuotesEnabled: Editor.smartQuotesEnabled,
+      readingWidth: Editor.readingWidth.pixels,
+      enhancedPasteEnabled: Editor.enhancedPasteEnabled,
       // Runtime config from settings.json, not dynamically changeable
       autoCharacterPairs: AppRuntimeConfig.autoCharacterPairs,
       indentBehavior: AppRuntimeConfig.indentBehavior,
@@ -391,6 +420,19 @@ enum IndentUnit: String, CompactCodableEnum {
       return "\t"
     case .twoTabs:
       return "\t\t"
+    }
+  }
+}
+
+enum ReadingWidth: String, CompactCodableEnum {
+  case off, narrow, comfortable, wide
+
+  var pixels: Double {
+    switch self {
+    case .off: return 0
+    case .narrow: return 640
+    case .comfortable: return 800
+    case .wide: return 960
     }
   }
 }

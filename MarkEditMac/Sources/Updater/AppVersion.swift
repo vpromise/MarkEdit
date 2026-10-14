@@ -7,6 +7,7 @@
 
 import AppKitExtensions
 import Foundation
+import MarkEditCore
 
 /**
  [GitHub Releases API](https://api.github.com/repos/MarkEdit-app/MarkEdit/releases/latest)
@@ -21,6 +22,7 @@ struct AppVersion: Decodable {
   }
 
   let name: String
+  let tagName: String?
   let body: String
   let htmlUrl: String
   let assets: [Asset]?
@@ -40,7 +42,14 @@ struct AppVersion: Decodable {
     Whether this release is newer than the running app.
    */
   var isCompatible: Bool {
-    name.compare(Bundle.main.shortVersionString, options: .numeric) == .orderedDescending
+    guard let candidate = ForkReleaseVersion(tag: tagName ?? name), candidate.revision > 0,
+          let installed = ForkReleaseVersion(
+            version: Bundle.main.shortVersionString,
+            revision: Int(Bundle.main.infoDictionary?["MarkEditForkRevision"] as? String ?? "0") ?? 0
+          ) else {
+      return false
+    }
+    return candidate > installed
   }
 
   /**

@@ -265,6 +265,16 @@ public final class EditorModuleAPI: NativeModuleAPI {
   #endif
   }
 
+  public func setPasteboardString(text: String) async -> Bool {
+  #if os(macOS)
+    let pasteboard = NSPasteboard.general
+    pasteboard.clearContents()
+    return pasteboard.setString(text, forType: .string)
+  #else
+    return false
+  #endif
+  }
+
   public func terminateApp() {
     delegate?.editorAPITerminateApp(self)
   }

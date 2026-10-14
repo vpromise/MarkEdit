@@ -26,6 +26,8 @@ struct EditorSettingsView: View {
   @State private var focusMode = AppPreferences.Editor.focusMode
   @State private var lineWrapping = AppPreferences.Editor.lineWrapping
   @State private var lineHeight = AppPreferences.Editor.lineHeight
+  @State private var readingWidth = AppPreferences.Editor.readingWidth
+  @State private var enhancedPasteEnabled = AppPreferences.Editor.enhancedPasteEnabled
   @State private var tabKeyBehavior = AppPreferences.Editor.tabKeyBehavior
   @State private var indentUnit = AppPreferences.Editor.indentUnit
 
@@ -139,6 +141,25 @@ struct EditorSettingsView: View {
           }
           .formHorizontalRadio()
           .formBreathingInset()
+
+          Picker(Localized.Settings.readingWidth, selection: $readingWidth) {
+            Text(Localized.Settings.fullWidth).tag(ReadingWidth.off)
+            Text(Localized.Settings.narrowWidth).tag(ReadingWidth.narrow)
+            Text(Localized.Settings.comfortableWidth).tag(ReadingWidth.comfortable)
+            Text(Localized.Settings.wideWidth).tag(ReadingWidth.wide)
+          }
+          .onChange(of: readingWidth) {
+            AppPreferences.Editor.readingWidth = readingWidth
+          }
+          .formMenuPicker()
+
+          Toggle(isOn: $enhancedPasteEnabled) {
+            Text(Localized.Settings.enhancedPaste)
+          }
+          .onChange(of: enhancedPasteEnabled) {
+            AppPreferences.Editor.enhancedPasteEnabled = enhancedPasteEnabled
+          }
+          .formLabel(Localized.Settings.pasting)
         }
 
         Section {

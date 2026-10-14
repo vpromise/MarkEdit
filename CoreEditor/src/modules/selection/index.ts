@@ -1,5 +1,5 @@
 import { EditorView } from '@codemirror/view';
-import { EditorSelection, Line, SelectionRange } from '@codemirror/state';
+import { ChangeSpec, EditorSelection, Line, SelectionRange, TransactionSpec } from '@codemirror/state';
 import { selectAll as selectAllCommand } from '@codemirror/commands';
 import { isComposing } from '../../common/store';
 import { isReleaseMode } from '../../common/utils';
@@ -24,6 +24,23 @@ export const caretScrollDefaults: { y: ScrollStrategy; yMargin: number } = {
   y: 'end',
   yMargin: 55,
 };
+
+/**
+ * Apply changes to the editor without scrolling the viewport.
+ */
+export function applyChangesNoScroll(
+  changes: ChangeSpec,
+  spec: Omit<TransactionSpec, 'changes' | 'effects' | 'scrollIntoView' | 'userEvent'> = {},
+) {
+  const editor = window.editor;
+  const changeSet = editor.state.changes(changes);
+  editor.dispatch({
+    ...spec,
+    changes: changeSet,
+    effects: editor.scrollSnapshot().map(changeSet) ?? [],
+    userEvent: '@none',
+  });
+}
 
 /**
  * Reverse ranges for multi-selection to keep indices correct when updating.
@@ -174,10 +191,10 @@ export function scrollIntoView(anchor: number | SelectionRange, strategy: Scroll
   // Try with the suggested strategy
   tryToScroll(strategy);
 
-  // Try centering if the suggested strategy failed
+  // Try again in case the initial attempt didn't work
   afterDomUpdate(() => {
     if (almostEqual(editor.scrollDOM.scrollTop, currentOffset)) {
-      tryToScroll('center');
+      tryToScroll(strategy);
     }
   });
 }

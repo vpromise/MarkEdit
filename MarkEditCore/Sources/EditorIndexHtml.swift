@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import OSLog
 
 /**
  index.html built by CoreEditor, shared between the app and its extensions.
@@ -27,13 +28,27 @@ public enum EditorIndexHtml {
     toHtml(template: sharedContents, config: config, userSettings: "{}")
   }
 
-  public static func copyToSharedContainer() {
-    guard let targetURL = sharedURL, let data = bundledData else {
-      return
+  public static func fromBundle(_ bundle: Bundle, config: EditorConfig) -> String {
+    guard let url = bundle.url(forResource: "index", withExtension: "html"),
+          let template = try? String(contentsOf: url, encoding: .utf8) else {
+      return ""
     }
 
+    return toHtml(template: template, config: config, userSettings: "{}")
+  }
+
+  @discardableResult
+  public static func copyToSharedContainer() -> Bool {
+    guard let targetURL = sharedURL, let data = bundledData else {
+      return false
+    }
+
+    return copySharedData(data, to: targetURL)
+  }
+
+  static func copySharedData(_ data: Data, to targetURL: URL) -> Bool {
     guard (try? Data(contentsOf: targetURL)) != data else {
-      return
+      return true
     }
 
     do {
@@ -43,11 +58,15 @@ public enum EditorIndexHtml {
       )
 
       try data.write(to: targetURL, options: .atomic)
+      return true
     } catch {
-      assertionFailure("Failed to copy index.html to shared container: \(error)")
+      sharedEditorLogger.error("Failed to prepare Quick Look: \(error.localizedDescription, privacy: .public)")
+      return false
     }
   }
 }
+
+private let sharedEditorLogger = Logger(subsystem: "app.cyan.markedit", category: "SharedEditor")
 
 // MARK: - Private
 

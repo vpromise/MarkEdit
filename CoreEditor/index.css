@@ -298,6 +298,102 @@ html.markdown-preview-active body {
   }
 }
 
+.markdown-preview {
+  padding-inline: max(24px, calc((100% - var(--markdown-preview-reading-width, 100%)) / 2));
+}
+
+.markdown-preview pre:has(.markdown-preview-copy) {
+  position: relative;
+  padding-top: 2.8em;
+}
+
+.markdown-preview-copy {
+  position: absolute;
+  top: 0.45em;
+  right: 0.6em;
+  padding: 0.3em 0.65em;
+  border: 1px solid var(--markdown-preview-border-color);
+  border-radius: 5px;
+  background: var(--markdown-preview-background-color);
+  color: var(--markdown-preview-muted-color);
+  font: 12px system-ui;
+  cursor: pointer;
+}
+
+.markdown-preview-copy:focus-visible {
+  outline: 2px solid var(--markdown-preview-accent-color);
+  outline-offset: 2px;
+}
+
+.markdown-preview .hljs-keyword,
+.markdown-preview .hljs-selector-tag,
+.markdown-preview .hljs-literal,
+.markdown-preview .hljs-built_in {
+  color: light-dark(#cf222e, #ff7b72);
+}
+
+.markdown-preview .hljs-string,
+.markdown-preview .hljs-attr,
+.markdown-preview .hljs-template-variable {
+  color: light-dark(#0a3069, #a5d6ff);
+}
+
+.markdown-preview .hljs-number,
+.markdown-preview .hljs-title {
+  color: light-dark(#0550ae, #79c0ff);
+}
+
+.markdown-preview .hljs-comment {
+  color: var(--markdown-preview-muted-color);
+}
+
+.markdown-preview .task-list-item {
+  list-style: none;
+}
+
+.markdown-preview .task-list-item-checkbox {
+  margin-inline: -1.4em 0.5em;
+  accent-color: var(--markdown-preview-accent-color);
+}
+
+.markdown-preview .markdown-alert {
+  --alert-color: light-dark(#0969da, #4493f8);
+  margin-block: 1em;
+  padding: 0.7em 1em;
+  border-inline-start: 0.25em solid var(--alert-color);
+  background: color-mix(in srgb, var(--alert-color) 5%, transparent);
+}
+
+.markdown-preview .markdown-alert-title {
+  margin-top: 0;
+  color: var(--alert-color);
+  font-weight: 600;
+}
+
+.markdown-preview .markdown-alert > :last-child {
+  margin-bottom: 0;
+}
+
+.markdown-preview .markdown-alert-tip {
+  --alert-color: light-dark(#1a7f37, #3fb950);
+}
+
+.markdown-preview .markdown-alert-important {
+  --alert-color: light-dark(#8250df, #ab7df8);
+}
+
+.markdown-preview .markdown-alert-warning {
+  --alert-color: light-dark(#9a6700, #d29922);
+}
+
+.markdown-preview .markdown-alert-caution {
+  --alert-color: light-dark(#d1242f, #f85149);
+}
+
+.markdown-preview .footnotes {
+  font-size: 0.9em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .markdown-preview-mermaid-canvas:empty::before {
     animation: none;

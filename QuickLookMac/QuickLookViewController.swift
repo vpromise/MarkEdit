@@ -12,16 +12,18 @@ import MarkEditCore
 
 final class QuickLookViewController: NSViewController {
   var guidanceView: NSView?
-  var mouseDownMonitor: Any?
-  var mouseDragMonitor: Any?
-  var mouseUpMonitor: Any?
-  var isDraggingScroller = false
 
   weak var defaultOpenTarget: AnyObject?
   var defaultOpenAction: Selector?
 
+  lazy var openRecognizer = QuickLookOpenGestureRecognizer(target: self, action: #selector(openPreview(_:)))
+  lazy var scrollbarClickRecognizer = NSClickGestureRecognizer(target: self, action: #selector(clickScrollbar(_:)))
+  lazy var scrollbarDragRecognizer = NSPanGestureRecognizer(target: self, action: #selector(dragScrollbar(_:)))
+
   private var previewDirectoryURL: URL?
+  private var previewRequestID = UUID()
   private var appearanceObservation: NSKeyValueObservation?
+  private weak var observedResizeWindow: NSWindow?
 
   lazy var webView: WKWebView = {
     let config: WKWebViewConfiguration = .preferredConfig()
@@ -59,24 +61,15 @@ final class QuickLookViewController: NSViewController {
   }
 
   deinit {
-    if let mouseDownMonitor {
-      NSEvent.removeMonitor(mouseDownMonitor)
-      self.mouseDownMonitor = nil
-    }
-
-    if let mouseDragMonitor {
-      NSEvent.removeMonitor(mouseDragMonitor)
-      self.mouseDragMonitor = nil
-    }
-
-    if let mouseUpMonitor {
-      NSEvent.removeMonitor(mouseUpMonitor)
-      self.mouseUpMonitor = nil
-    }
+    NotificationCenter.default.removeObserver(self)
   }
 
   override func viewDidLoad() {
     super.viewDidLoad()
+    if let size = QuickLookWindowSize.savedValue {
+      preferredContentSize = size
+    }
+
     view.wantsLayer = true
     view.addSubview(webView)
 
@@ -84,7 +77,7 @@ final class QuickLookViewController: NSViewController {
     view.layer?.masksToBounds = true
     view.layer?.cornerRadius = 6
 
-    addEventMonitorsForDragging()
+    configureGestures()
     updateAppearance()
 
     appearanceObservation = NSApp.observe(\.effectiveAppearance) { [weak self] _, _ in
@@ -98,13 +91,18 @@ final class QuickLookViewController: NSViewController {
     }
   }
 
+  override func viewDidAppear() {
+    super.viewDidAppear()
+    observeWindowResize()
+  }
+
   override func viewDidLayout() {
     super.viewDidLayout()
     webView.frame = view.bounds
     guidanceView?.frame = view.bounds
 
     if view.window != nil {
-      disableDefaultOpen()
+      configureDefaultOpen()
     }
   }
 }
@@ -113,19 +111,32 @@ final class QuickLookViewController: NSViewController {
 
 extension QuickLookViewController: QLPreviewingController {
   func preparePreviewOfFile(at url: URL) async throws {
-    guard EditorIndexHtml.sharedFileExists else {
+    try Task.checkCancellation()
+    let requestID = UUID()
+    previewRequestID = requestID
+
+    let rendererBundle = Bundle(for: QuickLookViewController.self)
+    let hasBundledRenderer = rendererBundle.url(forResource: "index", withExtension: "html") != nil
+    guard hasBundledRenderer || EditorIndexHtml.sharedFileExists else {
       return showSetUpGuidance()
     }
 
-    let fileURL = textFileURL(of: url)
-    previewDirectoryURL = fileURL.deletingLastPathComponent()
+    let contents = try await Task.detached(priority: .userInitiated) {
+      let fileURL = Self.textFileURL(of: url)
+      return (url: fileURL, data: try Data(contentsOf: fileURL))
+    }.value
+    try Task.checkCancellation()
+    guard previewRequestID == requestID else {
+      return
+    }
 
-    let config = EditorConfig.quicklookConfig(
-      fileData: try Data(contentsOf: fileURL)
-    )
+    previewDirectoryURL = contents.url.deletingLastPathComponent()
+    let config = EditorConfig.quicklookConfig(fileData: contents.data)
 
-    let index = [EditorIndexHtml.fromSharedContainer(config: config)]
-    let html = (index + userStyles).joined(separator: "\n\n")
+    let index = hasBundledRenderer
+      ? EditorIndexHtml.fromBundle(rendererBundle, config: config)
+      : EditorIndexHtml.fromSharedContainer(config: config)
+    let html = ([index] + userStyles).joined(separator: "\n\n")
     webView.loadHTMLString(html, baseURL: URL(string: "http://localhost/"))
   }
 }
@@ -139,5 +150,39 @@ extension QuickLookViewController: WKNavigationDelegate {
     decisionHandler: @escaping @MainActor (WKNavigationActionPolicy) -> Void
   ) {
     decisionHandler(navigationAction.navigationType == .linkActivated ? .cancel : .allow)
+  }
+}
+
+// MARK: - Private
+
+private extension QuickLookViewController {
+  func observeWindowResize() {
+    guard let window = view.window, window.level == .floating, window !== observedResizeWindow else {
+      return
+    }
+
+    if let observedResizeWindow {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: NSWindow.didEndLiveResizeNotification,
+        object: observedResizeWindow
+      )
+    }
+
+    observedResizeWindow = window
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(windowDidResize(_:)),
+      name: NSWindow.didEndLiveResizeNotification,
+      object: window
+    )
+  }
+
+  @objc func windowDidResize(_ notification: Notification) {
+    guard let window = notification.object as? NSWindow, window.level == .floating else {
+      return
+    }
+
+    QuickLookWindowSize.savedValue = view.bounds.size
   }
 }

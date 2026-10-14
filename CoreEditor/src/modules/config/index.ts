@@ -14,6 +14,12 @@ import { loadTheme } from '../../styling/themes';
 import * as styling from '../../styling/config';
 import * as completion from '../completion';
 
+export { setReadingWidth } from '../readingWidth';
+
+export function setEnhancedPasteEnabled(enabled: boolean) {
+  window.config.enhancedPasteEnabled = enabled;
+}
+
 export function setTheme(name: string) {
   window.config.theme = name;
   styling.setTheme(loadTheme(name));
@@ -24,18 +30,22 @@ export function setTheme(name: string) {
 export function setFontFace(fontFace: WebFontFace) {
   styling.setFontFace(fontFace);
   window.config.fontFace = fontFace;
-  window.editor.requestMeasure();
-
-  refreshEditFocus();
+  const editor = tryGetEditor();
+  if (editor !== null) {
+    editor.requestMeasure();
+    refreshEditFocus();
+  }
   recalculateTextMetrics();
 }
 
 export function setFontSize(fontSize: number) {
   styling.setFontSize(fontSize);
   window.config.fontSize = fontSize;
-  window.editor.requestMeasure();
-
-  refreshEditFocus();
+  const editor = tryGetEditor();
+  if (editor !== null) {
+    editor.requestMeasure();
+    refreshEditFocus();
+  }
   recalculateTextMetrics();
 }
 
@@ -128,6 +138,10 @@ export function setTabKeyBehavior(behavior: TabKeyBehavior) {
 export function setSuggestWhileTyping(enabled: boolean) {
   window.config.suggestWhileTyping = enabled;
   completion.invalidateCache();
+}
+
+export function setSmartQuotesEnabled(enabled: boolean) {
+  window.config.smartQuotesEnabled = enabled;
 }
 
 export function recalculateTextMetrics() {

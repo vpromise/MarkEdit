@@ -20,6 +20,11 @@ public struct EditorLocalizable: Encodable {
   let previewButtonTitle: String
   let cmdClickToFollow: String
   let cmdClickToToggleTodo: String
+  let copyCodeTitle: String
+  let copiedTitle: String
+  let copyFailedTitle: String
+  let imagePasteFailedTitle: String
+  let imagePasteFailedMessage: String
 
   public init(
     controlCharacter: String,
@@ -31,7 +36,12 @@ public struct EditorLocalizable: Encodable {
     unfoldLine: String,
     previewButtonTitle: String,
     cmdClickToFollow: String,
-    cmdClickToToggleTodo: String
+    cmdClickToToggleTodo: String,
+    copyCodeTitle: String,
+    copiedTitle: String,
+    copyFailedTitle: String,
+    imagePasteFailedTitle: String,
+    imagePasteFailedMessage: String
   ) {
     self.controlCharacter = controlCharacter
     self.foldedLines = foldedLines
@@ -43,6 +53,11 @@ public struct EditorLocalizable: Encodable {
     self.previewButtonTitle = previewButtonTitle
     self.cmdClickToFollow = cmdClickToFollow
     self.cmdClickToToggleTodo = cmdClickToToggleTodo
+    self.copyCodeTitle = copyCodeTitle
+    self.copiedTitle = copiedTitle
+    self.copyFailedTitle = copyFailedTitle
+    self.imagePasteFailedTitle = imagePasteFailedTitle
+    self.imagePasteFailedMessage = imagePasteFailedMessage
   }
 
   public func encode(to encoder: any Encoder) throws {
@@ -57,5 +72,10 @@ public struct EditorLocalizable: Encodable {
     try container.encode(previewButtonTitle, forKey: "previewButtonTitle")
     try container.encode(cmdClickToFollow, forKey: "cmdClickToFollow")
     try container.encode(cmdClickToToggleTodo, forKey: "cmdClickToToggleTodo")
+    try container.encode(copyCodeTitle, forKey: "copyCodeTitle")
+    try container.encode(copiedTitle, forKey: "copiedTitle")
+    try container.encode(copyFailedTitle, forKey: "copyFailedTitle")
+    try container.encode(imagePasteFailedTitle, forKey: "imagePasteFailedTitle")
+    try container.encode(imagePasteFailedMessage, forKey: "imagePasteFailedMessage")
   }
 }

@@ -13,7 +13,10 @@ describe('Light Markdown renderer', () => {
     const html = renderMarkdown('Use `code`.\n\n```swift\nlet value = 1\n```');
 
     expect(html).toContain('<code>code</code>');
-    expect(html).toContain('<pre><code class="language-swift">let value = 1\n</code></pre>');
+    const container = document.createElement('div');
+    container.innerHTML = html;
+    expect(container.querySelector('pre code')?.textContent).toBe('let value = 1\n');
+    expect(container.querySelector('.hljs-keyword')?.textContent).toBe('let');
   });
 
   test('prepares Mermaid fences for diagram rendering', () => {

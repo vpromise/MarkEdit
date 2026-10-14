@@ -26,7 +26,7 @@ final class EditorViewController: NSViewController {
   var mouseExitedWindow = false
   var nativeSearchQueryChanged = false
   var bottomPanelHeight: Double = 0
-  var pendingResetCount: Int = 0
+  var pendingResetCount: Int = 1
   var markdownPreviewModeRequestID = 0
   var isMarkdownPreviewMode = false
   var webBackgroundColor = AppPreferences.Window.cachedBackgroundColor?.nsColor
@@ -150,7 +150,7 @@ final class EditorViewController: NSViewController {
       controller.addUserScript(WKUserScript(
         source: $0,
         injectionTime: .atDocumentEnd,
-        forMainFrameOnly: false
+        forMainFrameOnly: true
       ))
     }
 
@@ -371,9 +371,13 @@ extension EditorViewController {
     bridge.core.insertText(text: text, from: 0, to: 0)
   }
 
-  func resetEditor() {
+  func resetEditor(resetSelection: Bool = false) {
     guard hasFinishedLoading, let document else {
       return
+    }
+
+    if lastResetDocumentID != nil {
+      pendingResetCount += 1
     }
 
     markdownPreviewModeRequestID += 1
@@ -387,6 +391,10 @@ extension EditorViewController {
     lastResetDocumentID = documentID
 
     let selectionRange: SelectionRange? = {
+      if resetSelection {
+        return SelectionRange(anchor: 0, head: 0)
+      }
+
       // CoreEditor preserves selection for same-document resets
       guard documentChanged else {
         return nil
@@ -405,7 +413,6 @@ extension EditorViewController {
       webView.magnification = 1.0
     }
 
-    pendingResetCount += 1
     Task { @MainActor [weak self] in
       guard let self else {
         return

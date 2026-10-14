@@ -49,7 +49,7 @@ public struct TextBundleWrapper {
   ///
   /// The example project by shinyfrog assumes all files are utf-8,
   /// but here we use the data encoded by editors.
-  public func fileWrapper(with textFileData: Data) throws -> FileWrapper {
+  public func fileWrapper(with textFileData: Data, assetsFrom bundleURL: URL? = nil) throws -> FileWrapper {
     let fileWrapper = FileWrapper(directoryWithFileWrappers: [:])
     fileWrapper.addRegularFile(withContents: textFileData, preferredFilename: textFileName)
 
@@ -58,9 +58,14 @@ public struct TextBundleWrapper {
       fileWrapper.addFileWrapper(infoFileWrapper)
     }
 
-    // For now, we don't care about assets, just add it back if we have
-    if let assetsFileWrapper {
-      fileWrapper.addFileWrapper(assetsFileWrapper)
+    // Pasted and dropped images can be added after this wrapper was read.
+    var assets = assetsFileWrapper
+    if let assetsURL = bundleURL?.appending(path: FileNames.assetsFolder),
+       FileManager.default.fileExists(atPath: assetsURL.path) {
+      assets = try FileWrapper(url: assetsURL, options: .immediate)
+    }
+    if let assets {
+      fileWrapper.addFileWrapper(assets)
     }
 
     return fileWrapper

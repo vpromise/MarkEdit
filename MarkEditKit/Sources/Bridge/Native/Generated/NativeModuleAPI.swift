@@ -31,6 +31,7 @@ public protocol NativeModuleAPI: NativeModule {
   func getFileInfo(path: String?) async -> String?
   func getPasteboardItems() async -> String?
   func getPasteboardString() async -> String?
+  func setPasteboardString(text: String) async -> Bool
   func terminateApp()
   func relaunchApp()
 }
@@ -90,6 +91,8 @@ final class NativeBridgeAPI: NativeBridge {
       return await getPasteboardItems(parameters: parameters)
     case "getPasteboardString":
       return await getPasteboardString(parameters: parameters)
+    case "setPasteboardString":
+      return await setPasteboardString(parameters: parameters)
     case "terminateApp":
       return await terminateApp(parameters: parameters)
     case "relaunchApp":
@@ -458,6 +461,28 @@ final class NativeBridgeAPI: NativeBridge {
 
   private func getPasteboardString(parameters: Data) async -> Result<Any?, Error>? {
     let result = await module.getPasteboardString()
+    return .success(result)
+  }
+
+  private func setPasteboardString(parameters: Data) async -> Result<Any?, Error>? {
+    struct Message: Decodable {
+      var text: String
+
+      init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: BridgeFieldKey.self)
+        text = try container.value("text")
+      }
+    }
+
+    let message: Message
+    do {
+      message = try decoder.decode(Message.self, from: parameters)
+    } catch {
+      Logger.assertFail("Failed to decode parameters: \(parameters)")
+      return .failure(error)
+    }
+
+    let result = await module.setPasteboardString(text: message.text)
     return .success(result)
   }
 

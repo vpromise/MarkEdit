@@ -1,8 +1,11 @@
 import { EditorView } from '@codemirror/view';
+import type { Text } from '@codemirror/state';
 import { isReleaseMode } from '../../common/utils';
 import { getLinkAnchor } from '../toc';
 import { renderMermaidDiagrams } from './mermaidRenderer';
-import { renderMarkdown } from './markdownRenderer';
+import { renderMarkdownResult, TaskMarker } from './markdownRenderer';
+import { resolveTaskToggle } from './task';
+import { copyText } from './clipboard';
 
 const previewClassName = 'markdown-preview';
 const previewModeClassName = 'markdown-preview-mode';
@@ -16,8 +19,11 @@ const storage: {
   enabled: boolean;
   container?: HTMLElement;
   parent?: Element;
+  sourceDocument?: Text;
+  tasks: WeakMap<HTMLInputElement, TaskMarker>;
 } = {
   enabled: false,
+  tasks: new WeakMap(),
 };
 
 export function setMarkdownPreviewMode(enabled: boolean, markdownText?: string): boolean {
@@ -37,6 +43,8 @@ export function resetMarkdownPreviewMode() {
   hideMarkdownPreview(false);
   storage.container?.remove();
   storage.container = undefined;
+  storage.sourceDocument = undefined;
+  storage.tasks = new WeakMap();
 }
 
 export function rewriteImageSource(source: string): string {
@@ -84,8 +92,22 @@ function showMarkdownPreview(markdownText?: string): boolean {
   const container = previewContainer(parent, editor.dom);
   const scrollRatio = scrollTopRatio(editor.scrollDOM);
 
-  container.innerHTML = renderMarkdown(markdownText ?? editor.state.doc.toString());
+  const source = markdownText ?? editor.state.doc.toString();
+  const result = renderMarkdownResult(source);
+  container.innerHTML = result.html;
   prepareMarkdownPreview(container);
+  storage.tasks = new WeakMap();
+  storage.sourceDocument = source === editor.state.doc.toString() ? editor.state.doc : undefined;
+  const markers = new Map(result.tasks.map(marker => [marker.id, marker]));
+  container.querySelectorAll<HTMLInputElement>('input[data-markedit-task]').forEach(input => {
+    const marker = markers.get(input.dataset.markeditTask ?? '');
+    if (marker !== undefined && storage.sourceDocument !== undefined && !editor.state.readOnly && !window.config.readOnlyMode) {
+      const label = input.closest('li')?.textContent.trim() ?? '';
+      input.setAttribute('aria-label', label.length > 0 ? label : 'Task');
+      input.disabled = false;
+      storage.tasks.set(input, marker);
+    }
+  });
   void renderMermaidDiagrams(container, editor.state.facet(EditorView.darkTheme) ? 'dark' : 'default');
   container.hidden = false;
 
@@ -144,6 +166,7 @@ function previewContainer(parent: Element, before: Element) {
   container.className = previewClassName;
   container.hidden = true;
   container.addEventListener('click', handlePreviewClick);
+  container.addEventListener('change', handleTaskChange);
   parent.insertBefore(container, before);
   storage.container = container;
   return container;
@@ -152,13 +175,82 @@ function previewContainer(parent: Element, before: Element) {
 export function prepareMarkdownPreview(container: HTMLElement) {
   applyHeadingAnchors(container);
   rewriteLocalImageSources(container);
+  container.querySelectorAll<HTMLInputElement>('input').forEach(input => { input.disabled = true; });
+  addCodeCopyButtons(container);
 }
 
 function applyHeadingAnchors(container: HTMLElement) {
+  const ids = new Set([...container.querySelectorAll<HTMLElement>('[id]')].map(element => element.id));
   container.querySelectorAll<HTMLHeadingElement>('h1, h2, h3, h4, h5, h6').forEach(heading => {
     if (heading.id === '') {
-      heading.id = getLinkAnchor(heading.textContent);
+      const base = getLinkAnchor(heading.textContent) || 'section';
+      let id = base;
+      let suffix = 1;
+      while (ids.has(id)) {
+        id = `${base}-${suffix++}`;
+      }
+
+      heading.id = id;
+      ids.add(id);
     }
+  });
+}
+
+function handleTaskChange(event: Event) {
+  const input = event.target;
+  if (!(input instanceof HTMLInputElement)) {
+    return;
+  }
+
+  const marker = storage.tasks.get(input);
+  if (marker === undefined) {
+    return;
+  }
+
+  const editor = window.editor;
+  if (!storage.enabled || editor.state.readOnly || window.config.readOnlyMode || editor.state.doc !== storage.sourceDocument) {
+    input.checked = !input.checked;
+    return;
+  }
+
+  const line = editor.state.doc.line(marker.line + 1);
+  const toggle = resolveTaskToggle(line.text);
+  if (toggle === null) {
+    input.checked = !input.checked;
+    return;
+  }
+
+  const from = line.from + toggle.offset;
+  editor.dispatch({ changes: { from, to: from + 1, insert: toggle.replacement }, userEvent: 'input.task' });
+  storage.sourceDocument = editor.state.doc;
+}
+
+function addCodeCopyButtons(container: HTMLElement) {
+  container.querySelectorAll<HTMLPreElement>('pre').forEach(pre => {
+    const code = pre.querySelector('code');
+    if (code === null || pre.querySelector('.markdown-preview-copy') !== null) {
+      return;
+    }
+
+    const button = document.createElement('button');
+    const title = window.config.localizable?.copyCodeTitle ?? 'Copy Code';
+    button.type = 'button';
+    button.className = 'markdown-preview-copy';
+    button.textContent = title;
+    button.setAttribute('aria-label', title);
+    button.setAttribute('aria-live', 'polite');
+    button.addEventListener('click', async event => {
+      event.preventDefault();
+      event.stopPropagation();
+      button.disabled = true;
+      const copied = await copyText(code.textContent);
+      button.disabled = false;
+      button.textContent = copied
+        ? window.config.localizable?.copiedTitle ?? 'Copied'
+        : window.config.localizable?.copyFailedTitle ?? 'Copy Failed';
+      setTimeout(() => { button.textContent = title; }, 1500);
+    });
+    pre.appendChild(button);
   });
 }
 

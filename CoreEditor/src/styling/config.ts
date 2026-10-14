@@ -12,6 +12,7 @@ import { calculateFontSize } from './nodes/heading';
 import { shadowableTextColor, updateStyleSheet } from './helper';
 import { isMouseDown } from '../modules/events';
 import { tryGetEditor, afterDomUpdate, isMotionReduced } from '../common/utils';
+import { setReadingWidth } from '../modules/readingWidth';
 
 /**
  * Style sheets that can be changed dynamically.
@@ -37,6 +38,7 @@ export function setUp(config: Config, colors: EditorColors) {
   updateFocusModeStyle(config.focusMode);
   setLineHeight(config.lineHeight);
   setOverscrollBehavior(config.lineWrapping);
+  setReadingWidth(config.readingWidth);
 
   if (config.showLineNumbers) {
     // Delay because when the window is resizing, the mouse can enter and leave gutters rapidly

@@ -28,6 +28,11 @@ export interface Localizable {
   previewButtonTitle: string;
   cmdClickToFollow: string;
   cmdClickToToggleTodo: string;
+  copyCodeTitle: string;
+  copiedTitle: string;
+  copyFailedTitle: string;
+  imagePasteFailedTitle: string;
+  imagePasteFailedMessage: string;
 }
 
 /**
@@ -76,6 +81,9 @@ export interface Config {
   tabKeyBehavior?: CodeGen_Int;
   indentUnit?: string;
   localizable?: Localizable;
+  smartQuotesEnabled: boolean;
+  readingWidth: number;
+  enhancedPasteEnabled: boolean;
   // Runtime config from settings.json, not dynamically changeable
   autoCharacterPairs: boolean;
   indentBehavior: IndentBehavior;

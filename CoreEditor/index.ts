@@ -48,6 +48,9 @@ const config = import.meta.env.PROD ? window.config : {
   lineWrapping: true,
   lineHeight: 1.5,
   suggestWhileTyping: false,
+  smartQuotesEnabled: true,
+  readingWidth: 800,
+  enhancedPasteEnabled: true,
   autoCharacterPairs: true,
   indentBehavior: IndentBehavior.paragraph,
   standardDirectories: {},
@@ -55,6 +58,11 @@ const config = import.meta.env.PROD ? window.config : {
     previewButtonTitle: 'Preview',
     cmdClickToFollow: '⌘-click to follow',
     cmdClickToToggleTodo: '⌘-click to toggle todo',
+    copyCodeTitle: 'Copy Code',
+    copiedTitle: 'Copied',
+    copyFailedTitle: 'Copy Failed',
+    imagePasteFailedTitle: 'Unable to Paste Image',
+    imagePasteFailedMessage: 'Save this document and grant access to its folder before pasting images.',
   },
 } as Config;
 

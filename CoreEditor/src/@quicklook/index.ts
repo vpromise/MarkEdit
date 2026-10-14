@@ -23,7 +23,9 @@ declare global {
  * the main app's toolbar preview.
  */
 export function setUpQuickLook(config: Config) {
+  window.config = config;
   document.documentElement.classList.add('markedit-quicklook');
+  document.documentElement.style.setProperty('--markdown-preview-reading-width', `${config.readingWidth || 800}px`);
 
   const parent = document.querySelector('#editor') ?? document.body;
   const preview = document.createElement('article');
@@ -69,7 +71,8 @@ function enableDragGestures(preview: HTMLElement) {
     storage.scrollbarOffset = location - scrollbarTop;
 
     if (location < scrollbarTop || location > scrollbarTop + scrollbarHeight) {
-      scrollToMouseLocation(location, scrollbarHeight * 0.5, 'smooth');
+      storage.scrollbarOffset = scrollbarHeight * 0.5;
+      scrollToMouseLocation(location, storage.scrollbarOffset, 'smooth');
     }
   };
 

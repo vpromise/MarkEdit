@@ -12,6 +12,19 @@ MarkEdit is a free and **open-source** Markdown editor, for macOS. It's just lik
 
 This fork adds rendered Markdown previews for both Finder Quick Look and the main editor window: press Space in Finder to preview rendered Markdown, or use the toolbar button in MarkEdit to switch between source editing and rendered Markdown.
 
+The fork also includes the following features without installing extensions:
+
+- Local code highlighting for common languages in both source and rendered previews.
+- LaTeX, Mermaid, footnotes, GitHub alerts, and rendered task lists. Click a task checkbox in the editor preview to update its Markdown source; Finder previews remain read-only.
+- Copy buttons on preview code blocks.
+- Rich-text paste converts HTML, including tables, to Markdown. Pasted images are saved in an `assets` folder beside the saved document and inserted as relative image references. Grant folder access when required by macOS.
+- **Settings → Editor** includes reading width and enhanced paste controls. The existing **Paste and Match Style** command keeps plain-text paste available.
+- Quick Look remembers its window size. Its context menu can reset the saved size.
+
+The Quick Look extension includes its renderer, so basic previews do not depend on the shared customization container being writable.
+
+Updates are checked against this fork's releases. Fork revisions are compared independently from the upstream app version.
+
 No bloat. Markdown editing done right in a 4 MB app that flies through million-line files.
 
 We do not claim to be the best in any single dimension. Instead, we aim to strike the right balance across **size**, **speed**, **native integration**, and **correctness**.
@@ -52,7 +65,7 @@ Customization is built around CSS, JavaScript, and [CodeMirror extensions](https
 
 ## Installation
 
-Get `MarkEdit.zip` from the <a href="https://github.com/vpromise/MarkEdit/releases/latest" target="_blank">latest release of this fork</a>, unzip it, and drag `MarkEdit.app` to `Applications`. The upstream app is also available via [Homebrew](https://brew.sh/): `brew install --cask markedit`.
+Get `MarkEdit-*.zip` from the <a href="https://github.com/vpromise/MarkEdit/releases/latest" target="_blank">latest release of this fork</a>, unzip it, and drag `MarkEdit.app` to `Applications`. Fork builds currently support Apple Silicon and use ad hoc signing without notarization. Updates are installed manually from the release page. The upstream app is also available via [Homebrew](https://brew.sh/): `brew install --cask markedit`.
 
 <img src="./Screenshots/install.png" width="540" alt="Install MarkEdit">
 
@@ -73,6 +86,8 @@ MarkEdit is a tool we use every day and keep improving for ourselves. We ship it
 For bugs, [open an issue](https://github.com/MarkEdit-app/MarkEdit/issues/new) or [pull request](https://github.com/MarkEdit-app/MarkEdit/compare). For behavior changes, discuss first; MarkEdit is intentionally minimal ([why](https://github.com/MarkEdit-app/MarkEdit/wiki/Why-MarkEdit#feature-poor)).
 
 Please refer to the [wiki page](https://github.com/MarkEdit-app/MarkEdit/wiki/Development) for development instructions.
+
+For this fork, run `./script/build_and_run.sh` to build and launch a separate development copy. Use `--build-only` to build it, or `--verify` to also check that it launched. Use `--release-build` to produce a Release app in `.build/macOS/Build/Products/Release/MarkEdit.app`. The build requires Node.js and Xcode 27 and retains the macOS 15 deployment target. The Codex Run action uses the same script.
 
 ## Acknowledgments
 

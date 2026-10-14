@@ -28,6 +28,7 @@ export interface NativeModuleAPI extends NativeModule {
   getFileInfo({ path }: { path: string | undefined }): Promise<string | undefined>;
   getPasteboardItems(): Promise<string | undefined>;
   getPasteboardString(): Promise<string | undefined>;
+  setPasteboardString({ text }: { text: string }): Promise<boolean>;
   terminateApp(): void;
   relaunchApp(): void;
 }

@@ -18,6 +18,9 @@ import {
   setTabKeyBehavior,
   setIndentUnit,
   setSuggestWhileTyping,
+  setSmartQuotesEnabled,
+  setReadingWidth,
+  setEnhancedPasteEnabled,
 } from '../../modules/config';
 
 /**
@@ -41,6 +44,9 @@ export interface WebModuleConfig extends WebModule {
   setTabKeyBehavior({ behavior }: { behavior: TabKeyBehavior }): void;
   setIndentUnit({ unit }: { unit: string }): void;
   setSuggestWhileTyping({ enabled }: { enabled: boolean }): void;
+  setSmartQuotesEnabled({ enabled }: { enabled: boolean }): void;
+  setReadingWidth({ width }: { width: number }): void;
+  setEnhancedPasteEnabled({ enabled }: { enabled: boolean }): void;
 }
 
 export class WebModuleConfigImpl implements WebModuleConfig {
@@ -102,5 +108,17 @@ export class WebModuleConfigImpl implements WebModuleConfig {
 
   setSuggestWhileTyping({ enabled }: { enabled: boolean }): void {
     setSuggestWhileTyping(enabled);
+  }
+
+  setSmartQuotesEnabled({ enabled }: { enabled: boolean }): void {
+    setSmartQuotesEnabled(enabled);
+  }
+
+  setReadingWidth({ width }: { width: number }): void {
+    setReadingWidth(width);
+  }
+
+  setEnhancedPasteEnabled({ enabled }: { enabled: boolean }): void {
+    setEnhancedPasteEnabled(enabled);
   }
 }
