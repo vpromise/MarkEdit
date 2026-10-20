@@ -39,6 +39,17 @@ export function getMarkdownPreviewMode(): boolean {
   return storage.enabled;
 }
 
+export function scrollToMarkdownPreviewHeading(position: number): boolean {
+  if (!storage.enabled || storage.container === undefined) {
+    return false;
+  }
+
+  const line = window.editor.state.doc.lineAt(position).number - 1;
+  storage.container.querySelector<HTMLElement>(`[data-markedit-heading-line="${line}"]`)
+    ?.scrollIntoView({ block: window.config.typewriterMode ? 'center' : 'start' });
+  return true;
+}
+
 export function resetMarkdownPreviewMode() {
   hideMarkdownPreview(false);
   storage.container?.remove();

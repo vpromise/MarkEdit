@@ -5,7 +5,7 @@ describe('Light Markdown renderer', () => {
   test('renders headings and paragraphs', () => {
     const html = renderMarkdown('# Title\n\nHello **MarkEdit**.');
 
-    expect(html).toContain('<h1>Title</h1>');
+    expect(html).toContain('<h1 data-markedit-heading-line="0">Title</h1>');
     expect(html).toContain('<p>Hello <strong>MarkEdit</strong>.</p>');
   });
 

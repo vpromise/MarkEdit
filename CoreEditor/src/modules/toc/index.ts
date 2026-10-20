@@ -5,6 +5,7 @@ import { getSyntaxTree } from '../lezer';
 import { scrollToSelection } from '../selection';
 import { saveGoBackSelection } from '../selection/navigate';
 import { isReleaseMode } from '../../common/utils';
+import { scrollToMarkdownPreviewHeading } from '../markdown/previewMode';
 import selectWithRanges from '../selection/selectWithRanges';
 
 // Ctrl-Mod-Arrow to navigate sections, Alt-Mod-Arrow conflicts with adding carets
@@ -111,7 +112,9 @@ export function selectNextSection() {
 export function gotoHeader(headingInfo: HeadingInfo) {
   saveGoBackSelection();
   selectWithRanges([EditorSelection.cursor(headingInfo.from)]);
-  scrollToSelection(window.config.typewriterMode ? 'center' : 'start');
+  if (!scrollToMarkdownPreviewHeading(headingInfo.from)) {
+    scrollToSelection(window.config.typewriterMode ? 'center' : 'start');
+  }
 }
 
 export type { HeadingInfo };

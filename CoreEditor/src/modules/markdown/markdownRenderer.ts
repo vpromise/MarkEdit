@@ -33,6 +33,15 @@ markdown.use(footnote);
 markdown.use(taskLists, { enabled: false });
 markdown.use(githubAlerts);
 
+markdown.renderer.rules.heading_open = (tokens, index, options, _env, renderer) => {
+  const token = tokens[index];
+  if (token.map !== null) {
+    token.attrSet('data-markedit-heading-line', String(token.map[0]));
+  }
+
+  return renderer.renderToken(tokens, index, options);
+};
+
 export interface TaskMarker {
   id: string;
   line: number;
