@@ -3,6 +3,7 @@ import { Config, Host } from '../src/config';
 import { resetEditor, setMarkdownPreviewMode } from '../src/core';
 import { renderMarkdown, renderMarkdownResult } from '../src/modules/markdown/markdownRenderer';
 import { setReadingWidth } from '../src/modules/readingWidth';
+import { setUpQuickLook } from '../src/@quicklook';
 import { undo } from '../src/@vendor/commands/history';
 import type { EditorView } from '@codemirror/view';
 
@@ -24,7 +25,9 @@ async function preview(source: string, readOnly = false) {
 
 afterEach(() => {
   const editor = Reflect.get(window, 'editor') as EditorView | undefined;
-  editor?.destroy();
+  if (typeof editor?.destroy === 'function') {
+    editor.destroy();
+  }
   jest.useRealTimers();
   jest.restoreAllMocks();
 });
@@ -100,5 +103,16 @@ describe('Built-in Markdown preview features', () => {
     expect(document.documentElement.style.getPropertyValue('--markdown-preview-reading-width')).toBe('100%');
     expect(window.editor).toBe(editor);
     expect(window.editor.state.doc.toString()).toBe('# 中文\n\n# 中文\n');
+  });
+});
+
+
+describe('Quick Look reading width', () => {
+  test.each([[0, '100%'], [640, '640px']] as const)('honors native width %i', (width, expected) => {
+    Reflect.deleteProperty(window, 'editor');
+    document.body.innerHTML = '<main id="editor"></main>';
+    jest.spyOn(window, 'scrollTo').mockImplementation(() => {});
+    setUpQuickLook({ ...window.config, host: Host.quicklook, text: '# Preview', readingWidth: width });
+    expect(document.documentElement.style.getPropertyValue('--markdown-preview-reading-width')).toBe(expected);
   });
 });

@@ -49,7 +49,7 @@ const config = import.meta.env.PROD ? window.config : {
   lineHeight: 1.5,
   suggestWhileTyping: false,
   smartQuotesEnabled: true,
-  readingWidth: 800,
+  readingWidth: 0,
   enhancedPasteEnabled: true,
   autoCharacterPairs: true,
   indentBehavior: IndentBehavior.paragraph,

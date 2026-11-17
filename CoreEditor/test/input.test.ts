@@ -1,5 +1,6 @@
-import { afterEach, beforeAll, describe, expect, test } from '@jest/globals';
+import { afterEach, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import { EditorSelection, EditorState } from '@codemirror/state';
+import { EditorView } from '@codemirror/view';
 import { filterTransaction, observeChanges } from '../src/modules/input';
 import { startObserving } from '../src/modules/events';
 import { editingState } from '../src/common/store';
@@ -17,6 +18,64 @@ describe('Input module', () => {
 
     wrapBlock('@', window.editor);
     expect(editor.getText()).toBe('~@Hello@~ World');
+  });
+});
+
+describe('Debounced native content updates', () => {
+  afterEach(() => {
+    window.editor.destroy();
+    jest.useRealTimers();
+    jest.restoreAllMocks();
+  });
+
+  test.each([0, 1500])('preserves pending edits when selection moves to %i', async anchor => {
+    jest.useFakeTimers();
+    editor.setUp('a'.repeat(2000), observeChanges());
+    const notify = jest.spyOn(window.nativeModules.core, 'notifyViewDidUpdate');
+    const cancelCompletion = jest.spyOn(window.nativeModules.completion, 'cancelCompletion');
+
+    window.editor.dispatch({
+      changes: { from: 2000, insert: 'b' },
+      selection: { anchor: 2001 },
+    });
+
+    expect(notify).not.toHaveBeenCalled();
+    expect(cancelCompletion).not.toHaveBeenCalled();
+    window.editor.dispatch({ selection: { anchor } });
+
+    await jest.advanceTimersByTimeAsync(150);
+    expect(notify).toHaveBeenCalledTimes(1);
+    expect(notify).toHaveBeenLastCalledWith(expect.objectContaining({ contentEdited: true }));
+    expect(cancelCompletion).toHaveBeenCalledTimes(1);
+
+    window.editor.dispatch({ selection: { anchor: 1 } });
+    expect(notify).toHaveBeenCalledTimes(2);
+    expect(notify).toHaveBeenLastCalledWith(expect.objectContaining({ contentEdited: false }));
+    expect(cancelCompletion).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('IME caret positioning', () => {
+  afterEach(() => {
+    window.editor.destroy();
+    document.body.innerHTML = '';
+    editingState.compositionEnded = true;
+    window.config.typewriterMode = false;
+    jest.restoreAllMocks();
+  });
+
+  test('does not recenter marked text but centers committed edits in typewriter mode', () => {
+    editor.setUp('中文', observeChanges());
+    window.config.typewriterMode = true;
+    jest.spyOn(window.editor, 'coordsAtPos').mockReturnValue({ top: 390, bottom: 410, left: 0, right: 0 });
+    Object.defineProperty(window.editor.dom, 'clientHeight', { configurable: true, value: 800 });
+    const scroll = jest.spyOn(EditorView, 'scrollIntoView');
+    editingState.compositionEnded = false;
+    window.editor.dispatch({ changes: { from: 2, insert: '拼' } });
+    expect(scroll).not.toHaveBeenCalled();
+    editingState.compositionEnded = true;
+    window.editor.dispatch({ changes: { from: 3, insert: '音' } });
+    expect(scroll).toHaveBeenCalledTimes(1);
   });
 });
 

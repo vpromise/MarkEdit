@@ -7,6 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09A13CCE825FDEC4C7C168D8 /* QuickSearchUI in Frameworks */ = {isa = PBXBuildFile; productRef = 9F2C38690E7396BF1CC7990A /* QuickSearchUI */; };
+		0C0060EDC72258ACD4AACF09 /* TextBundle in Frameworks */ = {isa = PBXBuildFile; productRef = 5FDE2ADD1FC5E90045268D7F /* TextBundle */; };
+		23988687F2CA6BD00E93CDEE /* AppDelegate+QuickSearch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7826F34192B7FC7759B08F97 /* AppDelegate+QuickSearch.swift */; };
+		3685FB95C86CE6AECC336E1E /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D6114F129D33327326BFC0B /* BookmarkStore.swift */; };
+		6783366FA80222B63ED32034 /* QuickSearchCore in Frameworks */ = {isa = PBXBuildFile; productRef = 333E232D986076DBA44705AD /* QuickSearchCore */; };
+		6B0DE02F85A857772D3106A7 /* EditorDocumentSaveTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CBA03ADF97588F3CAFF0ED8 /* EditorDocumentSaveTests.swift */; };
+		7608B655DA780D9722B27601 /* EditorFileSnapshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C616680119563479067D5D7 /* EditorFileSnapshots.swift */; };
+		83BDE75BEA5AB1BD51B69E79 /* QuickSearchUI in Frameworks */ = {isa = PBXBuildFile; productRef = 1E1CD940A4E0F1219030FB12 /* QuickSearchUI */; };
 		84FB00F02C6C4AED00850E94 /* AppWritingTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84FB00EF2C6C4AED00850E94 /* AppWritingTools.swift */; };
 		8701D0A42CC12321006AF8C2 /* FileVersion in Frameworks */ = {isa = PBXBuildFile; productRef = 8701D0A32CC12321006AF8C2 /* FileVersion */; };
 		8703C175303E7DD300A896D0 /* QuickLookWindowSize.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8703C171303E7DCF00A896D0 /* QuickLookWindowSize.swift */; };
@@ -20,7 +28,6 @@
 		870A51BC294702AF0095C7EB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A51B7294702AF0095C7EB /* AppDelegate.swift */; };
 		870A51BD294702AF0095C7EB /* EditorDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870A51B8294702AF0095C7EB /* EditorDocument.swift */; };
 		870A51C9294752530095C7EB /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 870A51C8294752530095C7EB /* index.html */; };
-		FA100001AABBCCDD00000001 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 870A51C8294752530095C7EB /* index.html */; };
 		870F17662984D2C000003DA7 /* EditorViewController+LineEndings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870F17652984D2C000003DA7 /* EditorViewController+LineEndings.swift */; };
 		870F17682985285B00003DA7 /* EditorViewController+Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 870F17672985285B00003DA7 /* EditorViewController+Config.swift */; };
 		870F177D29855CA500003DA7 /* MarkEditKit in Frameworks */ = {isa = PBXBuildFile; productRef = 870F177C29855CA500003DA7 /* MarkEditKit */; };
@@ -119,12 +126,21 @@
 		87F2B5F429ACF56E0027103E /* EditorViewController+Completion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F2B5F329ACF56E0027103E /* EditorViewController+Completion.swift */; };
 		87F2B61429AF2F3A0027103E /* NSSpellChecker+Extras.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87F2B61329AF2F3A0027103E /* NSSpellChecker+Extras.swift */; };
 		87FAFFD72BE0B6A300FA509D /* AppDelegate+FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87FAFFD62BE0B6A300FA509D /* AppDelegate+FileSystem.swift */; };
+		8FD2BCEA5178995EF5C99C82 /* QuickSearchCore in Frameworks */ = {isa = PBXBuildFile; productRef = D9BDDBC722FD2EAA629AB268 /* QuickSearchCore */; };
+		90FA218CED5B2C2D17319B62 /* BookmarkStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E604C4298D2D08E8921E32A /* BookmarkStoreTests.swift */; };
+		9819D855D7F75EBFA713703C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A8D629C4444D35368656960A /* Cocoa.framework */; };
+		9949736DB81B3E2BD788EF2C /* MarkEditKit in Frameworks */ = {isa = PBXBuildFile; productRef = FD3F6D5113FD8DA17F71281D /* MarkEditKit */; };
+		A463F0778AC6B77073B7788E /* QuickSearchIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D450FBF573663A533BE823FA /* QuickSearchIntegrationTests.swift */; };
+		AC9444416D0EA893660C045A /* MarkEditCore in Frameworks */ = {isa = PBXBuildFile; productRef = F62E6969BFB2B74B05D08BBD /* MarkEditCore */; };
 		B0E02F682D8F77A50060DEA5 /* MarkEdit.sdef in Resources */ = {isa = PBXBuildFile; fileRef = B0E02F672D8F77A50060DEA5 /* MarkEdit.sdef */; };
+		B5CC8AF91C4626CB1C601199 /* AppKitExtensions in Frameworks */ = {isa = PBXBuildFile; productRef = C4F9BADD60B4619E3ABAC6C1 /* AppKitExtensions */; };
+		CA433BDBECCA5E28B7F3A3F5 /* EditorDocument+History.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD3792F6BAA86D086721FBD /* EditorDocument+History.swift */; };
 		CC000002300000000000001A /* EditorDocument+ClosedTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000002300000000000001B /* EditorDocument+ClosedTab.swift */; };
 		CC000003300000000000001A /* AppDelegate+ClosedTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000003300000000000001B /* AppDelegate+ClosedTab.swift */; };
 		CC000004300000000000001A /* EditorSelectionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000004300000000000001B /* EditorSelectionHistory.swift */; };
 		CC000006300000000000001A /* EditorClosedTabHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC000006300000000000001B /* EditorClosedTabHistory.swift */; };
 		CC000020300000000000FD01 /* FileDrop in Frameworks */ = {isa = PBXBuildFile; productRef = CC000020300000000000FD02 /* FileDrop */; };
+		D3D933B1E1887882E7807EE0 /* EditorDocumentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F19E54B55C382817C4D7F9A6 /* EditorDocumentTests.swift */; };
 		EE100008EEEE000000000008 /* ExtensionInstaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100007EEEE000000000007 /* ExtensionInstaller.swift */; };
 		EE10000AEEEE00000000000A /* ExtensionUpdater.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100009EEEE000000000009 /* ExtensionUpdater.swift */; };
 		EE10000CEEEE00000000000C /* ExtensionsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE10000BEEEE00000000000B /* ExtensionsModel.swift */; };
@@ -132,9 +148,17 @@
 		EE100012EEEE000000000012 /* ExtensionsRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100011EEEE000000000011 /* ExtensionsRowView.swift */; };
 		EE100014EEEE000000000014 /* ExtensionsOverlays.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE100013EEEE000000000013 /* ExtensionsOverlays.swift */; };
 		EE200001EEEE000000000001 /* ExtensionCore in Frameworks */ = {isa = PBXBuildFile; productRef = EE200002EEEE000000000002 /* ExtensionCore */; };
+		FA100001AABBCCDD00000001 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 870A51C8294752530095C7EB /* index.html */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		0ACD4262415123BBE79D25D6 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 870A519A294700DE0095C7EB /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 870A51A1294700DE0095C7EB;
+			remoteInfo = MarkEditMac;
+		};
 		8729240E2951525C007156B1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 870A519A294700DE0095C7EB /* Project object */;
@@ -177,6 +201,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0C616680119563479067D5D7 /* EditorFileSnapshots.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EditorFileSnapshots.swift; path = MarkEditMac/Sources/Editor/Models/EditorFileSnapshots.swift; sourceTree = SOURCE_ROOT; };
+		1CBA03ADF97588F3CAFF0ED8 /* EditorDocumentSaveTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkEditMac/Tests/EditorDocumentSaveTests.swift; sourceTree = SOURCE_ROOT; };
+		56164B4B069D14F65D2FE783 /* MarkEditMacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MarkEditMacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E604C4298D2D08E8921E32A /* BookmarkStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkEditMac/Tests/BookmarkStoreTests.swift; sourceTree = SOURCE_ROOT; };
+		7826F34192B7FC7759B08F97 /* AppDelegate+QuickSearch.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "AppDelegate+QuickSearch.swift"; path = "MarkEditMac/Sources/Main/Application/AppDelegate+QuickSearch.swift"; sourceTree = SOURCE_ROOT; };
+		7D6114F129D33327326BFC0B /* BookmarkStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BookmarkStore.swift; path = MarkEditMac/Sources/Main/BookmarkStore.swift; sourceTree = SOURCE_ROOT; };
 		84FB00EF2C6C4AED00850E94 /* AppWritingTools.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppWritingTools.swift; sourceTree = "<group>"; };
 		8703C171303E7DCF00A896D0 /* QuickLookWindowSize.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLookWindowSize.swift; sourceTree = "<group>"; };
 		87067E2629755D5C0052E795 /* EditorStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorStatusView.swift; sourceTree = "<group>"; };
@@ -288,20 +318,38 @@
 		87F2B5F329ACF56E0027103E /* EditorViewController+Completion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorViewController+Completion.swift"; sourceTree = "<group>"; };
 		87F2B61329AF2F3A0027103E /* NSSpellChecker+Extras.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSSpellChecker+Extras.swift"; sourceTree = "<group>"; };
 		87FAFFD62BE0B6A300FA509D /* AppDelegate+FileSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+FileSystem.swift"; sourceTree = "<group>"; };
+		A8D629C4444D35368656960A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX26.0.sdk/System/Library/Frameworks/Cocoa.framework; sourceTree = DEVELOPER_DIR; };
 		B0E02F672D8F77A50060DEA5 /* MarkEdit.sdef */ = {isa = PBXFileReference; lastKnownFileType = text; path = MarkEdit.sdef; sourceTree = "<group>"; };
 		CC000002300000000000001B /* EditorDocument+ClosedTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EditorDocument+ClosedTab.swift"; sourceTree = "<group>"; };
 		CC000003300000000000001B /* AppDelegate+ClosedTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+ClosedTab.swift"; sourceTree = "<group>"; };
 		CC000004300000000000001B /* EditorSelectionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorSelectionHistory.swift; sourceTree = "<group>"; };
 		CC000006300000000000001B /* EditorClosedTabHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorClosedTabHistory.swift; sourceTree = "<group>"; };
+		CCD3792F6BAA86D086721FBD /* EditorDocument+History.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "EditorDocument+History.swift"; path = "MarkEditMac/Sources/Editor/Models/EditorDocument+History.swift"; sourceTree = SOURCE_ROOT; };
+		D450FBF573663A533BE823FA /* QuickSearchIntegrationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkEditMac/Tests/QuickSearchIntegrationTests.swift; sourceTree = SOURCE_ROOT; };
 		EE100007EEEE000000000007 /* ExtensionInstaller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionInstaller.swift; sourceTree = "<group>"; };
 		EE100009EEEE000000000009 /* ExtensionUpdater.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionUpdater.swift; sourceTree = "<group>"; };
 		EE10000BEEEE00000000000B /* ExtensionsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsModel.swift; sourceTree = "<group>"; };
 		EE10000DEEEE00000000000D /* ExtensionsWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsWindowController.swift; sourceTree = "<group>"; };
 		EE100011EEEE000000000011 /* ExtensionsRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsRowView.swift; sourceTree = "<group>"; };
 		EE100013EEEE000000000013 /* ExtensionsOverlays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionsOverlays.swift; sourceTree = "<group>"; };
+		F19E54B55C382817C4D7F9A6 /* EditorDocumentTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MarkEditMac/Tests/EditorDocumentTests.swift; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		6CA74D1648DA79958C820C73 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9819D855D7F75EBFA713703C /* Cocoa.framework in Frameworks */,
+				AC9444416D0EA893660C045A /* MarkEditCore in Frameworks */,
+				9949736DB81B3E2BD788EF2C /* MarkEditKit in Frameworks */,
+				B5CC8AF91C4626CB1C601199 /* AppKitExtensions in Frameworks */,
+				6783366FA80222B63ED32034 /* QuickSearchCore in Frameworks */,
+				83BDE75BEA5AB1BD51B69E79 /* QuickSearchUI in Frameworks */,
+				0C0060EDC72258ACD4AACF09 /* TextBundle in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		870A519F294700DE0095C7EB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -319,6 +367,8 @@
 				874823CE29B0BD980067EC49 /* TextCompletion in Frameworks */,
 				870F178E2985775B00003DA7 /* SharedUI in Frameworks */,
 				870F17962985775B00003DA7 /* SettingsUI in Frameworks */,
+				8FD2BCEA5178995EF5C99C82 /* QuickSearchCore in Frameworks */,
+				09A13CCE825FDEC4C7C168D8 /* QuickSearchUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +416,7 @@
 				870A51A2294700DE0095C7EB /* MarkEdit.app */,
 				872924002951525C007156B1 /* QuickLookExtension.appex */,
 				87DA0000000000000000E000 /* UpdateInstaller.xpc */,
+				56164B4B069D14F65D2FE783 /* MarkEditMacTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -377,6 +428,7 @@
 				870A51C52947103A0095C7EB /* Sources */,
 				870A51C229470D5C0095C7EB /* Resources */,
 				870A51C129470CAB0095C7EB /* Supporting Files */,
+				9EB941A6CD5541B0ADFF46E7 /* Tests */,
 			);
 			path = MarkEditMac;
 			sourceTree = "<group>";
@@ -431,9 +483,13 @@
 				8780AC0A29822C5500065EF4 /* Settings */,
 				8765FD262AF291A300C645A8 /* Updater */,
 				87850C8429482A6A00D1A952 /* Extras */,
+				0C616680119563479067D5D7 /* EditorFileSnapshots.swift */,
+				7826F34192B7FC7759B08F97 /* AppDelegate+QuickSearch.swift */,
+				7D6114F129D33327326BFC0B /* BookmarkStore.swift */,
+				CCD3792F6BAA86D086721FBD /* EditorDocument+History.swift */,
 			);
-			path = Sources;
-			sourceTree = "<group>";
+			path = MarkEditMac/Sources;
+			sourceTree = SOURCE_ROOT;
 		};
 		870F1797298577A000003DA7 /* Panels */ = {
 			isa = PBXGroup;
@@ -513,6 +569,7 @@
 		874823CC29B0BD980067EC49 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				FB8DE39720DC1E18DA2CD89D /* OS X */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -703,9 +760,55 @@
 			path = UpdateInstaller;
 			sourceTree = "<group>";
 		};
+		9EB941A6CD5541B0ADFF46E7 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				6E604C4298D2D08E8921E32A /* BookmarkStoreTests.swift */,
+				1CBA03ADF97588F3CAFF0ED8 /* EditorDocumentSaveTests.swift */,
+				F19E54B55C382817C4D7F9A6 /* EditorDocumentTests.swift */,
+				D450FBF573663A533BE823FA /* QuickSearchIntegrationTests.swift */,
+			);
+			name = Tests;
+			path = MarkEditMac/Tests;
+			sourceTree = SOURCE_ROOT;
+		};
+		FB8DE39720DC1E18DA2CD89D /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				A8D629C4444D35368656960A /* Cocoa.framework */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1073F8F233D65EB510807E78 /* MarkEditMacTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 023C5F8D1BB442385A051D4E /* Build configuration list for PBXNativeTarget "MarkEditMacTests" */;
+			buildPhases = (
+				DF84F65424C90C85556F6E23 /* Sources */,
+				6CA74D1648DA79958C820C73 /* Frameworks */,
+				963F58F2F0F18E4941FF6CB5 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				1C36E90CE322F347DF85BF49 /* PBXTargetDependency */,
+			);
+			name = MarkEditMacTests;
+			packageProductDependencies = (
+				F62E6969BFB2B74B05D08BBD /* MarkEditCore */,
+				FD3F6D5113FD8DA17F71281D /* MarkEditKit */,
+				C4F9BADD60B4619E3ABAC6C1 /* AppKitExtensions */,
+				333E232D986076DBA44705AD /* QuickSearchCore */,
+				1E1CD940A4E0F1219030FB12 /* QuickSearchUI */,
+				5FDE2ADD1FC5E90045268D7F /* TextBundle */,
+			);
+			productName = MarkEditMacTests;
+			productReference = 56164B4B069D14F65D2FE783 /* MarkEditMacTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		870A51A1294700DE0095C7EB /* MarkEditMac */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 870A51B1294700E00095C7EB /* Build configuration list for PBXNativeTarget "MarkEditMac" */;
@@ -739,6 +842,8 @@
 				8701D0A32CC12321006AF8C2 /* FileVersion */,
 				CC000020300000000000FD02 /* FileDrop */,
 				EE200002EEEE000000000002 /* ExtensionCore */,
+				D9BDDBC722FD2EAA629AB268 /* QuickSearchCore */,
+				9F2C38690E7396BF1CC7990A /* QuickSearchUI */,
 			);
 			productName = MarkEdit;
 			productReference = 870A51A2294700DE0095C7EB /* MarkEdit.app */;
@@ -824,6 +929,7 @@
 				870A51A1294700DE0095C7EB /* MarkEditMac */,
 				872923FF2951525C007156B1 /* QuickLookMac */,
 				87DA0000000000000000E002 /* UpdateInstaller */,
+				1073F8F233D65EB510807E78 /* MarkEditMacTests */,
 			);
 		};
 /* End PBXProject section */
@@ -850,6 +956,13 @@
 				FA100001AABBCCDD00000001 /* index.html in Resources */,
 				8729240B2951525C007156B1 /* Main.xib in Resources */,
 				87B0D1022F1A4C0100B0D101 /* Localizable.xcstrings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		963F58F2F0F18E4941FF6CB5 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -993,6 +1106,10 @@
 				874065792BB505F500B5CE5A /* EditorViewController+Events.swift in Sources */,
 				87067E2729755D5C0052E795 /* EditorStatusView.swift in Sources */,
 				87ACB6942BD8CA8400CE6F9E /* Application.swift in Sources */,
+				7608B655DA780D9722B27601 /* EditorFileSnapshots.swift in Sources */,
+				23988687F2CA6BD00E93CDEE /* AppDelegate+QuickSearch.swift in Sources */,
+				3685FB95C86CE6AECC336E1E /* BookmarkStore.swift in Sources */,
+				CA433BDBECCA5E28B7F3A3F5 /* EditorDocument+History.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1020,9 +1137,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DF84F65424C90C85556F6E23 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				90FA218CED5B2C2D17319B62 /* BookmarkStoreTests.swift in Sources */,
+				6B0DE02F85A857772D3106A7 /* EditorDocumentSaveTests.swift in Sources */,
+				D3D933B1E1887882E7807EE0 /* EditorDocumentTests.swift in Sources */,
+				A463F0778AC6B77073B7788E /* QuickSearchIntegrationTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		1C36E90CE322F347DF85BF49 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MarkEditMac;
+			target = 870A51A1294700DE0095C7EB /* MarkEditMac */;
+			targetProxy = 0ACD4262415123BBE79D25D6 /* PBXContainerItemProxy */;
+		};
 		8729240F2951525C007156B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 872923FF2951525C007156B1 /* QuickLookMac */;
@@ -1030,7 +1164,7 @@
 		};
 		87BFF24E298AB754006C31E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			productRef = 87BFF24D298AB754006C31E4 /* SwiftLint */;
+			productRef = 87BFF24D298AB754006C31E4 /* plugin:SwiftLint */;
 		};
 		87DA0000000000000000E009 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1061,6 +1195,48 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		2E2EBBA6575B55312B86E1E8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "app.cyan.markedit-dev.tests";
+				PRODUCT_MODULE_NAME = MarkEditMacTests;
+				PRODUCT_NAME = MarkEditMacTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MarkEdit.app/Contents/MacOS/MarkEdit";
+			};
+			name = Release;
+		};
+		7B33948445F851741FC91988 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "-";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@loader_path/../Frameworks",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "app.cyan.markedit-dev.tests";
+				PRODUCT_MODULE_NAME = MarkEditMacTests;
+				PRODUCT_NAME = MarkEditMacTests;
+				SDKROOT = macosx;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MarkEdit.app/Contents/MacOS/MarkEdit";
+			};
+			name = Debug;
+		};
 		870A51AF294700E00095C7EB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 8743B26229593B2000F83DAE /* Build.xcconfig */;
@@ -1382,6 +1558,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		023C5F8D1BB442385A051D4E /* Build configuration list for PBXNativeTarget "MarkEditMacTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E2EBBA6575B55312B86E1E8 /* Release */,
+				7B33948445F851741FC91988 /* Debug */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		870A519D294700DE0095C7EB /* Build configuration list for PBXProject "MarkEdit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1421,6 +1606,18 @@
 /* End XCConfigurationList section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		1E1CD940A4E0F1219030FB12 /* QuickSearchUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = QuickSearchUI;
+		};
+		333E232D986076DBA44705AD /* QuickSearchCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = QuickSearchCore;
+		};
+		5FDE2ADD1FC5E90045268D7F /* TextBundle */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TextBundle;
+		};
 		8701D0A32CC12321006AF8C2 /* FileVersion */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FileVersion;
@@ -1461,7 +1658,7 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = DiffKit;
 		};
-		87BFF24D298AB754006C31E4 /* SwiftLint */ = {
+		87BFF24D298AB754006C31E4 /* plugin:SwiftLint */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = "plugin:SwiftLint";
 		};
@@ -1477,13 +1674,33 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = MarkEditCore;
 		};
+		9F2C38690E7396BF1CC7990A /* QuickSearchUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = QuickSearchUI;
+		};
+		C4F9BADD60B4619E3ABAC6C1 /* AppKitExtensions */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppKitExtensions;
+		};
 		CC000020300000000000FD02 /* FileDrop */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FileDrop;
 		};
+		D9BDDBC722FD2EAA629AB268 /* QuickSearchCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = QuickSearchCore;
+		};
 		EE200002EEEE000000000002 /* ExtensionCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ExtensionCore;
+		};
+		F62E6969BFB2B74B05D08BBD /* MarkEditCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MarkEditCore;
+		};
+		FD3F6D5113FD8DA17F71281D /* MarkEditKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MarkEditKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

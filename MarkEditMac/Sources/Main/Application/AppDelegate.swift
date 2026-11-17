@@ -8,6 +8,7 @@ import AppKit
 import AppKitExtensions
 import ExtensionCore
 import SettingsUI
+import QuickSearchUI
 import MarkEditCore
 import MarkEditKit
 
@@ -20,7 +21,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
   @IBOutlet weak var copyPandocCommandMenu: NSMenu?
   @IBOutlet weak var openFileInMenu: NSMenu?
+  @IBOutlet weak var openRecentMenu: NSMenu?
   @IBOutlet weak var reopenFileMenu: NSMenu?
+  @IBOutlet weak var bookmarksMenu: NSMenu?
   @IBOutlet weak var lineEndingsMenu: NSMenu?
   @IBOutlet weak var editCommandsMenu: NSMenu?
   @IBOutlet weak var editTableOfContentsMenu: NSMenu?
@@ -57,19 +60,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   @IBOutlet weak var postponeUpdateItem: NSMenuItem?
   @IBOutlet weak var ignoreUpdateItem: NSMenuItem?
 
+  var quickSearchController: QuickSearchController?
+  weak var quickSearchSourceWindow: NSWindow?
+
+  lazy var bookmarkStore = BookmarkStore.shared
   private var appearanceObservation: NSKeyValueObservation?
   private var settingsWindowController: NSWindowController?
 
   func applicationWillFinishLaunching(_ notification: Notification) {
+    guard !ApplicationEnvironment.isRunningTests else { return }
     NSApp.appearance = AppPreferences.General.appearance.resolved()
     EditorPreloader.shared.warmUp()
   }
 
   func applicationDidFinishLaunching(_ notification: Notification) {
+    guard !ApplicationEnvironment.isRunningTests else { return }
     AppDesign.migrateMainMenuIcons(delegate: self)
     appearanceObservation = NSApp.observe(\.effectiveAppearance) { _, _ in
       Task { @MainActor in
         AppTheme.current.updateAppearance()
+        NSApp.appDelegate?.updateQuickSearchAppearance()
       }
     }
 
@@ -151,6 +161,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   func applicationShouldTerminate(_ application: NSApplication) -> NSApplication.TerminateReply {
+    guard !ApplicationEnvironment.isRunningTests else { return .terminateNow }
     if AppRuntimeConfig.autoSaveWhenIdle && NSDocumentController.shared.hasOutdatedDocuments {
       // Terminate after all outdated documents are saved
       Task {
@@ -165,6 +176,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
   }
 
   func applicationWillTerminate(_ notification: Notification) {
+    guard !ApplicationEnvironment.isRunningTests else { return }
     AppUpdater.commitStagedUpdate()
     EditorSelectionHistory.purgeStaleEntries()
   }

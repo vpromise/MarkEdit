@@ -33,6 +33,18 @@ markdown.use(footnote);
 markdown.use(taskLists, { enabled: false });
 markdown.use(githubAlerts);
 
+// Source maps are only added for the full-document preview, not standalone renderers.
+markdown.core.ruler.after('inline', 'markedit_source_mapping', state => {
+  if (!(state.env as MathEnvironment).sourceMapping) {
+    return;
+  }
+  state.tokens.forEach(token => {
+    if (token.map !== null && token.block && (token.nesting === 1 || token.type === 'fence')) {
+      token.attrSet('data-markedit-source-line', String(token.map[0]));
+    }
+  });
+});
+
 markdown.renderer.rules.heading_open = (tokens, index, options, _env, renderer) => {
   const token = tokens[index];
   if (token.map !== null) {
@@ -63,6 +75,7 @@ type MathSegment = {
 };
 
 type MathEnvironment = {
+  readonly sourceMapping: boolean;
   readonly mathNonce: string;
   readonly mathSegments: MathSegment[];
   readonly tasks: TaskMarker[];
@@ -102,7 +115,7 @@ markdown.renderer.rules.fence = (tokens, index, options, env, renderer) => {
 
   const source = markdown.utils.escapeHtml(token.content);
   return [
-    `<div class="${mermaidWrapperClassName}" data-markedit-mermaid aria-busy="true" aria-label="Mermaid diagram">`,
+    `<div class="${mermaidWrapperClassName}"${renderer.renderAttrs(token)} data-markedit-mermaid aria-busy="true" aria-label="Mermaid diagram">`,
     `<code class="${mermaidSourceClassName}" hidden>${source}</code>`,
     `<div class="${mermaidCanvasClassName}"></div>`,
     '</div>\n',
@@ -138,8 +151,8 @@ export function renderMarkdown(markdownText: string): string {
   return renderMarkdownResult(markdownText).html;
 }
 
-export function renderMarkdownResult(markdownText: string): MarkdownRenderResult {
-  const env = createMathEnvironment();
+export function renderMarkdownResult(markdownText: string, sourceMapping = false): MarkdownRenderResult {
+  const env = createMathEnvironment(sourceMapping);
   const sanitizedHTML = DOMPurify.sanitize(markdown.render(markdownText, env), sanitizeConfig);
   return { html: restoreMathSegments(sanitizedHTML, env), tasks: env.tasks };
 }
@@ -148,8 +161,9 @@ function fenceLanguage(info: string): string {
   return info.trim().split(/\s+/, 1)[0]?.toLowerCase() ?? '';
 }
 
-function createMathEnvironment(): MathEnvironment {
+function createMathEnvironment(sourceMapping: boolean): MathEnvironment {
   return {
+    sourceMapping,
     mathNonce: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`,
     mathSegments: [],
     tasks: [],
@@ -177,7 +191,11 @@ function mathBlockRule(state: StateBlock, startLine: number, endLine: number, si
   }
 
   const token = state.push('html_block', '', 0);
-  token.content = addMathSegment(mathBlock.content, delimiter.displayMode, state.env as MathEnvironment);
+  const env = state.env as MathEnvironment;
+  const content = addMathSegment(mathBlock.content, delimiter.displayMode, env);
+  token.content = env.sourceMapping
+    ? `<div data-markedit-source-line="${startLine}">${content}</div>`
+    : content;
   token.map = [startLine, mathBlock.endLine];
   state.line = mathBlock.endLine;
   return true;

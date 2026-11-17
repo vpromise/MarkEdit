@@ -50,6 +50,26 @@ export function scrollToMarkdownPreviewHeading(position: number): boolean {
   return true;
 }
 
+export function scrollToMarkdownPreviewLine(lineNumber: number): boolean {
+  const container = storage.container;
+  if (!storage.enabled || container === undefined) {
+    return false;
+  }
+
+  let target: HTMLElement | undefined;
+  let nearest = -1;
+  container.querySelectorAll<HTMLElement>('[data-markedit-source-line]').forEach(element => {
+    const line = Number(element.dataset.markeditSourceLine);
+    if (line <= lineNumber - 1 && line >= nearest) {
+      target = element;
+      nearest = line;
+    }
+  });
+  target?.scrollIntoView({ block: window.config.typewriterMode ? 'center' : 'start' });
+  container.focus({ preventScroll: true });
+  return true;
+}
+
 export function resetMarkdownPreviewMode() {
   hideMarkdownPreview(false);
   storage.container?.remove();
@@ -104,7 +124,7 @@ function showMarkdownPreview(markdownText?: string): boolean {
   const scrollRatio = scrollTopRatio(editor.scrollDOM);
 
   const source = markdownText ?? editor.state.doc.toString();
-  const result = renderMarkdownResult(source);
+  const result = renderMarkdownResult(source, true);
   container.innerHTML = result.html;
   prepareMarkdownPreview(container);
   storage.tasks = new WeakMap();
@@ -175,6 +195,7 @@ function previewContainer(parent: Element, before: Element) {
 
   const container = document.createElement('article');
   container.className = previewClassName;
+  container.tabIndex = -1;
   container.hidden = true;
   container.addEventListener('click', handlePreviewClick);
   container.addEventListener('change', handleTaskChange);

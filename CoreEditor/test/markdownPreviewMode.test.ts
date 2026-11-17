@@ -3,6 +3,7 @@ import { EditorView } from '@codemirror/view';
 import { Config } from '../src/config';
 import { getMarkdownPreviewMode, resetEditor, setMarkdownPreviewMode } from '../src/core';
 import { handlePreviewLinkClick, rewriteImageSource } from '../src/modules/markdown/previewMode';
+import { gotoLine } from '../src/modules/selection';
 import { WebModuleTableOfContentsImpl } from '../src/bridge/web/toc';
 
 window.config = {
@@ -48,6 +49,42 @@ describe('Markdown preview mode', () => {
     expect(window.editor.state.selection.main.head).toBe(headingInfo.from);
     expect(window.editor.dom.hidden).toBe(true);
   });
+
+  test('Quick Search line navigation keeps the rendered preview active', async () => {
+    document.body.innerHTML = '<main id="editor"></main>';
+    await resetEditor('# Title\n\nFirst paragraph\n\nSecond paragraph');
+    setMarkdownPreviewMode(true);
+    const paragraph = document.querySelector<HTMLElement>('.markdown-preview [data-markedit-source-line="4"]');
+    expect(paragraph).not.toBeNull();
+    const scroll = jest.fn();
+    if (paragraph === null) {
+      throw new Error('Preview paragraph mapping is missing');
+    }
+    paragraph.scrollIntoView = scroll;
+    gotoLine(5);
+    expect(scroll).toHaveBeenCalledTimes(1);
+    expect(getMarkdownPreviewMode()).toBe(true);
+    expect(window.editor.dom.hidden).toBe(true);
+    expect(document.activeElement).toBe(document.querySelector('.markdown-preview'));
+    expect(window.editor.state.doc.lineAt(window.editor.state.selection.main.head).number).toBe(5);
+  });
+
+  test.each(['```swift\nlet value = 1\n```', '$$\nx = 1\n$$'])(
+    'maps code and formula blocks for search navigation: %s', async block => {
+      document.body.innerHTML = '<main id="editor"></main>';
+      await resetEditor(`# Title\n\n${block}`);
+      setMarkdownPreviewMode(true);
+      const target = document.querySelector<HTMLElement>('.markdown-preview [data-markedit-source-line="2"]');
+      if (target === null) {
+        throw new Error('Rendered block source mapping is missing');
+      }
+      const scroll = jest.fn();
+      target.scrollIntoView = scroll;
+      gotoLine(4);
+      expect(scroll).toHaveBeenCalledTimes(1);
+      expect(getMarkdownPreviewMode()).toBe(true);
+    },
+  );
 
   test('navigates between rendered sections and returns to source navigation', async () => {
     document.body.innerHTML = '<main id="editor"></main>';

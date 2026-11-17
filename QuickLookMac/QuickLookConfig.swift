@@ -92,7 +92,7 @@ extension EditorConfig {
       indentUnit: nil,
       localizable: nil,
       smartQuotesEnabled: false,
-      readingWidth: 800,
+      readingWidth: 0,
       enhancedPasteEnabled: false,
       // Runtime config from settings.json, not dynamically changeable
       autoCharacterPairs: false,

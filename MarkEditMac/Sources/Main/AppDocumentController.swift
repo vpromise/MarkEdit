@@ -17,10 +17,13 @@ import MarkEditKit
  */
 final class AppDocumentController: NSDocumentController {
   static var suggestedTextEncoding: EditorTextEncoding?
-  static var suggestedFilename: String?
 
-  override var maximumRecentDocumentCount: Int {
-    min(super.maximumRecentDocumentCount, 8)
+  override func noteNewRecentDocumentURL(_ url: URL) {
+    guard !ApplicationEnvironment.isRunningTests else {
+      return
+    }
+
+    super.noteNewRecentDocumentURL(url)
   }
 
   override func beginOpenPanel(_ openPanel: NSOpenPanel, forTypes inTypes: [String]?) async -> Int {
@@ -89,6 +92,11 @@ final class AppDocumentController: NSDocumentController {
     display displayDocument: Bool,
     completionHandler: @escaping (NSDocument?, Bool, (any Error)?) -> Void
   ) {
+    if ApplicationEnvironment.isRunningTests {
+      super.openDocument(withContentsOf: url, display: false, completionHandler: completionHandler)
+      return
+    }
+
     if url.isBinaryFile {
       // Dead loop prevention
       if Bundle.main.isDefaultApp(toOpen: url) {

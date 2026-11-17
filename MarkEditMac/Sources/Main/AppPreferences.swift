@@ -45,14 +45,14 @@ enum AppPreferences {
      Due to historical issues, this can be either a file bookmark, or an array of file bookmarks.
      */
     @Storage(key: "general.granted-folder-bookmark", defaultValue: nil)
-    static var grantedFolderBookmark: Data?
+    static var fileBookmarks: Data?
 
     static var quitAlwaysKeepsWindows: Bool {
       get {
-        UserDefaults.standard.bool(forKey: NSQuitAlwaysKeepsWindows)
+        ApplicationEnvironment.preferences.bool(forKey: NSQuitAlwaysKeepsWindows)
       }
       set {
-        UserDefaults.standard.set(newValue, forKey: NSQuitAlwaysKeepsWindows)
+        ApplicationEnvironment.preferences.set(newValue, forKey: NSQuitAlwaysKeepsWindows)
       }
     }
   }
@@ -146,7 +146,7 @@ enum AppPreferences {
       }
     }
 
-    @Storage(key: "editor.reading-width", defaultValue: .comfortable)
+    @Storage(key: "editor.reading-width", defaultValue: .off)
     static var readingWidth: ReadingWidth {
       didSet {
         performUpdates { $0.setReadingWidth(readingWidth) }
@@ -175,11 +175,11 @@ enum AppPreferences {
     }
 
     static var smartQuotesEnabled: Bool {
-      guard UserDefaults.standard.object(forKey: WKAutomaticQuoteSubstitutionEnabled) != nil else {
+      guard ApplicationEnvironment.preferences.object(forKey: WKAutomaticQuoteSubstitutionEnabled) != nil else {
         return NSSpellChecker.isAutomaticQuoteSubstitutionEnabled
       }
 
-      return UserDefaults.standard.bool(forKey: WKAutomaticQuoteSubstitutionEnabled)
+      return ApplicationEnvironment.preferences.bool(forKey: WKAutomaticQuoteSubstitutionEnabled)
     }
 
     static func smartQuotesOptionToggled() {
@@ -475,8 +475,8 @@ enum NewFilenameExtension: String, Codable, CaseIterable {
     UTType(exportedType) ?? .plainText // public.plain-text
   }
 
-  static func preferredExtension(for typeName: String) -> Self {
-    (allCases.first { $0.exportedType == typeName }) ?? AppPreferences.General.newFilenameExtension
+  static func preferredExtension(for typeName: String) -> Self? {
+    allCases.first { $0.exportedType == typeName }
   }
 }
 
@@ -512,7 +512,7 @@ struct Storage<T: Codable> {
 
   var wrappedValue: T {
     get {
-      guard let data = UserDefaults.standard.object(forKey: key) as? Data else {
+      guard let data = ApplicationEnvironment.preferences.object(forKey: key) as? Data else {
         return defaultValue
       }
 
@@ -521,7 +521,7 @@ struct Storage<T: Codable> {
     }
     set {
       let data = try? Coders.encoder.encode(newValue)
-      UserDefaults.standard.set(data, forKey: key)
+      ApplicationEnvironment.preferences.set(data, forKey: key)
     }
   }
 }

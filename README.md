@@ -20,16 +20,16 @@ The fork also includes the following features without installing extensions:
 - Rich-text paste converts HTML, including tables, to Markdown. Pasted images are saved in an `assets` folder beside the saved document and inserted as relative image references. Grant folder access when required by macOS.
 - **Settings → Editor** includes reading width and enhanced paste controls. The existing **Paste and Match Style** command keeps plain-text paste available.
 - Quick Look remembers its window size. Its context menu can reset the saved size.
+- Native **File → Quick Search…** (⇧⌘O) searches recent files, bookmarked folders, current-document headings and text, and menu commands. **File → Bookmarks** manages folder access.
+- The editor and Finder previews default to full width; an optional reading width remains available in Editor settings.
 
 The Quick Look extension includes its renderer, so basic previews do not depend on the shared customization container being writable.
 
 Updates are checked against this fork's releases. Fork revisions are compared independently from the upstream app version.
 
-No bloat. Markdown editing done right in a 4 MB app that flies through million-line files.
+Native Markdown editing with bundled previews for code, math, and diagrams.
 
 We do not claim to be the best in any single dimension. Instead, we aim to strike the right balance across **size**, **speed**, **native integration**, and **correctness**.
-
-_For perspective: at just 4 MB, MarkEdit is much smaller than Electron apps. Handling a 10 MB file with ease puts it ahead of TextKit-based editors. Performance-first editors built with Rust lack native features, while correctness alone rules out editors that rely on regex-based Markdown parsing._
 
 > [!TIP]
 > Discover our other free and open-source apps at [libremac.github.io](https://libremac.github.io/).
@@ -51,7 +51,7 @@ _For perspective: at just 4 MB, MarkEdit is much smaller than Electron apps. Han
 - Privacy-focused: doesn't collect any user data
 - Native: clean and intuitive, feels right at home on Mac
 - Fast: edits 10 MB files easily
-- Lightweight: installer size is about 4 MB
+- Lightweight: native app with bundled Markdown rendering
 - Extensible: seamless integration with Shortcuts and AppleScript
 - Rendered previews: Finder Quick Look and the editor toolbar can show formatted Markdown without losing source-editing state
 
@@ -87,7 +87,7 @@ For bugs, [open an issue](https://github.com/MarkEdit-app/MarkEdit/issues/new) o
 
 Please refer to the [wiki page](https://github.com/MarkEdit-app/MarkEdit/wiki/Development) for development instructions.
 
-For this fork, run `./script/build_and_run.sh` to build and launch a separate development copy. Use `--build-only` to build it, or `--verify` to also check that it launched. Use `--release-build` to produce a Release app in `.build/macOS/Build/Products/Release/MarkEdit.app`. The build requires Node.js and Xcode 27 and retains the macOS 15 deployment target. The Codex Run action uses the same script.
+For this fork, run `./script/build_and_run.sh` to build and launch a separate development copy. Use `--build-only` to build it, or `--verify` to also check that it launched. Use `--release-build` to produce a Release app in `.build/macOS/Build/Products/Release/MarkEdit.app`. The build requires Node.js and Xcode 27 and retains the macOS 15 deployment target. The Codex Run action uses the same script. Native saving and search integration tests are available in the `MarkEditMacTests` scheme; additional search tests are included in `ModulesTests`. See [upstream synchronization notes](docs/upstream-sync.md) for the selected changes and validation scope.
 
 ## Acknowledgments
 

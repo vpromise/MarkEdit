@@ -49,12 +49,22 @@ public extension NSMenuItem {
   }
 
   @MainActor
-  func performAction() {
+  @discardableResult
+  func performAction() -> Bool {
     guard let action else {
+      return false
+    }
+
+    return NSApp.sendAction(action, to: target, from: self)
+  }
+
+  func ensureTitleVisibility() {
+    guard #available(macOS 27.0, *), attributedTitle == nil else {
       return
     }
 
-    NSApp.sendAction(action, to: target, from: self)
+    // [macOS 27] Regression: title is truncated
+    attributedTitle = NSAttributedString(string: title)
   }
 
   func ensureImageVisibility() {
@@ -62,19 +72,7 @@ public extension NSMenuItem {
       return
     }
 
-  #if canImport(FoundationModels, _version: 2)
     preferredImageVisibility = .visible
-  #else
-    let selector = sel_getUid("setPreferredImageVisibility:")
-    if responds(to: selector) {
-      unsafeBitCast(
-        method(for: selector),
-        to: (@convention(c) (NSMenuItem, Selector, Int) -> Void).self
-      )(self, selector, 1) // .visible
-    } else {
-      assertionFailure("Missing setPreferredImageVisibility:")
-    }
-  #endif
   }
 }
 

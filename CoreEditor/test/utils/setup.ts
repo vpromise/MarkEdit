@@ -38,6 +38,7 @@ if (typeof globalThis.DragEvent === 'undefined') {
 };
 
 window.nativeModules = {
+  completion: { cancelCompletion() { /* noop */ } },
   core: {
     notifyBackgroundColorDidChange() { /* noop */ },
     notifyViewportScaleDidChange() { /* noop */ },

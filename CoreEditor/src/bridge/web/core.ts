@@ -14,6 +14,7 @@ import {
   setMarkdownPreviewMode,
   getMarkdownPreviewMode,
   handleFocusLost,
+  restoreFocus,
   handleMouseExited,
   setHasModalSheet,
 } from '../../core';
@@ -34,6 +35,7 @@ export interface WebModuleCore extends WebModule {
   setMarkdownPreviewMode({ enabled }: { enabled: boolean }): boolean;
   getMarkdownPreviewMode(): boolean;
   handleFocusLost(): void;
+  restoreFocus(): void;
   handleMouseExited({ clientX, clientY }: { clientX: number; clientY: number }): void;
   setHasModalSheet({ value }: { value: boolean }): void;
 }
@@ -77,6 +79,10 @@ export class WebModuleCoreImpl implements WebModuleCore {
 
   handleFocusLost(): void {
     handleFocusLost();
+  }
+
+  restoreFocus(): void {
+    restoreFocus();
   }
 
   handleMouseExited({ clientX, clientY }: { clientX: number; clientY: number }): void {

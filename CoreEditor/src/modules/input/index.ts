@@ -10,7 +10,7 @@ import { hasRecentKeyPress } from '../events';
 import { isContentDirty, setHistoryExplictlyMoved } from '../history';
 import { adjustActiveLineGutter, adjustGutterPositions } from '../lines';
 import { tokenizePosition } from '../tokenizer';
-import { refreshEditFocus, scrollCaretToVisible, scrollToSelection, selectedLineColumn, updateActiveLine } from '../../modules/selection';
+import { refreshEditFocus, ensureCaretPosition, selectedLineColumn, updateActiveLine } from '../../modules/selection';
 
 import hasSelection from '../selection/hasSelection';
 import redrawSelectionLayer from '../selection/redrawSelectionLayer';
@@ -133,20 +133,14 @@ export function interceptInputs() {
  * Returns an extension that handles all the editor changes.
  */
 export function observeChanges() {
+  let contentEditedPending = false;
   const listener = EditorView.updateListener.of(update => {
     if (update.docChanged) {
       // This should be called before updating the native view
       setHistoryExplictlyMoved(update);
 
-      if (!update.transactions.some(tr => tr.annotation(Transaction.userEvent) === '@none')) {
-        // We need this because we have different line height for headings,
-        // CodeMirror doesn't by default fix the offset issue.
-        scrollCaretToVisible();
-
-        // Make sure the main selection is always centered for typewriter mode
-        if (window.config.typewriterMode) {
-          scrollToSelection('center');
-        }
+      if (!isComposing() && !update.transactions.some(tr => tr.annotation(Transaction.userEvent) === '@none')) {
+        ensureCaretPosition();
       }
 
       // Keep the bottom pinned across an IME composition; the composing string and
@@ -195,13 +189,23 @@ export function observeChanges() {
       // and only called when the update is actually sent. The snapshot is intentional:
       // getInfo() is consistent with the other fields captured in this update.
       const lineColumnState = selectedLineColumn();
+      // A selection-only update must not discard an edit notification waiting to be sent
+      contentEditedPending ||= update.docChanged;
+
       const notifyViewDidUpdate = () => {
         window.nativeModules.core.notifyViewDidUpdate({
-          contentEdited: update.docChanged,
+          contentEdited: contentEditedPending,
           compositionEnded: editingState.compositionEnded,
           isDirty: isContentDirty(),
           selectedLineColumn: lineColumnState.getInfo(),
         });
+
+        // Native normally cancels completion for selection-only updates, but this one also reports an edit
+        if (contentEditedPending && !update.docChanged) {
+          window.nativeModules.completion.cancelCompletion();
+        }
+
+        contentEditedPending = false;
       };
 
       if (storage.lineColumnUpdater !== undefined) {

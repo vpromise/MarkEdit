@@ -1,4 +1,5 @@
 import { Config } from '../config';
+import { setReadingWidth } from '../modules/readingWidth';
 import { setEditorColors } from '../styling/config';
 import { renderMarkdown } from '../modules/markdown/markdownRenderer';
 import { renderMermaidDiagrams } from '../modules/markdown/mermaidRenderer';
@@ -25,7 +26,7 @@ declare global {
 export function setUpQuickLook(config: Config) {
   window.config = config;
   document.documentElement.classList.add('markedit-quicklook');
-  document.documentElement.style.setProperty('--markdown-preview-reading-width', `${config.readingWidth || 800}px`);
+  setReadingWidth(config.readingWidth);
 
   const parent = document.querySelector('#editor') ?? document.body;
   const preview = document.createElement('article');
